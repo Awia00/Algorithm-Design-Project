@@ -22,4 +22,21 @@ E[Xi] = the expected value of edge to be satisfied: 2/3
 E[X] = sum of the probability of all edges m beign satisfied = 2/3m <= 2/3c*
 
 ## 2)
-Two 
+### a)
+Total size is: 100_000
+H = 80_000
+T = 20_000
+P = 0.01 for not voting what you want
+
+X = number of people voting H
+Xi = i voting H 
+
+E[Xi]=4/5*(1-P)+1/5*P = 0.794
+E[X] = Sum of all i E[Xi] = 73 800
+
+
+### b)
+P=0.5
+
+## 3)
+probability of guessing 1 element the same is k/n
