@@ -18,33 +18,48 @@ public class Kernelizer {
             input = new FileInputStream(new File(args[0]));
 
         try (Scanner scanner = new Scanner(input)) {
-            List<String> inputList = new ArrayList<>();
-            HashMap<String, Integer> usageMap = new HashMap<>();
+            HashMap<String, List<String>> graph = new HashMap<>();
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine();
 
                 String[] split = line.split(" ");
-                inputList.add(line);
-                if(usageMap.containsKey(split[0]))
-                    usageMap.put(split[0], usageMap.get(split[0])+1);
-                else
-                    usageMap.put(split[0], 1);
-                if(usageMap.containsKey(split[1]))
-                    usageMap.put(split[1], usageMap.get(split[1])+1);
-                else
-                    usageMap.put(split[1], 1);
+                if(graph.containsKey(split[0]))
+                    graph.get(split[0]).add(split[1]);
+                else{
+                    List<String> list = new ArrayList<>();
+                    list.add(split[1]);
+                    graph.put(split[0], list);
+                }
+                if(graph.containsKey(split[1]))
+                    graph.get(split[1]).add(split[0]);
+                else{
+                    List<String> list = new ArrayList<>();
+                    list.add(split[0]);
+                    graph.put(split[1], list);
+                }
             }
-            List<String> toRemove = new ArrayList<>();
-            for (Map.Entry<String, Integer> usageEntry : usageMap.entrySet()) {
-                if(usageEntry.getValue() == 1)
-                    for (String s : inputList) {
-                        if (s.contains(usageEntry.getKey()))
-                            toRemove.add(s);
+            boolean hasChanged = true;
+            while(hasChanged)
+            {
+                hasChanged = false;
+                for (Map.Entry<String, List<String>> vertexAndEdges : graph.entrySet()) {
+                    if(vertexAndEdges.getValue().size()==1)
+                    {
+                        String other = vertexAndEdges.getValue().get(0);
+                        graph.get(other).remove(vertexAndEdges.getKey());
+                        vertexAndEdges.getValue().remove(other);
+                        hasChanged = true;
                     }
+                }
             }
-            inputList.removeAll(toRemove);
-            for (String s : inputList) {
-                System.out.println(s);
+            HashSet<String> outputted = new HashSet<>();
+            for (Map.Entry<String, List<String>> vertexAndEdges : graph.entrySet()) {
+                for (String s : vertexAndEdges.getValue()) {
+                    if(!outputted.contains(s)){
+                        System.out.println(vertexAndEdges.getKey() + " " + s);
+                        outputted.add(vertexAndEdges.getKey());
+                    }
+                }
             }
         }
     }
