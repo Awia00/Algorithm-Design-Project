@@ -7,7 +7,7 @@ public class GraphStatistics {
 		Set<String> vertices = new HashSet<>();
 		int edges = 0;
 
-		try (Scanner scanner = new Scanner(new File(args[0]))) {
+		try (Scanner scanner = new Scanner(Util.getInput(args))) {
 			while (scanner.hasNextLine()) {
 				String line = scanner.nextLine();
 
