@@ -64,8 +64,36 @@ public class MinFill {
         return min;
     }
 
+
     public Set<Set<Integer>> generateVitalPotentialMaximalCliques(Graph g, int k) {
-        throw new IllegalStateException("Not implemented");
+        Set<Set<Integer>> potentialMaximalCliques = null;
+        Set<Set<Integer>> vertexSubsets = g.vertices().subsetOfSize((int)(5*Math.sqrt(k)));
+        // enumerate quasi-cliques.
+
+        for (Set<Integer> z : vertexSubsets) {
+            Set<Integer> gz = g.vertices().minus(z);
+            Graph h = g.inducedBy(gz).minimalTriangulation();
+            for (Set<Integer> s : h.minimalSeparators()) {
+                if(g.inducedBy(s).isClique()){
+                    int componentSize = g.inducedBy(g.vertices().minus(s)).components().size();
+
+                    if(componentSize >= 2) { // case 1
+                        Set<Integer> c = s.union(z);
+                        if (g.isPotentialMaximalClique(c)) {
+                            potentialMaximalCliques = potentialMaximalCliques.add(c);
+                        }
+                    } else if(componentSize == 1){ // case 2
+
+                    } else { // case 3
+
+                    }
+                }
+            }
+        }
+        // enumerate quasi cliques
+        // all vertex subsets
+        //
+        return potentialMaximalCliques;
     }
 
     /**
@@ -141,23 +169,44 @@ interface Graph {
     boolean isAdjacent(int a, int b);
     boolean hasPath(int a, int b);
     boolean isChordal();
-    boolean isFullyConnected();
+    boolean isClique();
+    default boolean isPotentialMaximalClique(Set<Integer> k){
+        Graph gk = inducedBy(vertices().minus(k));
+        Set<Set<Integer>> s = null;
+        for (Graph component : gk.components()) {
+            Set<Integer> sI = neighborhood(component.vertices().intersect(k));
+            s.add(sI);
+            if(!sI.isProperSubsetOf(k)){
+                return false;
+            }
+        }
+        Graph cliqueChecker = this;
+        for (Set<Integer> sI : s) {
+            cliqueChecker = cliqueChecker.cliqify(sI);
+        }
+        return cliqueChecker.inducedBy(k).isClique();
+    }
     Set<Graph> components();
-    Set<Integer> minimalSeparator();
+    Set<Set<Integer>> minimalSeparators();
     Set<Integer> shortestPath(int from, int to);
     Graph addEdge(Edge e);
     Set<Edge> getNonEdges();
     Graph inducedBy(Set<Integer> vertices);
+    Graph minimalTriangulation();
+    Graph minimalTriangulation(Set<Integer> vertices);
+    Graph cliqify(Set<Integer> vertices);
 }
 
 interface Set<T> extends Iterable<T> {
     boolean isEmpty();
+    boolean isProperSubsetOf(Set<T> other);
     int size();
     Set<T> add(T element);
     Set<T> union(Set<T> other);
     Set<T> intersect(Set<T> other);
     Set<T> minus(Set<T> other);
     Set<T> remove(T element);
+    Set<Set<T>> subsetOfSize(int size);
 }
 
 class Edge {
