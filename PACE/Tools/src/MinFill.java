@@ -1,3 +1,8 @@
+import com.sun.pisces.PiscesRenderer;
+
+import java.util.HashMap;
+import java.util.Map;
+
 public class MinFill {
     public boolean stepB1(Graph g, int k) {
         if (k < 0) return false;
@@ -29,39 +34,54 @@ public class MinFill {
         return stepC(g, k, piI);
     }
 
-    public boolean stepC(Graph g, int k, Set<Set<Integer>> piI) {
-        return k >= minFill(g, k, piI);
-    }
-
-    public int minFill(Graph g, int k, Set<Set<Integer>> piI) {
-        int min = Integer.MAX_VALUE;
-
+    public Set<Set<Integer>> generatePiSC(Graph g, Set<Set<Integer>> piI)
+    {
+        Set<Set<Integer>> piSC = null;
         for (Set<Integer> omega : piI) {
-            Set<Edge> nonEdges = g.inducedBy(omega).getNonEdges();
-            int fill = nonEdges.size();
-
-            // TODO Implement as separate method/function.
-            Graph gOmega = g;
-            for (Edge nonEdge : nonEdges) {
-                gOmega = gOmega.addEdge(nonEdge);
-            }
-
-            int filled = fill;
-
-            // TODO: Implement as described by section 5 towards the end.
-            for (Graph component : g.inducedBy(g.vertices().minus(omega)).components()) {
-                Set<Integer> cVertices = component.vertices();
-                filled += minFill(
-                        gOmega.inducedBy(cVertices.union(g.neighborhood(cVertices))),
-                        k,
-                        piI);
-            }
-
-            if (filled < min) {
-                min = filled;
+            Graph gMinusOmega = g.inducedBy(g.vertices().minus(omega));
+            Set<Graph> components = gMinusOmega.components();
+            for (Graph component : components) {
+                Set<Integer> s = g.neighborhood(component.vertices());
+                Graph gMinusS = g.inducedBy(g.vertices().minus(s));
+                for (Graph c : gMinusS.fullComponents()) {
+                    if(s.isProperSubsetOf(omega) && omega.isSubsetOf(s.union(c.vertices())))
+                    {
+                        piSC = piSC.add(omega);
+                    }
+                }
             }
         }
-        return min;
+        return piSC;
+    }
+
+    public int minFillF(Graph f, Set<Set<Integer>> piSC, Map<Graph, Integer> memoizer){
+        Integer memoizedResult = memoizer.get(f);
+        if(memoizedResult != null) return memoizedResult;
+
+        int result = 0;
+        for (Set<Integer> omegaPrime : piSC) {
+            int fill = f.inducedBy(omegaPrime).getNonEdges().size();
+            for (Graph cPrime : f.inducedBy(f.vertices().minus(omegaPrime)).components()) {
+                fill += minFillF(f.cliqify(omegaPrime).inducedBy(cPrime.vertices().union(f.neighborhood(cPrime.vertices()))), piSC, memoizer);
+            }
+            result = Math.min(result, fill);
+        }
+
+        memoizer.put(f, result);
+        return result;
+    }
+
+    public boolean stepC(Graph g, int k, Set<Set<Integer>> piI) {
+        Set<Set<Integer>> piSC = generatePiSC(g, piI);
+        Map<Graph, Integer> memoizer = new HashMap<>();
+        for (Set<Integer> omega : piI) {
+            int fill = g.inducedBy(omega).getNonEdges().size();
+            for (Graph c : g.inducedBy(g.vertices().minus(omega)).components()) {
+                fill += minFillF(g.cliqify(omega).inducedBy(c.vertices().union(g.neighborhood(c.vertices()))), piSC, memoizer);
+            }
+            if(fill<=k) return true;
+        }
+        return false;
     }
 
     // Implementation of Lemma 4.1
@@ -248,12 +268,14 @@ interface Graph {
 interface Set<T> extends Iterable<T> {
     boolean isEmpty();
     boolean isProperSubsetOf(Set<T> other);
+    boolean isSubsetOf(Set<T> other);
     int size();
     Set<T> add(T element);
     Set<T> union(Set<T> other);
     Set<T> intersect(Set<T> other);
     Set<T> minus(Set<T> other);
     Set<T> remove(T element);
+
     Set<Set<T>> subsetOfSizeAtMost(int size);
 }
 
