@@ -64,35 +64,76 @@ public class MinFill {
         return min;
     }
 
-
-    public Set<Set<Integer>> generateVitalPotentialMaximalCliques(Graph g, int k) {
+    // Implementation of Lemma 4.1
+    // TODO: Check that we branch correctly on component size.
+    private Set<Set<Integer>> enumerateQuasiCliques(Graph g, int k) {
         Set<Set<Integer>> potentialMaximalCliques = null;
-        Set<Set<Integer>> vertexSubsets = g.vertices().subsetOfSize((int)(5*Math.sqrt(k)));
+        Set<Set<Integer>> vertexSubsets = g.vertices().subsetOfSizeAtMost((int)(5*Math.sqrt(k)));
 
-        // enumerate quasi-cliques.
         for (Set<Integer> z : vertexSubsets) {
-            Set<Integer> gz = g.vertices().minus(z);
-            Graph h = g.inducedBy(gz).minimalTriangulation();
+            Set<Integer> gMinusZ = g.vertices().minus(z);
+            Graph h = g.inducedBy(gMinusZ).minimalTriangulation();
             for (Set<Integer> s : h.minimalSeparators()) {
                 if(g.inducedBy(s).isClique()){
-                    int componentSize = g.inducedBy(g.vertices().minus(s)).components().size();
+                    int componentSize = g.inducedBy(g.vertices().minus(s)).fullComponents().size();
 
                     if(componentSize >= 2) { // case 1
                         Set<Integer> c = s.union(z);
                         if (g.isPotentialMaximalClique(c)) {
+                            // TODO: Maybe check vitality
                             potentialMaximalCliques = potentialMaximalCliques.add(c);
                         }
-                    } else if(componentSize == 1){ // case 2
-
+                    } else if(componentSize == 0){ // case 2
+                        for (Set<Integer> maximalClique : h.maximalCliquesOfChordalGraph()) {
+                            if (g.isClique(maximalClique)) {
+                                Set<Integer> c = maximalClique.union(z);
+                                if (g.isPotentialMaximalClique(c)) {
+                                    // TODO: maybe check vitality
+                                    potentialMaximalCliques = potentialMaximalCliques.add(c);
+                                }
+                            }
+                        }
                     } else { // case 3
-
+                        for (Set<Integer> maximalClique : h.maximalCliquesOfChordalGraph()) {
+                            for (Integer y : z) {
+                                Set<Integer> Y = null;
+                                for (Graph bi : g.inducedBy(g.vertices().minus(z.union(maximalClique))).components()) {
+                                    Y = Y.union(bi.vertices().add(y));
+                                }
+                                Set<Integer> c = g.neighborhood(Y).add(y);
+                                if (g.isPotentialMaximalClique(c)) {
+                                    // TODO: maybe check vitality
+                                    potentialMaximalCliques = potentialMaximalCliques.add(c);
+                                }
+                            }
+                        }
                     }
                 }
             }
         }
-        // enumerate quasi cliques
-        // all vertex subsets
-        //
+        // TODO: Maybe first check vitality here? (bad use of memory?)
+        return potentialMaximalCliques;
+    }
+
+    public Set<Set<Integer>> generateVitalPotentialMaximalCliques(Graph g, int k) {
+        Set<Set<Integer>> potentialMaximalCliques = null;
+
+        // enumerate quasi-cliques. (Step 1)
+        potentialMaximalCliques = enumerateQuasiCliques(g, k);
+
+        // all vertex subsets of size at most 5*sqrt(k)+2 (step 2)
+        for (Set<Integer> vertices : g.vertices().subsetOfSizeAtMost((int) (5 * Math.sqrt(k) + 2))) {
+            if (g.isVitalPotentialMaximalClique(vertices, k)) {
+                potentialMaximalCliques = potentialMaximalCliques.add(vertices);
+            }
+        }
+
+        // step 3 of generating vital potential maximal cliques
+        for (Integer vertex : g.vertices()) {
+            Graph h = g.cliqify(g.neighborhood(vertex));
+
+            potentialMaximalCliques = potentialMaximalCliques.union(enumerateQuasiCliques(h, k));
+        }
         return potentialMaximalCliques;
     }
 
@@ -161,7 +202,7 @@ public class MinFill {
 }
 
 interface Graph {
-    Set<Graph> maximalCliquesOfChordalGraph(); // TODO: We have an algorithm for this. [3]
+    Set<Set<Integer>> maximalCliquesOfChordalGraph(); // TODO: We have an algorithm for this. [3]
     Set<Integer> vertices();
     Set<Edge> edges();
     Set<Integer>[] neighborhoods();
@@ -187,7 +228,10 @@ interface Graph {
         }
         return cliqueChecker.inducedBy(k).isClique();
     }
+
+    boolean isVitalPotentialMaximalClique(Set<Integer> vertices, int k);
     Set<Graph> components();
+    Set<Graph> fullComponents();
     Set<Set<Integer>> minimalSeparators();
     Set<Integer> shortestPath(int from, int to);
     Graph addEdge(Edge e);
@@ -196,6 +240,9 @@ interface Graph {
     Graph minimalTriangulation();
     Graph minimalTriangulation(Set<Integer> vertices);
     Graph cliqify(Set<Integer> vertices);
+
+
+    boolean isClique(Set<Integer> vertices);
 }
 
 interface Set<T> extends Iterable<T> {
@@ -207,7 +254,7 @@ interface Set<T> extends Iterable<T> {
     Set<T> intersect(Set<T> other);
     Set<T> minus(Set<T> other);
     Set<T> remove(T element);
-    Set<Set<T>> subsetOfSize(int size);
+    Set<Set<T>> subsetOfSizeAtMost(int size);
 }
 
 class Edge {
