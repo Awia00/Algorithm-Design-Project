@@ -73,40 +73,38 @@ public class MinFill {
         for (Set<Integer> z : vertexSubsets) {
             Set<Integer> gMinusZ = g.vertices().minus(z);
             Graph h = g.inducedBy(gMinusZ).minimalTriangulation();
+
+            // Case 1
             for (Set<Integer> s : h.minimalSeparators()) {
                 if(g.inducedBy(s).isClique()){
-                    int componentSize = g.inducedBy(g.vertices().minus(s)).fullComponents().size();
+                    Set<Integer> c = s.union(z);
+                    if (g.isPotentialMaximalClique(c)) {
+                        // TODO: Maybe check vitality
+                        potentialMaximalCliques = potentialMaximalCliques.add(c);
+                    }
+                }
+            }
 
-                    if(componentSize >= 2) { // case 1
-                        Set<Integer> c = s.union(z);
-                        if (g.isPotentialMaximalClique(c)) {
-                            // TODO: Maybe check vitality
-                            potentialMaximalCliques = potentialMaximalCliques.add(c);
-                        }
-                    } else if(componentSize == 0){ // case 2
-                        for (Set<Integer> maximalClique : h.maximalCliquesOfChordalGraph()) {
-                            if (g.isClique(maximalClique)) {
-                                Set<Integer> c = maximalClique.union(z);
-                                if (g.isPotentialMaximalClique(c)) {
-                                    // TODO: maybe check vitality
-                                    potentialMaximalCliques = potentialMaximalCliques.add(c);
-                                }
-                            }
-                        }
-                    } else { // case 3
-                        for (Set<Integer> maximalClique : h.maximalCliquesOfChordalGraph()) {
-                            for (Integer y : z) {
-                                Set<Integer> Y = null;
-                                for (Graph bi : g.inducedBy(g.vertices().minus(z.union(maximalClique))).components()) {
-                                    Y = Y.union(bi.vertices().add(y));
-                                }
-                                Set<Integer> c = g.neighborhood(Y).add(y);
-                                if (g.isPotentialMaximalClique(c)) {
-                                    // TODO: maybe check vitality
-                                    potentialMaximalCliques = potentialMaximalCliques.add(c);
-                                }
-                            }
-                        }
+            for (Set<Integer> maximalClique : h.maximalCliquesOfChordalGraph()) {
+                // Case 2
+                if (g.isClique(maximalClique)) {
+                    Set<Integer> c = maximalClique.union(z);
+                    if (g.isPotentialMaximalClique(c)) {
+                        // TODO: maybe check vitality
+                        potentialMaximalCliques = potentialMaximalCliques.add(c);
+                    }
+                }
+
+                // Case 3
+                for (Integer y : z) {
+                    Set<Integer> Y = null;
+                    for (Graph bi : g.inducedBy(g.vertices().minus(z.union(maximalClique))).components()) {
+                        Y = Y.union(bi.vertices().add(y));
+                    }
+                    Set<Integer> c = g.neighborhood(Y).add(y);
+                    if (g.isPotentialMaximalClique(c)) {
+                        // TODO: maybe check vitality
+                        potentialMaximalCliques = potentialMaximalCliques.add(c);
                     }
                 }
             }
@@ -243,6 +241,9 @@ interface Graph {
 
 
     boolean isClique(Set<Integer> vertices);
+
+    @Override
+    int hashCode();
 }
 
 interface Set<T> extends Iterable<T> {
