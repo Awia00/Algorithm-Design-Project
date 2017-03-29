@@ -68,8 +68,8 @@ public class MinFill {
     public Set<Set<Integer>> generateVitalPotentialMaximalCliques(Graph g, int k) {
         Set<Set<Integer>> potentialMaximalCliques = null;
         Set<Set<Integer>> vertexSubsets = g.vertices().subsetOfSize((int)(5*Math.sqrt(k)));
-        // enumerate quasi-cliques.
 
+        // enumerate quasi-cliques.
         for (Set<Integer> z : vertexSubsets) {
             Set<Integer> gz = g.vertices().minus(z);
             Graph h = g.inducedBy(gz).minimalTriangulation();
@@ -161,6 +161,7 @@ public class MinFill {
 }
 
 interface Graph {
+    Set<Graph> maximalCliquesOfChordalGraph(); // TODO: We have an algorithm for this. [3]
     Set<Integer> vertices();
     Set<Edge> edges();
     Set<Integer>[] neighborhoods();
