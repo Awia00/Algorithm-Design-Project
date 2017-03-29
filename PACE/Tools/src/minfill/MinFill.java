@@ -2,12 +2,15 @@ package minfill;
 
 import minfill.data.Edge;
 import minfill.data.Graph;
+import minfill.data.ImmutableSet;
 import minfill.data.Set;
+import org.jetbrains.annotations.Contract;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class MinFill {
+    @Contract(pure = true)
     public boolean stepB1(Graph g, int k) {
         if (k < 0) return false;
         if (g.isChordal()) return true;
@@ -32,12 +35,14 @@ public class MinFill {
         return false;
     }
 
+    @Contract(pure = true)
     public boolean stepB2(Graph g, int k) {
         Set<Set<Integer>> piI = generateVitalPotentialMaximalCliques(g, k);
 
         return stepC(g, k, piI);
     }
 
+    @Contract(pure = true)
     public Set<Set<Integer>> generatePiSC(Graph g, Set<Set<Integer>> piI)
     {
         Set<Set<Integer>> piSC = Set.empty();
@@ -76,6 +81,7 @@ public class MinFill {
         return result;
     }
 
+    @Contract(pure = true)
     public boolean stepC(Graph g, int k, Set<Set<Integer>> piI) {
         Set<Set<Integer>> piSC = generatePiSC(g, piI);
         Map<Graph, Integer> memoizer = new HashMap<>();
@@ -91,6 +97,7 @@ public class MinFill {
 
     // Implementation of Lemma 4.1
     // TODO: Check that we branch correctly on component size.
+    @Contract(pure = true)
     private Set<Set<Integer>> enumerateQuasiCliques(Graph g, int k) {
         Set<Set<Integer>> potentialMaximalCliques = Set.empty();
         Set<Set<Integer>> vertexSubsets = g.vertices().subsetsOfSizeAtMost((int)(5*Math.sqrt(k)));
@@ -138,6 +145,7 @@ public class MinFill {
         return potentialMaximalCliques;
     }
 
+    @Contract(pure = true)
     public Set<Set<Integer>> generateVitalPotentialMaximalCliques(Graph g, int k) {
         // enumerate quasi-cliques. (Step 1)
         Set<Set<Integer>> potentialMaximalCliques = enumerateQuasiCliques(g, k);
@@ -163,6 +171,7 @@ public class MinFill {
      * @param k Max number of edges to make g chordal.
      * @return A set of changes that, applied to g, reduces it.
      */
+    @Contract(pure = true)
     public Set<Set<Edge>> branch(Graph g, int k) {
         double h = Math.sqrt(k);
         Set<Set<Edge>> changes = Set.empty();
@@ -197,7 +206,7 @@ public class MinFill {
                 changes = changes.add(c.add(nonEdge));
 
                 // Find a shortest u,v-path in gw.
-                Set<Integer> path = gw.shortestPath(u, v).minus(nonEdge.vertices());
+                Set<Integer> path = new ImmutableSet<>(gw.shortestPath(u, v)).minus(nonEdge.vertices());
 
                 // case i: add edge between w_i in path and all vertices in x.
                 for (int i = 0; i < path.size(); i++) {

@@ -1,9 +1,11 @@
 package minfill.data;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Iterator;
 
 public class EmptySet<T> implements Set<T> {
-    private final static EmptySetIterator iterator = new EmptySetIterator();
+    private static final EmptySetIterator iterator = new EmptySetIterator();
     private static final EmptySet instance = new EmptySet();
 
     @SuppressWarnings("unchecked")
@@ -60,9 +62,10 @@ public class EmptySet<T> implements Set<T> {
 
     @Override
     public Set<Set<T>> subsetsOfSizeAtMost(int size) {
-        return new EmptySet<>();
+        return instance();
     }
 
+    @NotNull
     @Override
     @SuppressWarnings("unchecked")
     public Iterator<T> iterator() {

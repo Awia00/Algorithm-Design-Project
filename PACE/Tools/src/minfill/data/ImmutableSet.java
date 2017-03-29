@@ -1,5 +1,7 @@
 package minfill.data;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -133,6 +135,7 @@ public class ImmutableSet<T> implements Set<T> {
         return new Pair<>(previousResults.o1, myResults);
     }
 
+    @NotNull
     @Override
     public Iterator<T> iterator() {
         return Collections.unmodifiableSet(inner).iterator();
