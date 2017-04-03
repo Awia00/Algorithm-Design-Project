@@ -35,7 +35,7 @@ public interface Graph {
         Graph gk = inducedBy(vertices().minus(k));
         Set<Set<Integer>> s = Set.empty();
         for (Set<Integer> component : gk.components()) {
-            Set<Integer> sI = neighborhood(component.intersect(k));
+            Set<Integer> sI = neighborhood(component).intersect(k);
             s = s.add(sI);
             if(!sI.isProperSubsetOf(k)){
                 return false;
