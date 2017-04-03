@@ -56,7 +56,7 @@ public interface Graph {
     Set<Set<Integer>> components();
 
     @Contract(pure = true)
-    Set<Set<Integer>> fullComponents();
+    Set<Set<Integer>> fullComponents(Set<Integer> separator);
 
     @Contract(pure = true)
     Set<Set<Integer>> minimalSeparators();

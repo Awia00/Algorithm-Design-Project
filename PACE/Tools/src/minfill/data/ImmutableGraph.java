@@ -147,7 +147,7 @@ public class ImmutableGraph implements Graph {
 
     @Override
     @Contract(pure = true)
-    public Set<Set<Integer>> fullComponents() {
+    public Set<Set<Integer>> fullComponents(Set<Integer> separator) {
         throw new UnsupportedOperationException("Not implemented"); // TODO
     }
 
@@ -206,6 +206,8 @@ public class ImmutableGraph implements Graph {
     public Graph addEdge(Edge e) {
         if (!vertices.contains(e.from)) throw new IllegalArgumentException("Unknown vertex");
         if (!vertices.contains(e.to)) throw new IllegalArgumentException("Unknown vertex");
+
+        if (neighborhood(e.from).contains(e.to)) return this;
 
         Map<Integer, Set<Integer>> copy = new HashMap<>(neighborhoods);
 
