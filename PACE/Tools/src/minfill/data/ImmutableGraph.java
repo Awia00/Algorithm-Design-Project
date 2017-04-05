@@ -105,7 +105,7 @@ public class ImmutableGraph implements Graph {
     }
 
     @Contract(pure = true)
-    private List<Integer> maximumCardinalitySearch() {
+    private List<Integer> maximumCardinalitySearch() { // todo handle components
         List<Integer> order = new ArrayList<>(vertices.size());
         TreeMap<Integer, Integer> weightMap = new TreeMap<>();
         for (Integer vertex : vertices) {
@@ -120,8 +120,8 @@ public class ImmutableGraph implements Graph {
         }
         return order;
     }
-    @Contract(pure = true)
-    private Pair<List<Integer>, Set<Edge>> maximumCardinalitySearchM() {
+    @Contract(pure = true) // berry page 5
+    private Pair<List<Integer>, Set<Edge>> maximumCardinalitySearchM() { // todo handle components
         List<Integer> order = new ArrayList<>(vertices.size());
         TreeMap<Integer, Integer> weightMap = new TreeMap<>();
         Set<Edge> F = EmptySet.instance();
@@ -154,7 +154,7 @@ public class ImmutableGraph implements Graph {
     }
     @Override
     @Contract(pure = true)
-    public boolean isChordal() {
+    public boolean isChordal() { // todo handle components
         List<Integer> order = maximumCardinalitySearch();
         return order.size() == vertices.size(); // might not be how to check that it has an ordering.
     }
@@ -223,11 +223,21 @@ public class ImmutableGraph implements Graph {
     }
 
     @Override
-    @Contract(pure = true)
-    public Set<Set<Integer>> maximalCliquesOfChordalGraph() {
+    @Contract(pure = true) // blair page 20
+    public Set<Set<Integer>> maximalCliquesOfChordalGraph() { // todo handle components
         if (!isChordal())
             throw new UnsupportedOperationException("maximalCliquesOfChordalGraph can only be used on chordal graphs");
-        throw new UnsupportedOperationException("Not implemented"); // TODO
+        List<Integer> peo = maximumCardinalitySearch();
+        Set<Set<Integer>> cliques = EmptySet.instance();
+        for (int i = 0; i < peo.size()-1; i++) {
+            Integer v1 = peo.get(i);
+            Integer v2 = peo.get(i+1);
+            if(i == 1) cliques = cliques.add(neighborhood(v1).add(v1));
+            if(neighborhood(v1).size() + peo.size() - i+1 <= neighborhood(v2).size() + peo.size() - i+2) { // Li = vertices with labels greater than i but we already know how many we have left since we go in order
+                cliques = cliques.add(neighborhood(v2).add(v2));
+            }
+        }
+        return cliques;
     }
 
     @Override
