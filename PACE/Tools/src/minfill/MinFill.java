@@ -1,9 +1,6 @@
 package minfill;
 
-import minfill.data.Edge;
-import minfill.data.Graph;
-import minfill.data.ImmutableSet;
-import minfill.data.Set;
+import minfill.data.*;
 import org.jetbrains.annotations.Contract;
 
 import java.util.HashMap;
@@ -43,19 +40,20 @@ public class MinFill {
     }
 
     @Contract(pure = true)
-    public Set<Set<Integer>> generatePiSC(Graph g, Set<Set<Integer>> piI)
+    public Map<Pair, Set<Set<Integer>>> generatePiSC(Graph g, Set<Set<Integer>> piI)
     {
-        Set<Set<Integer>> piSC = Set.empty();
+        Map<Pair, Set<Set<Integer>>> piSC = new HashMap<>();
         for (Set<Integer> omega : piI) {
             Graph gMinusOmega = g.inducedBy(g.vertices().minus(omega));
             Set<Set<Integer>> components = gMinusOmega.components();
             for (Set<Integer> component : components) {
                 Set<Integer> s = g.neighborhood(component);
-                Graph gMinusS = g.inducedBy(g.vertices().minus(s));
-                for (Set<Integer> c : gMinusS.fullComponents()) {
+                for (Set<Integer> c : g.fullComponents(s)) {
                     if(s.isProperSubsetOf(omega) && omega.isSubsetOf(s.union(c)))
                     {
-                        piSC = piSC.add(omega);
+                        Pair pair = new Pair<>(s,c);
+                        if(!piSC.containsKey(pair)) piSC.put(pair, new ImmutableSet<>(omega));
+                        else piSC.put(pair, piSC.get(pair).add(omega));
                     }
                 }
             }
@@ -63,15 +61,15 @@ public class MinFill {
         return piSC;
     }
 
-    public int minFillF(Graph f, Set<Set<Integer>> piSC, Map<Graph, Integer> memoizer){
+    public int minFillF(Graph f, Pair sc, Map<Pair, Set<Set<Integer>>> piSC, Map<Graph, Integer> memoizer){
         Integer memoizedResult = memoizer.get(f);
         if(memoizedResult != null) return memoizedResult;
 
         int result = 0;
-        for (Set<Integer> omegaPrime : piSC) {
+        for (Set<Integer> omegaPrime : piSC.get(sc)) {
             int fill = f.inducedBy(omegaPrime).getNonEdges().size();
-            for (Set<Integer> cPrime : f.inducedBy(f.vertices().minus(omegaPrime)).components()) {
-                fill += minFillF(f.cliqueify(omegaPrime).inducedBy(cPrime.union(f.neighborhood(cPrime))), piSC, memoizer);
+            for (Set<Integer> cPrime : f.fullComponents(omegaPrime)) {
+                fill += minFillF(f.cliqueify(omegaPrime).inducedBy(cPrime.union(f.neighborhood(cPrime))), new Pair(omegaPrime,cPrime), piSC, memoizer);
                 if (fill >= result) break;
             }
             result = Math.min(result, fill);
@@ -83,12 +81,12 @@ public class MinFill {
 
     @Contract(pure = true)
     public boolean stepC(Graph g, int k, Set<Set<Integer>> piI) {
-        Set<Set<Integer>> piSC = generatePiSC(g, piI);
+        Map<Pair, Set<Set<Integer>>> piSC = generatePiSC(g, piI);
         Map<Graph, Integer> memoizer = new HashMap<>();
         for (Set<Integer> omega : piI) {
             int fill = g.inducedBy(omega).getNonEdges().size();
             for (Set<Integer> c : g.inducedBy(g.vertices().minus(omega)).components()) {
-                fill += minFillF(g.cliqueify(omega).inducedBy(c.union(g.neighborhood(c))), piSC, memoizer);
+                fill += minFillF(g.cliqueify(omega).inducedBy(c.union(g.neighborhood(c))), new Pair(omega,c), piSC, memoizer);
             }
             if(fill<=k) return true;
         }
