@@ -71,6 +71,9 @@ public interface Graph {
     Graph addEdge(Edge e);
 
     @Contract(pure = true)
+    Graph addEdges(Set<Edge> edges);
+
+    @Contract(pure = true)
     Set<Edge> getNonEdges();
 
     @Contract(pure = true)

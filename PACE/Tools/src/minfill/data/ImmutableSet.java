@@ -67,6 +67,15 @@ public class ImmutableSet<T> implements Set<T> {
     }
 
     @Override
+    public Set<T> remove(T element) {
+        if(!inner.contains(element)) return this;
+
+        java.util.Set<T> copy = new HashSet<>(inner);
+        copy.remove(element);
+        return newSet(copy);
+    }
+
+    @Override
     public Set<T> union(Set<T> other) {
         if (other.isEmpty()) return this;
 

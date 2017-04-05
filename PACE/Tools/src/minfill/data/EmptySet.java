@@ -46,6 +46,11 @@ public class EmptySet<T> implements Set<T> {
     }
 
     @Override
+    public Set<T> remove(T element) {
+        return this;
+    }
+
+    @Override
     public Set<T> union(Set<T> other) {
         return other;
     }

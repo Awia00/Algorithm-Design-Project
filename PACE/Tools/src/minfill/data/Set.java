@@ -2,7 +2,7 @@ package minfill.data;
 
 import org.jetbrains.annotations.Contract;
 
-public interface Set<T> extends Iterable<T> {
+public interface Set<T> extends Iterable<T>  {
     @Contract(pure = true)
     boolean isEmpty();
 
@@ -20,6 +20,9 @@ public interface Set<T> extends Iterable<T> {
 
     @Contract(pure = true)
     Set<T> add(T element);
+
+    @Contract(pure = true)
+    Set<T> remove(T element);
 
     @Contract(pure = true)
     Set<T> union(Set<T> other);

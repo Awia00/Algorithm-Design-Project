@@ -95,10 +95,68 @@ public class ImmutableGraph implements Graph {
         return false;
     }
 
+    private Integer unNumberedMaximumWeightVertex(TreeMap<Integer, Integer> weightMap, List<Integer> order){
+        for (Integer y : weightMap.descendingKeySet()) {
+            if(!order.contains(y)){
+                return y;
+            }
+        }
+        throw new RuntimeException("no element not in order");
+    }
+
+    @Contract(pure = true)
+    private List<Integer> maximumCardinalitySearch() {
+        List<Integer> order = new ArrayList<>(vertices.size());
+        TreeMap<Integer, Integer> weightMap = new TreeMap<>();
+        for (Integer vertex : vertices) {
+            weightMap.put(vertex,0);
+        }
+        for (int i = vertices.size()-1; i >= 0 ; i--) {
+            Integer z = unNumberedMaximumWeightVertex(weightMap, order);
+            order.set(i, z);
+            for (Integer neighbour : neighborhood(z)) {
+                weightMap.put(neighbour, weightMap.get(neighbour)+1);
+            }
+        }
+        return order;
+    }
+    @Contract(pure = true)
+    private Pair<List<Integer>, Set<Edge>> maximumCardinalitySearchM() {
+        List<Integer> order = new ArrayList<>(vertices.size());
+        TreeMap<Integer, Integer> weightMap = new TreeMap<>();
+        Set<Edge> F = EmptySet.instance();
+        for (Integer vertex : vertices) {
+            weightMap.put(vertex,0);
+        }
+        for (int i = vertices.size()-1; i >= 0 ; i--) {
+            Integer z = unNumberedMaximumWeightVertex(weightMap, order);
+            order.set(i, z);
+            Integer zWeight = weightMap.get(z);
+            for (Integer y : vertices) {
+                if(!y.equals(z)){
+                    Integer yWeight = weightMap.get(y);
+                    Set<Integer> possibleGraph = EmptySet.instance();
+
+                    for (Integer Xi : vertices) {
+                        if(zWeight - weightMap.get(Xi) < zWeight-yWeight){ // wz-(xi) < wz - (y) so maybe wrong maybe we need a path of increasing weight or something
+                            possibleGraph = possibleGraph.add(Xi);
+                        }
+                    }
+
+                    if(inducedBy(possibleGraph).hasPath(y,z)){
+                        weightMap.put(y, weightMap.get(y)+1);
+                        F = F.add(new Edge(z,y));
+                    }
+                }
+            }
+        }
+        return new Pair(order, F);
+    }
     @Override
     @Contract(pure = true)
     public boolean isChordal() {
-        throw new UnsupportedOperationException("Not implemented"); // TODO
+        List<Integer> order = maximumCardinalitySearch();
+        return order.size() == vertices.size(); // might not be how to check that it has an ordering.
     }
 
     @Override
@@ -112,7 +170,7 @@ public class ImmutableGraph implements Graph {
     public boolean isVitalPotentialMaximalClique(Set<Integer> vertices, int k) {
         if (!vertices.isSubsetOf(this.vertices)) throw new IllegalArgumentException("Unknown vertex");
         if (k < 0) return false;
-        throw new UnsupportedOperationException("Not implemented"); // TODO
+        return inducedBy(vertices).getNonEdges().size() <= k && isPotentialMaximalClique(vertices);
     }
 
     @Override
@@ -148,7 +206,14 @@ public class ImmutableGraph implements Graph {
     @Override
     @Contract(pure = true)
     public Set<Set<Integer>> fullComponents(Set<Integer> separator) {
-        throw new UnsupportedOperationException("Not implemented"); // TODO
+        Set<Set<Integer>> fullComponents = EmptySet.instance();
+        Graph gMinusS = this.inducedBy(this.vertices().minus(separator));
+        for (Set<Integer> component : gMinusS.components()) {
+            if (!component.intersect(separator).isEmpty()){
+                fullComponents.add(component);
+            }
+        }
+        return fullComponents;
     }
 
     @Override
@@ -217,6 +282,28 @@ public class ImmutableGraph implements Graph {
         return new ImmutableGraph(vertices, copy);
     }
 
+
+    @Override
+    @Contract(pure = true)
+    public Graph addEdges(Set<Edge> edges) {
+        return new ImmutableGraph(vertices, getEdges().union(edges));
+    }
+
+    @Contract(pure = true)
+    private Set<Edge> getEdges(){
+        Set<Edge> edges = Set.empty();
+
+        for (Integer v1 : vertices) {
+            for (Integer v2 : vertices) {
+                if (v1 < v2 && neighborhood(v1).contains(v2)) {
+                    edges = edges.add(new Edge(v1, v2));
+                }
+            }
+        }
+
+        return edges;
+    }
+
     @Override
     @Contract(pure = true)
     public Set<Edge> getNonEdges() {
@@ -254,7 +341,7 @@ public class ImmutableGraph implements Graph {
     @Override
     @Contract(pure = true)
     public Graph minimalTriangulation() {
-        throw new UnsupportedOperationException("Not implemented"); // TODO
+        return addEdges(maximumCardinalitySearchM().o2);
     }
 
     @Override
