@@ -217,9 +217,21 @@ public class ImmutableGraph implements Graph {
     }
 
     @Override
-    @Contract(pure = true)
-    public Set<Set<Integer>> minimalSeparators() {
-        throw new UnsupportedOperationException("Not implemented"); // TODO
+    @Contract(pure = true) // P.Sreenivasa Kumar page 10(164)
+    public Set<Set<Integer>> minimalSeparatorsOfChordalGraph() {
+        if (!isChordal())
+            throw new UnsupportedOperationException("maximalCliquesOfChordalGraph can only be used on chordal graphs");
+        List<Integer> peo = maximumCardinalitySearch();
+        Set<Set<Integer>> separators = EmptySet.instance();
+        for (int i = 0; i < peo.size()-1; i++) {
+            Integer v1 = peo.get(i);
+            Integer v2 = peo.get(i+1);
+            if(neighborhood(v1).size() <= neighborhood(v2).size()){
+                separators = separators.add(neighborhood(v1));
+            }
+        }
+        return separators;
+        // new UnsupportedOperationException("Not implemented"); // TODO
     }
 
     @Override

@@ -59,7 +59,7 @@ public interface Graph {
     Set<Set<Integer>> fullComponents(Set<Integer> separator);
 
     @Contract(pure = true)
-    Set<Set<Integer>> minimalSeparators();
+    Set<Set<Integer>> minimalSeparatorsOfChordalGraph();
 
     @Contract(pure = true)
     Set<Set<Integer>> maximalCliquesOfChordalGraph(); // TODO: We have an algorithm for this. [3]

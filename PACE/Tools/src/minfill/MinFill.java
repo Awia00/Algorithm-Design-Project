@@ -105,7 +105,7 @@ public class MinFill {
             Graph h = g.inducedBy(gMinusZ).minimalTriangulation();
 
             // Case 1
-            for (Set<Integer> s : h.minimalSeparators()) {
+            for (Set<Integer> s : h.minimalSeparatorsOfChordalGraph()) {
                 if(g.inducedBy(s).isClique()){
                     Set<Integer> c = s.union(z);
                     if (g.isPotentialMaximalClique(c)) {
