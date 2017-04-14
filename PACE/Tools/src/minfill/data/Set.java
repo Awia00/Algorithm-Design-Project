@@ -46,11 +46,13 @@ public interface Set<T> extends Iterable<T>  {
 
     @Contract(pure = true)
     static <T> Set<T> of(T... elements) {
+        if (elements.length == 0) return empty();
         return new ImmutableSet<>(Arrays.asList(elements));
     }
 
     @Contract(pure = true)
     static <T> Set<T> of(Collection<T> elements) {
+        if (elements.isEmpty()) return empty();
         return new ImmutableSet<>(elements);
     }
 }

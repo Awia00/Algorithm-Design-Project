@@ -32,8 +32,9 @@ public class Program {
                 k -= kPrime;
             } else {
                 if (mfi.stepB1(gPrime, kPrime)) {
-                    Set<Edge> minimumFill = null; // TODO: Retrieve answer from deep below;
-                    io.print(minimumFill);
+                    System.out.println("Succeeded with k=" + k);
+//                    Set<Edge> minimumFill = null; // TODO: Retrieve answer from deep below;
+//                    io.print(minimumFill);
                     break;
                 } else {
                     k++;

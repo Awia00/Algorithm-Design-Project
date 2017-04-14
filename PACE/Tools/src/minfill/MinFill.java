@@ -9,8 +9,8 @@ import java.util.Map;
 public class MinFill {
     @Contract(pure = true)
     public boolean stepB1(Graph g, int k) {
-        if (k < 0) return false;
         if (g.isChordal()) return true;
+        if (k <= 0) return false;
 
         Set<Set<Edge>> branches = branch(g, k);
 
@@ -51,7 +51,7 @@ public class MinFill {
                 for (Set<Integer> c : g.fullComponents(s)) {
                     if(s.isProperSubsetOf(omega) && omega.isSubsetOf(s.union(c)))
                     {
-                        Pair pair = new Pair<>(s,c);
+                        Pair pair = new Pair<>(s, c);
                         if(!piSC.containsKey(pair)) piSC.put(pair, new ImmutableSet<>(omega));
                         else piSC.put(pair, piSC.get(pair).add(omega));
                     }
@@ -65,11 +65,12 @@ public class MinFill {
         Integer memoizedResult = memoizer.get(f);
         if(memoizedResult != null) return memoizedResult;
 
-        int result = 0;
+        int result = f.getNonEdges().size() + 1;
         for (Set<Integer> omegaPrime : piSC.get(sc)) {
             int fill = f.inducedBy(omegaPrime).getNonEdges().size();
-            for (Set<Integer> cPrime : f.fullComponents(omegaPrime)) {
-                fill += minFillF(f.cliqueify(omegaPrime).inducedBy(cPrime.union(f.neighborhood(cPrime))), new Pair<>(omegaPrime,cPrime), piSC, memoizer);
+            for (Set<Integer> cPrime : f.inducedBy(f.vertices().minus(omegaPrime)).components()) {
+                Set<Integer> neighborhoodCPrime = f.neighborhood(cPrime);
+                fill += minFillF(f.cliqueify(omegaPrime).inducedBy(cPrime.union(neighborhoodCPrime)), new Pair<>(neighborhoodCPrime, cPrime), piSC, memoizer);
                 if (fill >= result) break;
             }
             result = Math.min(result, fill);
@@ -86,7 +87,8 @@ public class MinFill {
         for (Set<Integer> omega : piI) {
             int fill = g.inducedBy(omega).getNonEdges().size();
             for (Set<Integer> c : g.inducedBy(g.vertices().minus(omega)).components()) {
-                fill += minFillF(g.cliqueify(omega).inducedBy(c.union(g.neighborhood(c))), new Pair<>(omega,c), piSC, memoizer);
+                Set<Integer> neighborhoodC = g.neighborhood(c);
+                fill += minFillF(g.cliqueify(omega).inducedBy(c.union(neighborhoodC)), new Pair<>(neighborhoodC, c), piSC, memoizer);
             }
             if(fill<=k) return true;
         }
@@ -108,8 +110,7 @@ public class MinFill {
             for (Set<Integer> s : h.minimalSeparatorsOfChordalGraph()) {
                 if(g.inducedBy(s).isClique()){
                     Set<Integer> c = s.union(z);
-                    if (g.isPotentialMaximalClique(c)) {
-                        // TODO: Maybe check vitality
+                    if (g.isVitalPotentialMaximalClique(c, k)) {
                         potentialMaximalCliques = potentialMaximalCliques.add(c);
                     }
                 }
@@ -119,8 +120,7 @@ public class MinFill {
                 // Case 2
                 if (g.isClique(maximalClique)) {
                     Set<Integer> c = maximalClique.union(z);
-                    if (g.isPotentialMaximalClique(c)) {
-                        // TODO: maybe check vitality
+                    if (g.isVitalPotentialMaximalClique(c, k)) {
                         potentialMaximalCliques = potentialMaximalCliques.add(c);
                     }
                 }
@@ -132,14 +132,12 @@ public class MinFill {
                         Y = Y.union(bi.add(y));
                     }
                     Set<Integer> c = g.neighborhood(Y).add(y);
-                    if (g.isPotentialMaximalClique(c)) {
-                        // TODO: maybe check vitality
+                    if (g.isVitalPotentialMaximalClique(c, k)) {
                         potentialMaximalCliques = potentialMaximalCliques.add(c);
                     }
                 }
             }
         }
-        // TODO: Maybe first check vitality here? (bad use of memory?)
         return potentialMaximalCliques;
     }
 
@@ -204,7 +202,7 @@ public class MinFill {
                 changes = changes.add(c.add(nonEdge));
 
                 // Find a shortest u,v-path in gw.
-                Set<Integer> path = new ImmutableSet<>(gw.shortestPath(u, v)).minus(nonEdge.vertices());
+                Set<Integer> path = Set.of(gw.shortestPath(u, v)).minus(nonEdge.vertices());
 
                 // case i: add edge between w_i in path and all vertices in x.
                 for (int i = 0; i < path.size(); i++) {
@@ -218,7 +216,7 @@ public class MinFill {
 
                     // If number of added edges is greater than k, then we cannot use this subgraph.
                     // TODO: Check if this is sound.
-                    if (c.size() <= k) {
+                    if (!c.isEmpty() && c.size() <= k) {
                         // Case i done, add to branch-list.
                         changes = changes.add(c);
                     }

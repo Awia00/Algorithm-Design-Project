@@ -98,7 +98,7 @@ public class ImmutableSet<T> implements Set<T> {
                 intersection.add(element);
             }
         }
-        return new ImmutableSet<>(intersection);
+        return newSet(intersection);
     }
 
     @Override
@@ -111,7 +111,7 @@ public class ImmutableSet<T> implements Set<T> {
             copy.remove(element);
         }
 
-        return new ImmutableSet<>(copy);
+        return newSet(copy);
     }
 
     @Override

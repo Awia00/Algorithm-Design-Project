@@ -96,12 +96,15 @@ public class ImmutableGraph implements Graph {
     }
 
     @Contract(pure = true)
-    public Integer unNumberedMaximumWeightVertex(TreeMap<Integer, Integer> weightMap, java.util.Set<Integer> numbered){
-        for (Integer y : weightMap.descendingKeySet()) {
-            if(!numbered.contains(y)){
-                return y;
-            }
+    public Integer unNumberedMaximumWeightVertex(Map<Integer, Integer> weightMap, java.util.Set<Integer> numbered){
+        Optional<Map.Entry<Integer, Integer>> max = weightMap.entrySet().stream()
+                .filter(entry -> !numbered.contains(entry.getKey()))
+                .max(Comparator.comparing(Map.Entry::getValue));
+
+        if (max.isPresent()) {
+            return max.get().getKey();
         }
+
         throw new RuntimeException("no element not in order");
     }
 
@@ -147,7 +150,7 @@ public class ImmutableGraph implements Graph {
             for (Integer y : vertices) {
                 if(!numbered.contains(y)){
                     Integer yWeight = weightCopy.get(y);
-                    Set<Integer> possibleGraph = Set.of(z);
+                    Set<Integer> possibleGraph = Set.of(z,y);
 
                     for (Integer Xi : vertices) {
                         if(!numbered.contains(Xi) && weightCopy.get(Xi) < yWeight){ // w{z-}(xi) < w_{z-}(y) so maybe wrong maybe we need a path of increasing weight or something
@@ -167,10 +170,12 @@ public class ImmutableGraph implements Graph {
     @Override
     @Contract(pure = true)
     public boolean isChordal() { // todo handle components
-        for (Set<Integer> integers : components()) {
-            List<Integer> order = this.inducedBy(integers).maximumCardinalitySearch();
-            if( order.size() != vertices.size())
-                return false;
+        for (Set<Integer> component : components()) {
+            List<Integer> order = this.inducedBy(component).maximumCardinalitySearch();
+
+            for (int i = 0; i < order.size(); i++) {
+                if (!isClique(mAdj(order, i))) return false;
+            }
         }
         return true; // might not be how to check that it has an ordering.
     }
@@ -225,7 +230,7 @@ public class ImmutableGraph implements Graph {
         Set<Set<Integer>> fullComponents = Set.empty();
         Graph gMinusS = this.inducedBy(this.vertices().minus(separator));
         for (Set<Integer> component : gMinusS.components()) {
-            if (!component.intersect(separator).isEmpty()){
+            if (neighborhood(component).equals(separator)) {
                 fullComponents = fullComponents.add(component);
             }
         }
@@ -236,7 +241,7 @@ public class ImmutableGraph implements Graph {
     @Contract(pure = true) // Kumar, Madhavan page 10(164)
     public Set<Set<Integer>> minimalSeparatorsOfChordalGraph() {
         if (!isChordal())
-            throw new UnsupportedOperationException("maximalCliquesOfChordalGraph can only be used on chordal graphs");
+            throw new UnsupportedOperationException("minimalSeparatorsOfChordalGraph can only be used on chordal graphs");
         List<Integer> peo = maximumCardinalitySearch();
         Set<Set<Integer>> separators = Set.empty();
         for (int i = 0; i < peo.size()-1; i++) {
@@ -260,12 +265,20 @@ public class ImmutableGraph implements Graph {
         for (int i = 0; i < peo.size()-1; i++) {
             Integer v1 = peo.get(i);
             Integer v2 = peo.get(i+1);
-            if(i == 1) cliques = cliques.add(neighborhood(v1).add(v1));
-            if(neighborhood(v1).size() + peo.size() - i+1 <= neighborhood(v2).size() + peo.size() - i+2) { // Li = vertices with labels greater than i but we already know how many we have left since we go in order
+            if(i == 0) cliques = cliques.add(neighborhood(v1).add(v1));
+            if(mAdj(peo, i).size() <= mAdj(peo, i+1).size()) { // Li = vertices with labels greater than i but we already know how many we have left since we go in order
                 cliques = cliques.add(neighborhood(v2).add(v2));
             }
         }
         return cliques;
+    }
+
+    private Set<Integer> mAdj(List<Integer> peo, int index) {
+        Set<Integer> neighborhood = neighborhood(peo.get(index));
+        return neighborhood.intersect(
+                Set.of(
+                        peo.subList(index + 1, peo.size())
+                ));
     }
 
     @Override
@@ -285,8 +298,10 @@ public class ImmutableGraph implements Graph {
             if (!marked.contains(vertex)) {
                 marked.add(vertex);
                 for (Integer neighbor : neighborhood(vertex)) {
-                    edgeFrom.put(neighbor, vertex);
-                    queue.add(neighbor);
+                    if (!marked.contains(neighbor)) {
+                        edgeFrom.put(neighbor, vertex);
+                        queue.add(neighbor);
+                    }
                 }
             }
         }
@@ -361,7 +376,8 @@ public class ImmutableGraph implements Graph {
     @Override
     @Contract(pure = true)
     public Graph inducedBy(Set<Integer> vertices) {
-        if (!vertices.isSubsetOf(this.vertices)) throw new IllegalArgumentException("Unknown vertex");
+        if (!vertices.isSubsetOf(this.vertices))
+            throw new IllegalArgumentException("Unknown vertex");
 
         if (vertices.isProperSubsetOf(this.vertices)) {
             Map<Integer, Set<Integer>> copy = new HashMap<>();
@@ -398,7 +414,7 @@ public class ImmutableGraph implements Graph {
             }
         }
 
-        return new ImmutableGraph(vertices, copy);
+        return new ImmutableGraph(this.vertices, copy);
     }
 
     @Override
