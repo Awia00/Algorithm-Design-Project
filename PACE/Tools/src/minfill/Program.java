@@ -25,23 +25,21 @@ public class Program {
 
         int k = 0;
         while (true) {
-            Pair<Graph, Integer> tmp = kernel.kernelize(g, k);
-            Graph gPrime = tmp.o1;
-            int kPrime = tmp.o2;
+            Optional<Pair<Graph, Integer>> tmp = kernel.kernelize(g, k);
+            if (tmp.isPresent()) {
+                Graph gPrime = tmp.get().o1;
+                int kPrime = tmp.get().o2;
 
-            if (kPrime < 0) {
-                k -= kPrime;
-            } else {
                 Optional<Graph> result = mfi.stepB1(gPrime, kPrime);
 
                 if (result.isPresent()) {
                     Set<Edge> minimumFill = result.get().getEdges().minus(g.getEdges());
                     io.print(minimumFill);
-                    break;
-                } else {
-                    k++;
+                    System.err.println("Memoizer hits: " + MinFill.memoizerHits.longValue());
+                    return;
                 }
             }
+            k++;
         }
     }
 }

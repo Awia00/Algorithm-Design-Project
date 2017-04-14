@@ -174,7 +174,9 @@ public class ImmutableGraph implements Graph {
             List<Integer> order = this.inducedBy(component).maximumCardinalitySearch();
 
             for (int i = 0; i < order.size(); i++) {
-                if (!isClique(mAdj(order, i))) return false;
+                Set<Integer> madj = mAdj(order, i);
+                if (!isClique(madj))
+                    return false;
             }
         }
         return true; // might not be how to check that it has an ordering.
@@ -291,17 +293,16 @@ public class ImmutableGraph implements Graph {
         Map<Integer, Integer> edgeFrom = new HashMap<>();
         Queue<Integer> queue = new ArrayDeque<>();
         queue.add(from);
+        marked.add(from);
 
         while (!queue.isEmpty()) {
             int vertex = queue.poll();
-            if (vertex == to) break;
-            if (!marked.contains(vertex)) {
-                marked.add(vertex);
-                for (Integer neighbor : neighborhood(vertex)) {
-                    if (!marked.contains(neighbor)) {
-                        edgeFrom.put(neighbor, vertex);
-                        queue.add(neighbor);
-                    }
+            for (Integer neighbor : neighborhood(vertex)) {
+                if (!marked.contains(neighbor)) {
+                    marked.add(neighbor);
+                    edgeFrom.put(neighbor, vertex);
+                    if (neighbor == to) break;
+                    queue.add(neighbor);
                 }
             }
         }
@@ -340,6 +341,21 @@ public class ImmutableGraph implements Graph {
     @Contract(pure = true)
     public Graph addEdges(Set<Edge> edges) {
         return new ImmutableGraph(vertices, getEdges().union(edges));
+    }
+
+    @Override
+    public Graph removeEdge(Edge e) {
+        if (!vertices.contains(e.from)) throw new IllegalArgumentException("Unknown vertex");
+        if (!vertices.contains(e.to)) throw new IllegalArgumentException("Unknown vertex");
+
+        if (!neighborhood(e.from).contains(e.to)) return this;
+
+        Map<Integer, Set<Integer>> copy = new HashMap<>(neighborhoods);
+
+        copy.put(e.from, copy.get(e.from).remove(e.to));
+        copy.put(e.to, copy.get(e.to).remove(e.from));
+
+        return new ImmutableGraph(vertices, copy);
     }
 
     @Contract(pure = true)

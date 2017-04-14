@@ -6,8 +6,11 @@ import org.jetbrains.annotations.Contract;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.atomic.LongAdder;
 
 public class MinFill {
+    public static LongAdder memoizerHits = new LongAdder();
+
     @Contract(pure = true)
     public Optional<Graph> stepB1(Graph g, int k) {
         if (g.isChordal()) return Optional.of(g);
@@ -65,7 +68,10 @@ public class MinFill {
 
     public Set<Edge> minFillF(Graph f, Pair sc, Map<Pair, Set<Set<Integer>>> piSC, Map<Graph, Set<Edge>> memoizer){
         Set<Edge> memoizedResult = memoizer.get(f);
-        if(memoizedResult != null) return memoizedResult;
+        if(memoizedResult != null) {
+            memoizerHits.increment();
+            return memoizedResult;
+        }
 
         Set<Edge> result = f.getNonEdges();
         for (Set<Integer> omegaPrime : piSC.get(sc)) {

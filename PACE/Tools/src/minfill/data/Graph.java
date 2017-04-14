@@ -80,6 +80,9 @@ public interface Graph {
     Graph addEdges(Set<Edge> edges);
 
     @Contract(pure = true)
+    Graph removeEdge(Edge edge);
+
+    @Contract(pure = true)
     Set<Edge> getNonEdges();
 
     @Contract(pure = true)

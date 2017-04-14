@@ -170,21 +170,21 @@ public class ImmutableSet<T> implements Set<T> {
         return inner.hashCode();
     }
 
-    public static void main(String[] args) {
-        for (int i = 1; i < 15; i++) {
-            Set<Integer> elements = new ImmutableSet<>(IntStream.range(0, i).boxed().collect(Collectors.toSet()));
-
-            Set<Set<Integer>> subsets = elements.subsetsOfSizeAtMost(i);
-
-            assert (((int) Math.pow(2, i)) == subsets.size());
-        }
-
-
-        assert (
-                new ImmutableSet<>(
-                        IntStream.range(0, 3).boxed().collect(Collectors.toSet()))
-                        .subsetsOfSizeAtMost(3)
-                        .contains(
-                                new ImmutableSet<>(Arrays.asList(0, 1, 2))));
-    }
+//    public static void main(String[] args) {
+//        for (int i = 1; i < 15; i++) {
+//            Set<Integer> elements = new ImmutableSet<>(IntStream.range(0, i).boxed().collect(Collectors.toSet()));
+//
+//            Set<Set<Integer>> subsets = elements.subsetsOfSizeAtMost(i);
+//
+//            assert (((int) Math.pow(2, i)) == subsets.size());
+//        }
+//
+//
+//        assert (
+//                new ImmutableSet<>(
+//                        IntStream.range(0, 3).boxed().collect(Collectors.toSet()))
+//                        .subsetsOfSizeAtMost(3)
+//                        .contains(
+//                                new ImmutableSet<>(Arrays.asList(0, 1, 2))));
+//    }
 }
