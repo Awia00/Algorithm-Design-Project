@@ -69,7 +69,7 @@ public class MinFill {
         for (Set<Integer> omegaPrime : piSC.get(sc)) {
             int fill = f.inducedBy(omegaPrime).getNonEdges().size();
             for (Set<Integer> cPrime : f.fullComponents(omegaPrime)) {
-                fill += minFillF(f.cliqueify(omegaPrime).inducedBy(cPrime.union(f.neighborhood(cPrime))), new Pair(omegaPrime,cPrime), piSC, memoizer);
+                fill += minFillF(f.cliqueify(omegaPrime).inducedBy(cPrime.union(f.neighborhood(cPrime))), new Pair<>(omegaPrime,cPrime), piSC, memoizer);
                 if (fill >= result) break;
             }
             result = Math.min(result, fill);
@@ -86,7 +86,7 @@ public class MinFill {
         for (Set<Integer> omega : piI) {
             int fill = g.inducedBy(omega).getNonEdges().size();
             for (Set<Integer> c : g.inducedBy(g.vertices().minus(omega)).components()) {
-                fill += minFillF(g.cliqueify(omega).inducedBy(c.union(g.neighborhood(c))), new Pair(omega,c), piSC, memoizer);
+                fill += minFillF(g.cliqueify(omega).inducedBy(c.union(g.neighborhood(c))), new Pair<>(omega,c), piSC, memoizer);
             }
             if(fill<=k) return true;
         }

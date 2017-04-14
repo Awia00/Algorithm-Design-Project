@@ -96,9 +96,9 @@ public class ImmutableGraph implements Graph {
     }
 
     @Contract(pure = true)
-    public Integer unNumberedMaximumWeightVertex(TreeMap<Integer, Integer> weightMap, List<Integer> order){
+    public Integer unNumberedMaximumWeightVertex(TreeMap<Integer, Integer> weightMap, java.util.Set<Integer> numbered){
         for (Integer y : weightMap.descendingKeySet()) {
-            if(!order.contains(y)){
+            if(!numbered.contains(y)){
                 return y;
             }
         }
@@ -109,15 +109,20 @@ public class ImmutableGraph implements Graph {
     @Contract(pure = true)
     public List<Integer> maximumCardinalitySearch() { // todo handle components
         List<Integer> order = new ArrayList<>(vertices.size());
+        java.util.Set<Integer> numbered = new HashSet<>(vertices.size());
         TreeMap<Integer, Integer> weightMap = new TreeMap<>();
         for (Integer vertex : vertices) {
             weightMap.put(vertex,0);
+            order.add(vertex);
         }
-        for (int i = vertices.size()-1; i >= 0 ; i--) {
-            Integer z = unNumberedMaximumWeightVertex(weightMap, order);
+        for (int i = vertices.size()-1;i >= 0 ; i--) {
+            Integer z = unNumberedMaximumWeightVertex(weightMap, numbered);
             order.set(i, z);
+            numbered.add(z);
             for (Integer neighbour : neighborhood(z)) {
-                weightMap.put(neighbour, weightMap.get(neighbour)+1);
+                if (!numbered.contains(neighbour)) {
+                    weightMap.put(neighbour, weightMap.get(neighbour) + 1);
+                }
             }
         }
         return order;
@@ -126,22 +131,26 @@ public class ImmutableGraph implements Graph {
     @Contract(pure = true) // berry page 5
     public Pair<List<Integer>, Set<Edge>> maximumCardinalitySearchM() { // todo handle components
         List<Integer> order = new ArrayList<>(vertices.size());
+        java.util.Set<Integer> numbered = new HashSet<>(vertices.size());
         TreeMap<Integer, Integer> weightMap = new TreeMap<>();
-        Set<Edge> F = EmptySet.instance();
+        Set<Edge> F = Set.empty();
         for (Integer vertex : vertices) {
             weightMap.put(vertex,0);
+            order.add(vertex);
         }
         for (int i = vertices.size()-1; i >= 0 ; i--) {
-            Integer z = unNumberedMaximumWeightVertex(weightMap, order);
+            Map<Integer, Integer> weightCopy = new HashMap<>(weightMap);
+
+            Integer z = unNumberedMaximumWeightVertex(weightMap, numbered);
             order.set(i, z);
-            Integer zWeight = weightMap.get(z);
+            numbered.add(z);
             for (Integer y : vertices) {
-                if(!y.equals(z)){
-                    Integer yWeight = weightMap.get(y);
-                    Set<Integer> possibleGraph = EmptySet.instance();
+                if(!numbered.contains(y)){
+                    Integer yWeight = weightCopy.get(y);
+                    Set<Integer> possibleGraph = Set.of(z);
 
                     for (Integer Xi : vertices) {
-                        if(zWeight - weightMap.get(Xi) < zWeight-yWeight){ // wz-(xi) < wz - (y) so maybe wrong maybe we need a path of increasing weight or something
+                        if(!numbered.contains(Xi) && weightCopy.get(Xi) < yWeight){ // w{z-}(xi) < w_{z-}(y) so maybe wrong maybe we need a path of increasing weight or something
                             possibleGraph = possibleGraph.add(Xi);
                         }
                     }
@@ -153,7 +162,7 @@ public class ImmutableGraph implements Graph {
                 }
             }
         }
-        return new Pair(order, F);
+        return new Pair<>(order, F);
     }
     @Override
     @Contract(pure = true)
@@ -203,33 +212,33 @@ public class ImmutableGraph implements Graph {
                         }
                     }
                 }
-                components.add(new ImmutableSet<>(component));
+                components.add(Set.of(component));
             }
         }
 
-        return new ImmutableSet<>(components);
+        return Set.of(components);
     }
 
     @Override
     @Contract(pure = true)
     public Set<Set<Integer>> fullComponents(Set<Integer> separator) {
-        Set<Set<Integer>> fullComponents = EmptySet.instance();
+        Set<Set<Integer>> fullComponents = Set.empty();
         Graph gMinusS = this.inducedBy(this.vertices().minus(separator));
         for (Set<Integer> component : gMinusS.components()) {
             if (!component.intersect(separator).isEmpty()){
-                fullComponents.add(component);
+                fullComponents = fullComponents.add(component);
             }
         }
         return fullComponents;
     }
 
     @Override
-    @Contract(pure = true) // P.Sreenivasa Kumar page 10(164)
+    @Contract(pure = true) // Kumar, Madhavan page 10(164)
     public Set<Set<Integer>> minimalSeparatorsOfChordalGraph() {
         if (!isChordal())
             throw new UnsupportedOperationException("maximalCliquesOfChordalGraph can only be used on chordal graphs");
         List<Integer> peo = maximumCardinalitySearch();
-        Set<Set<Integer>> separators = EmptySet.instance();
+        Set<Set<Integer>> separators = Set.empty();
         for (int i = 0; i < peo.size()-1; i++) {
             Integer v1 = peo.get(i);
             Integer v2 = peo.get(i+1);
@@ -247,7 +256,7 @@ public class ImmutableGraph implements Graph {
         if (!isChordal())
             throw new UnsupportedOperationException("maximalCliquesOfChordalGraph can only be used on chordal graphs");
         List<Integer> peo = maximumCardinalitySearch();
-        Set<Set<Integer>> cliques = EmptySet.instance();
+        Set<Set<Integer>> cliques = Set.empty();
         for (int i = 0; i < peo.size()-1; i++) {
             Integer v1 = peo.get(i);
             Integer v2 = peo.get(i+1);

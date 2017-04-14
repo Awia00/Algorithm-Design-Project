@@ -2,6 +2,9 @@ package minfill.data;
 
 import org.jetbrains.annotations.Contract;
 
+import java.util.Arrays;
+import java.util.Collection;
+
 public interface Set<T> extends Iterable<T>  {
     @Contract(pure = true)
     boolean isEmpty();
@@ -39,5 +42,15 @@ public interface Set<T> extends Iterable<T>  {
     @Contract(pure = true)
     static <T> Set<T> empty() {
         return EmptySet.instance();
+    }
+
+    @Contract(pure = true)
+    static <T> Set<T> of(T... elements) {
+        return new ImmutableSet<>(Arrays.asList(elements));
+    }
+
+    @Contract(pure = true)
+    static <T> Set<T> of(Collection<T> elements) {
+        return new ImmutableSet<>(elements);
     }
 }
