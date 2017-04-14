@@ -25,6 +25,12 @@ public interface Graph {
     boolean hasPath(int a, int b);
 
     @Contract(pure = true)
+    List<Integer> maximumCardinalitySearch();
+
+    @Contract(pure = true) // berry page 5
+    Pair<List<Integer>, Set<Edge>> maximumCardinalitySearchM();
+
+    @Contract(pure = true)
     boolean isChordal();
 
     @Contract(pure = true)

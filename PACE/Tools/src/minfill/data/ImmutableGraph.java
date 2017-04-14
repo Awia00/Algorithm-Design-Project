@@ -95,7 +95,8 @@ public class ImmutableGraph implements Graph {
         return false;
     }
 
-    private Integer unNumberedMaximumWeightVertex(TreeMap<Integer, Integer> weightMap, List<Integer> order){
+    @Contract(pure = true)
+    public Integer unNumberedMaximumWeightVertex(TreeMap<Integer, Integer> weightMap, List<Integer> order){
         for (Integer y : weightMap.descendingKeySet()) {
             if(!order.contains(y)){
                 return y;
@@ -104,8 +105,9 @@ public class ImmutableGraph implements Graph {
         throw new RuntimeException("no element not in order");
     }
 
+    @Override
     @Contract(pure = true)
-    private List<Integer> maximumCardinalitySearch() { // todo handle components
+    public List<Integer> maximumCardinalitySearch() { // todo handle components
         List<Integer> order = new ArrayList<>(vertices.size());
         TreeMap<Integer, Integer> weightMap = new TreeMap<>();
         for (Integer vertex : vertices) {
@@ -120,8 +122,9 @@ public class ImmutableGraph implements Graph {
         }
         return order;
     }
+    @Override
     @Contract(pure = true) // berry page 5
-    private Pair<List<Integer>, Set<Edge>> maximumCardinalitySearchM() { // todo handle components
+    public Pair<List<Integer>, Set<Edge>> maximumCardinalitySearchM() { // todo handle components
         List<Integer> order = new ArrayList<>(vertices.size());
         TreeMap<Integer, Integer> weightMap = new TreeMap<>();
         Set<Edge> F = EmptySet.instance();
@@ -155,8 +158,12 @@ public class ImmutableGraph implements Graph {
     @Override
     @Contract(pure = true)
     public boolean isChordal() { // todo handle components
-        List<Integer> order = maximumCardinalitySearch();
-        return order.size() == vertices.size(); // might not be how to check that it has an ordering.
+        for (Set<Integer> integers : components()) {
+            List<Integer> order = this.inducedBy(integers).maximumCardinalitySearch();
+            if( order.size() != vertices.size())
+                return false;
+        }
+        return true; // might not be how to check that it has an ordering.
     }
 
     @Override
