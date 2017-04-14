@@ -343,7 +343,7 @@ public class ImmutableGraph implements Graph {
     }
 
     @Contract(pure = true)
-    private Set<Edge> getEdges(){
+    public Set<Edge> getEdges(){
         Set<Edge> edges = Set.empty();
 
         for (Integer v1 : vertices) {

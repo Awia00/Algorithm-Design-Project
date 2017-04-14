@@ -83,6 +83,9 @@ public interface Graph {
     Set<Edge> getNonEdges();
 
     @Contract(pure = true)
+    Set<Edge> getEdges();
+
+    @Contract(pure = true)
     Graph inducedBy(Set<Integer> vertices);
 
     @Contract(pure = true)

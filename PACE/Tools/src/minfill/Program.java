@@ -8,6 +8,7 @@ import minfill.data.Set;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.util.Optional;
 
 public class Program {
     public static void main(String[] args) throws FileNotFoundException {
@@ -22,7 +23,7 @@ public class Program {
 
         Graph g = io.parse();
 
-        int k = 1;
+        int k = 0;
         while (true) {
             Pair<Graph, Integer> tmp = kernel.kernelize(g, k);
             Graph gPrime = tmp.o1;
@@ -31,10 +32,11 @@ public class Program {
             if (kPrime < 0) {
                 k -= kPrime;
             } else {
-                if (mfi.stepB1(gPrime, kPrime)) {
-                    System.out.println("Succeeded with k=" + k);
-//                    Set<Edge> minimumFill = null; // TODO: Retrieve answer from deep below;
-//                    io.print(minimumFill);
+                Optional<Graph> result = mfi.stepB1(gPrime, kPrime);
+
+                if (result.isPresent()) {
+                    Set<Edge> minimumFill = result.get().getEdges().minus(g.getEdges());
+                    io.print(minimumFill);
                     break;
                 } else {
                     k++;

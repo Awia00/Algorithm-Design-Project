@@ -10,7 +10,7 @@ public class IOManager {
 
     public void print(Set<Edge> minFill) {
         for (Edge edge : minFill) {
-            System.out.printf("%s %s", nodeNames[edge.from], nodeNames[edge.to]);
+            System.out.printf("%s %s\n", nodeNames[edge.from], nodeNames[edge.to]);
         }
     }
 

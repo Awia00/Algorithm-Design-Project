@@ -5,12 +5,13 @@ import org.jetbrains.annotations.Contract;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 public class MinFill {
     @Contract(pure = true)
-    public boolean stepB1(Graph g, int k) {
-        if (g.isChordal()) return true;
-        if (k <= 0) return false;
+    public Optional<Graph> stepB1(Graph g, int k) {
+        if (g.isChordal()) return Optional.of(g);
+        if (k <= 0) return Optional.empty();
 
         Set<Set<Edge>> branches = branch(g, k);
 
@@ -25,15 +26,16 @@ public class MinFill {
 
                 int kPrime = k - branch.size();
 
-                if (stepB1(gPrime, kPrime)) return true;
+                Optional<Graph> res = stepB1(gPrime, kPrime);
+                if (res.isPresent()) return res;
             }
         }
 
-        return false;
+        return Optional.empty();
     }
 
     @Contract(pure = true)
-    public boolean stepB2(Graph g, int k) {
+    public Optional<Graph> stepB2(Graph g, int k) {
         Set<Set<Integer>> piI = generateVitalPotentialMaximalCliques(g, k);
 
         return stepC(g, k, piI);
@@ -61,19 +63,21 @@ public class MinFill {
         return piSC;
     }
 
-    public int minFillF(Graph f, Pair sc, Map<Pair, Set<Set<Integer>>> piSC, Map<Graph, Integer> memoizer){
-        Integer memoizedResult = memoizer.get(f);
+    public Set<Edge> minFillF(Graph f, Pair sc, Map<Pair, Set<Set<Integer>>> piSC, Map<Graph, Set<Edge>> memoizer){
+        Set<Edge> memoizedResult = memoizer.get(f);
         if(memoizedResult != null) return memoizedResult;
 
-        int result = f.getNonEdges().size() + 1;
+        Set<Edge> result = f.getNonEdges();
         for (Set<Integer> omegaPrime : piSC.get(sc)) {
-            int fill = f.inducedBy(omegaPrime).getNonEdges().size();
+            Graph filled = f.cliqueify(omegaPrime);
+            Set<Edge> fill = f.inducedBy(omegaPrime).getNonEdges();
+
             for (Set<Integer> cPrime : f.inducedBy(f.vertices().minus(omegaPrime)).components()) {
                 Set<Integer> neighborhoodCPrime = f.neighborhood(cPrime);
-                fill += minFillF(f.cliqueify(omegaPrime).inducedBy(cPrime.union(neighborhoodCPrime)), new Pair<>(neighborhoodCPrime, cPrime), piSC, memoizer);
-                if (fill >= result) break;
+                fill = fill.union(minFillF(filled.inducedBy(cPrime.union(neighborhoodCPrime)), new Pair<>(neighborhoodCPrime, cPrime), piSC, memoizer));
+                if (fill.size() >= result.size()) break;
             }
-            result = Math.min(result, fill);
+            if (fill.size() < result.size()) result = fill;
         }
 
         memoizer.put(f, result);
@@ -81,18 +85,18 @@ public class MinFill {
     }
 
     @Contract(pure = true)
-    public boolean stepC(Graph g, int k, Set<Set<Integer>> piI) {
+    public Optional<Graph> stepC(Graph g, int k, Set<Set<Integer>> piI) {
         Map<Pair, Set<Set<Integer>>> piSC = generatePiSC(g, piI);
-        Map<Graph, Integer> memoizer = new HashMap<>();
+        Map<Graph, Set<Edge>> memoizer = new HashMap<>();
         for (Set<Integer> omega : piI) {
-            int fill = g.inducedBy(omega).getNonEdges().size();
+            Set<Edge> fill = g.inducedBy(omega).getNonEdges();
             for (Set<Integer> c : g.inducedBy(g.vertices().minus(omega)).components()) {
                 Set<Integer> neighborhoodC = g.neighborhood(c);
-                fill += minFillF(g.cliqueify(omega).inducedBy(c.union(neighborhoodC)), new Pair<>(neighborhoodC, c), piSC, memoizer);
+                fill = fill.union(minFillF(g.cliqueify(omega).inducedBy(c.union(neighborhoodC)), new Pair<>(neighborhoodC, c), piSC, memoizer));
             }
-            if(fill<=k) return true;
+            if(fill.size()<=k) return Optional.of(g.addEdges(fill));
         }
-        return false;
+        return Optional.empty();
     }
 
     // Implementation of Lemma 4.1
