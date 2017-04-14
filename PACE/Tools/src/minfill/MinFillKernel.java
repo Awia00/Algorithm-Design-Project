@@ -36,6 +36,7 @@ public class MinFillKernel {
         } while (cycleFound);
 
         // P2
+        p2:
         do {
             cycleFound = false;
 
@@ -102,6 +103,7 @@ public class MinFillKernel {
                         }
 
                         if (cc > k) return Optional.empty();
+                        continue p2;
                     }
                 }
             }
