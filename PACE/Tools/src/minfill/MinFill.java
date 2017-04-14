@@ -175,7 +175,6 @@ public class MinFill {
     public Set<Set<Edge>> branch(Graph g, int k) {
         double h = Math.sqrt(k);
         Set<Set<Edge>> changes = Set.empty();
-        Map<Integer, Set<Integer>> neighborhoods = g.neighborhoods();
 
         for (Edge nonEdge : g.getNonEdges()) {
             int u = nonEdge.from, v = nonEdge.to;
@@ -183,7 +182,7 @@ public class MinFill {
             // See the proof of Lemma 3.2.
 
             // X = N(u) \\union N(v)
-            Set<Integer> x = neighborhoods.get(u).intersect(neighborhoods.get(v));
+            Set<Integer> x = g.neighborhood(u).intersect(g.neighborhood(v));
 
             // W = V(G)\{u,v} such that every vertex is nonadjacent to at least h vertices of x.
             Set<Integer> w = Set.empty();
@@ -192,12 +191,12 @@ public class MinFill {
                 if (vertex == u || vertex == v) continue;
 
                 // vertex is nonadjacent to at least h vertices of X.
-                if (x.minus(neighborhoods.get(vertex)).size() >= h) {
+                if (x.minus(g.neighborhood(vertex)).size() >= h) {
                     w = w.add(vertex);
                 }
             }
 
-            Graph gw = g.inducedBy(w.add(u).add(v)); // G[W \\union {u,v}]
+            Graph gw = g.inducedBy(w.union(Set.of(u, v))); // G[W \\union {u,v}]
             // If u and v are in same component in G[W \\union {u,v}] rule 1 holds.
             if (gw.hasPath(u, v)) {
                 Set<Edge> c = Set.empty();
@@ -209,12 +208,12 @@ public class MinFill {
                 Set<Integer> path = Set.of(gw.shortestPath(u, v)).minus(nonEdge.vertices());
 
                 // case i: add edge between w_i in path and all vertices in x.
-                for (int i = 0; i < path.size(); i++) {
+                for (int wi : path) {
                     c = Set.empty();
                     for (Integer vertex : x) {
                         // If x and vertex are distinct non-adjacent vertices, add edges to change set.
-                        if (vertex != i && !g.isAdjacent(i, vertex)) {
-                            c = c.add(new Edge(i, vertex));
+                        if (vertex != wi && !g.isAdjacent(wi, vertex)) {
+                            c = c.add(new Edge(wi, vertex));
                         }
                     }
 
