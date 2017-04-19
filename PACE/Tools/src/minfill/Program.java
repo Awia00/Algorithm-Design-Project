@@ -29,6 +29,7 @@ public class Program {
             System.err.printf("Kernel procedure 1 and 2 done. k=%d\n", abk.c);
 
             int k = abk.c;
+
             while (true) {
                 Optional<Pair<Graph, Integer>> tmp = kernel.kernelProcedure3(g, abk.a, abk.b, k);
                 System.err.printf("Kernel procedure 3 for k=%d done\n", k);
@@ -41,7 +42,7 @@ public class Program {
                     Optional<Graph> result = mfi.stepB1(gPrime, kPrime);
 
                     if (result.isPresent()) {
-                        Set<Edge> minimumFill = result.get().getEdges().minus(entireGraph.getEdges());
+                        Set<Edge> minimumFill = result.get().getEdges().minus(g.getEdges());
                         io.print(minimumFill);
                         System.err.println("Memoizer hits: " + MinFill.memoizerHits.longValue());
                         assert result.get().isChordal();

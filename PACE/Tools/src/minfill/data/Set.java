@@ -37,9 +37,6 @@ public interface Set<T> extends Iterable<T>  {
     Set<T> minus(Set<T> other);
 
     @Contract(pure = true)
-    Set<Set<T>> subsetsOfSizeAtMost(int size);
-
-    @Contract(pure = true)
     static <T> Set<T> empty() {
         return EmptySet.instance();
     }
@@ -59,5 +56,9 @@ public interface Set<T> extends Iterable<T>  {
     static <T> Set<T> of(Collection<T> elements) {
         if (elements.isEmpty()) return empty();
         return new ImmutableSet<>(elements);
+    }
+
+    static <T extends Comparable<T>> Iterable<Set<T>> subsetsOfSizeAtMost(Set<T> elements, int maxSize) {
+        return new SubsetOfAtMostSizeIterable<>(elements, maxSize);
     }
 }

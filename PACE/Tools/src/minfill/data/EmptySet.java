@@ -65,11 +65,6 @@ public class EmptySet<T> implements Set<T> {
         return this;
     }
 
-    @Override
-    public Set<Set<T>> subsetsOfSizeAtMost(int size) {
-        return instance();
-    }
-
     @NotNull
     @Override
     @SuppressWarnings("unchecked")

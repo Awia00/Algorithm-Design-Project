@@ -115,37 +115,39 @@ public class ImmutableSet<T> implements Set<T> {
         return newSet(copy);
     }
 
-    @Override
-    public Set<Set<T>> subsetsOfSizeAtMost(int size) {
-        Pair<java.util.Set<Set<T>>, java.util.Set<Set<T>>> results = subsetHelper(size);
 
-        return Set.of(results.o1);
-    }
 
-    private Pair<java.util.Set<Set<T>>, java.util.Set<Set<T>>> subsetHelper(int size) {
-        if (size == 1) {
-            java.util.Set<Set<T>> result = new HashSet<>();
-            for (T t : inner) {
-                result.add(Set.of(t));
-            }
-
-            return new Pair<>(result, new HashSet<>(result));
-        }
-
-        Pair<java.util.Set<Set<T>>, java.util.Set<Set<T>>> previousResults = subsetHelper(size - 1);
-
-        java.util.Set<Set<T>> myResults = new HashSet<>();
-
-        for (T element : inner) {
-            for (Set<T> prevSet : previousResults.o2) {
-                if (!prevSet.contains(element)) myResults.add(prevSet.add(element));
-            }
-        }
-
-        previousResults.o1.addAll(myResults);
-
-        return new Pair<>(previousResults.o1, myResults);
-    }
+//    @Override
+//    public Set<Set<T>> subsetsOfSizeAtMost(int size) {
+//        Pair<java.util.Set<Set<T>>, java.util.Set<Set<T>>> results = subsetHelper(size);
+//
+//        return Set.of(results.o1);
+//    }
+//
+//    private Pair<java.util.Set<Set<T>>, java.util.Set<Set<T>>> subsetHelper(int size) {
+//        if (size == 1) {
+//            java.util.Set<Set<T>> result = new HashSet<>();
+//            for (T t : inner) {
+//                result.add(Set.of(t));
+//            }
+//
+//            return new Pair<>(result, new HashSet<>(result));
+//        }
+//
+//        Pair<java.util.Set<Set<T>>, java.util.Set<Set<T>>> previousResults = subsetHelper(size - 1);
+//
+//        java.util.Set<Set<T>> myResults = new HashSet<>();
+//
+//        for (T element : inner) {
+//            for (Set<T> prevSet : previousResults.o2) {
+//                if (!prevSet.contains(element)) myResults.add(prevSet.add(element));
+//            }
+//        }
+//
+//        previousResults.o1.addAll(myResults);
+//
+//        return new Pair<>(previousResults.o1, myResults);
+//    }
 
     @NotNull
     @Override
