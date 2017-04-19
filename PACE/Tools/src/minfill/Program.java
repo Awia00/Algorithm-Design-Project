@@ -17,7 +17,6 @@ public class Program {
         MinFillKernel kernel = new MinFillKernel();
         MinFill mfi = new MinFill();
 
-
         Graph entireGraph = io.parse();
 
         for (Set<Integer> component : entireGraph.components()) {
@@ -43,7 +42,5 @@ public class Program {
                 k++;
             }
         }
-
-
     }
 }

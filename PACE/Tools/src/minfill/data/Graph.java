@@ -49,7 +49,8 @@ public interface Graph {
         }
         Graph cliqueChecker = this;
         for (Set<Integer> sI : s) {
-            cliqueChecker = cliqueChecker.cliqueify(sI);
+            Set<Edge> fillEdges = cliqueChecker.cliqueify(sI);
+            cliqueChecker = cliqueChecker.addEdges(fillEdges);
         }
         return cliqueChecker.inducedBy(k).isClique();
     }
@@ -95,7 +96,7 @@ public interface Graph {
     Graph minimalTriangulation();
 
     @Contract(pure = true)
-    Graph cliqueify(Set<Integer> vertices);
+    Set<Edge> cliqueify(Set<Integer> vertices);
 
     @Contract(pure = true)
     boolean isClique(Set<Integer> vertices);

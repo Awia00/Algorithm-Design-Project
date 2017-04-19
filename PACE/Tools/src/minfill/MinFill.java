@@ -75,13 +75,13 @@ public class MinFill {
 
         Set<Edge> result = f.getNonEdges();
         for (Set<Integer> omegaPrime : piSC.get(sc)) {
-            Graph filled = f.cliqueify(omegaPrime);
-            Set<Edge> fill = f.inducedBy(omegaPrime).getNonEdges();
+            Set<Edge> fill = f.cliqueify(omegaPrime);
+            Graph filled = f.addEdges(fill);
 
             for (Set<Integer> cPrime : f.inducedBy(f.vertices().minus(omegaPrime)).components()) {
+                if (fill.size() >= result.size()) break;
                 Set<Integer> neighborhoodCPrime = f.neighborhood(cPrime);
                 fill = fill.union(minFillF(filled.inducedBy(cPrime.union(neighborhoodCPrime)), new Pair<>(neighborhoodCPrime, cPrime), piSC, memoizer));
-                if (fill.size() >= result.size()) break;
             }
             if (fill.size() < result.size()) result = fill;
         }
@@ -95,10 +95,11 @@ public class MinFill {
         Map<Pair, Set<Set<Integer>>> piSC = generatePiSC(g, piI);
         Map<Graph, Set<Edge>> memoizer = new HashMap<>();
         for (Set<Integer> omega : piI) {
-            Set<Edge> fill = g.inducedBy(omega).getNonEdges();
+            Set<Edge> fill = g.cliqueify(omega);
+            Graph filled = g.addEdges(fill);
             for (Set<Integer> c : g.inducedBy(g.vertices().minus(omega)).components()) {
                 Set<Integer> neighborhoodC = g.neighborhood(c);
-                fill = fill.union(minFillF(g.cliqueify(omega).inducedBy(c.union(neighborhoodC)), new Pair<>(neighborhoodC, c), piSC, memoizer));
+                fill = fill.union(minFillF(filled.inducedBy(c.union(neighborhoodC)), new Pair<>(neighborhoodC, c), piSC, memoizer));
             }
             if(fill.size()<=k) return Optional.of(g.addEdges(fill));
         }
@@ -165,7 +166,8 @@ public class MinFill {
 
         // step 3 of generating vital potential maximal cliques
         for (Integer vertex : g.vertices()) {
-            Graph h = g.cliqueify(g.neighborhood(vertex));
+            Set<Edge> fill = g.cliqueify(g.neighborhood(vertex));
+            Graph h = g.addEdges(fill);
 
             potentialMaximalCliques = potentialMaximalCliques.union(enumerateQuasiCliques(h, k));
         }

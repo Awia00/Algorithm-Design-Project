@@ -418,21 +418,20 @@ public class ImmutableGraph implements Graph {
 
     @Override
     @Contract(pure = true)
-    public Graph cliqueify(Set<Integer> vertices) {
+    public Set<Edge> cliqueify(Set<Integer> vertices) {
         if (!vertices.isSubsetOf(this.vertices)) throw new IllegalArgumentException("Unknown vertex");
 
-        Map<Integer, Set<Integer>> copy = new HashMap<>(neighborhoods);
+        java.util.Set<Edge> fill = new HashSet<>();
 
         for (Integer v1 : vertices) {
             for (Integer v2 : vertices) {
-                if (!Objects.equals(v1, v2)) {
-                    copy.put(v1, copy.get(v1).add(v2));
-                    copy.put(v2, copy.get(v2).add(v1));
+                if (!Objects.equals(v1, v2) && v1 < v2 && !neighborhood(v1).contains(v2)) {
+                    fill.add(new Edge(v1, v2));
                 }
             }
         }
 
-        return new ImmutableGraph(this.vertices, copy);
+        return Set.of(fill);
     }
 
     @Override
@@ -445,5 +444,20 @@ public class ImmutableGraph implements Graph {
             }
         }
         return true;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ImmutableGraph that = (ImmutableGraph) o;
+
+        return neighborhoods.equals(that.neighborhoods);
+    }
+
+    @Override
+    public int hashCode() {
+        return neighborhoods.hashCode();
     }
 }
