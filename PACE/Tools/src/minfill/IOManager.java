@@ -12,6 +12,7 @@ public class IOManager {
         for (Edge edge : minFill) {
             System.out.printf("%s %s\n", nodeNames[edge.from], nodeNames[edge.to]);
         }
+        System.out.flush();
     }
 
     public Graph parse() {

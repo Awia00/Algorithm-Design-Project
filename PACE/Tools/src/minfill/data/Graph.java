@@ -10,9 +10,6 @@ public interface Graph {
     Set<Integer> vertices();
 
     @Contract(pure = true)
-    Map<Integer, Set<Integer>> neighborhoods();
-
-    @Contract(pure = true)
     Set<Integer> neighborhood(int n);
 
     @Contract(pure = true)
@@ -88,6 +85,8 @@ public interface Graph {
 
     @Contract(pure = true)
     Set<Edge> getEdges();
+
+    int getNumberOfNonEdges();
 
     @Contract(pure = true)
     Graph inducedBy(Set<Integer> vertices);

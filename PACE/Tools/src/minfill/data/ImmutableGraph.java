@@ -39,12 +39,6 @@ public class ImmutableGraph implements Graph {
 
     @Override
     @Contract(pure = true)
-    public Map<Integer, Set<Integer>> neighborhoods() {
-        return Collections.unmodifiableMap(neighborhoods);
-    }
-
-    @Override
-    @Contract(pure = true)
     public Set<Integer> neighborhood(int n) {
         if (!vertices.contains(n)) throw new IllegalArgumentException("Unknown vertex");
         return neighborhoods.get(n);
@@ -192,7 +186,7 @@ public class ImmutableGraph implements Graph {
     public boolean isVitalPotentialMaximalClique(Set<Integer> vertices, int k) {
         if (!vertices.isSubsetOf(this.vertices)) throw new IllegalArgumentException("Unknown vertex");
         if (k < 0) return false;
-        return inducedBy(vertices).getNonEdges().size() <= k && isPotentialMaximalClique(vertices);
+        return inducedBy(vertices).getNumberOfNonEdges() <= k && isPotentialMaximalClique(vertices);
     }
 
     @Override
@@ -328,7 +322,7 @@ public class ImmutableGraph implements Graph {
         if (!vertices.contains(e.from)) throw new IllegalArgumentException("Unknown vertex");
         if (!vertices.contains(e.to)) throw new IllegalArgumentException("Unknown vertex");
 
-        if (neighborhood(e.from).contains(e.to)) return this;
+        if (isAdjacent(e.from, e.to)) return this;
 
         Map<Integer, Set<Integer>> copy = new HashMap<>(neighborhoods);
 
@@ -350,7 +344,7 @@ public class ImmutableGraph implements Graph {
         if (!vertices.contains(e.from)) throw new IllegalArgumentException("Unknown vertex");
         if (!vertices.contains(e.to)) throw new IllegalArgumentException("Unknown vertex");
 
-        if (!neighborhood(e.from).contains(e.to)) return this;
+        if (!isAdjacent(e.from, e.to)) return this;
 
         Map<Integer, Set<Integer>> copy = new HashMap<>(neighborhoods);
 
@@ -366,7 +360,7 @@ public class ImmutableGraph implements Graph {
 
         for (Integer v1 : vertices) {
             for (Integer v2 : vertices) {
-                if (v1 < v2 && neighborhood(v1).contains(v2)) {
+                if (v1 < v2 && isAdjacent(v1, v2)) {
                     edges = edges.add(new Edge(v1, v2));
                 }
             }
@@ -382,13 +376,26 @@ public class ImmutableGraph implements Graph {
 
         for (Integer v1 : vertices) {
             for (Integer v2 : vertices) {
-                if (v1 < v2 && !neighborhood(v1).contains(v2)) {
+                if (v1 < v2 && !isAdjacent(v1, v2)) {
                     nonEdges = nonEdges.add(new Edge(v1, v2));
                 }
             }
         }
 
         return nonEdges;
+    }
+
+    public int getNumberOfNonEdges() {
+        int number = 0;
+
+        for (Integer v1 : vertices) {
+            for (Integer v2 : vertices) {
+                if (v1 < v2 && !isAdjacent(v1, v2)) {
+                    number++;
+                }
+            }
+        }
+        return number;
     }
 
     @Override
@@ -425,7 +432,7 @@ public class ImmutableGraph implements Graph {
 
         for (Integer v1 : vertices) {
             for (Integer v2 : vertices) {
-                if (!Objects.equals(v1, v2) && v1 < v2 && !neighborhood(v1).contains(v2)) {
+                if (!Objects.equals(v1, v2) && v1 < v2 && !isAdjacent(v1, v2)) {
                     fill.add(new Edge(v1, v2));
                 }
             }
@@ -440,7 +447,7 @@ public class ImmutableGraph implements Graph {
         if (!vertices.isSubsetOf(this.vertices)) throw new IllegalArgumentException("Unknown vertex");
         for (Integer v1 : vertices) {
             for (Integer v2 : vertices) {
-                if (!Objects.equals(v1, v2) && !neighborhood(v1).contains(v2)) return false;
+                if (!Objects.equals(v1, v2) && !isAdjacent(v1, v2)) return false;
             }
         }
         return true;

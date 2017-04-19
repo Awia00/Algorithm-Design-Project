@@ -23,12 +23,17 @@ public class Program {
             Graph g = entireGraph.inducedBy(component);
             Triple<Set<Integer>, Set<Integer>, Integer> abk = kernel.kernelProcedure1And2(g);
 
+            System.err.println("Kernel procedure 1 and 2 done");
+
             int k = abk.c;
             while (true) {
                 Optional<Pair<Graph, Integer>> tmp = kernel.kernelProcedure3(g, abk.a, abk.b, k);
+                System.err.printf("Kernel procedure 3 for k=%d done\n", k);
                 if (tmp.isPresent()) {
                     Graph gPrime = tmp.get().o1;
                     int kPrime = tmp.get().o2;
+
+                    System.err.printf("k'=%d\n", kPrime);
 
                     Optional<Graph> result = mfi.stepB1(gPrime, kPrime);
 
@@ -36,6 +41,7 @@ public class Program {
                         Set<Edge> minimumFill = result.get().getEdges().minus(entireGraph.getEdges());
                         io.print(minimumFill);
                         System.err.println("Memoizer hits: " + MinFill.memoizerHits.longValue());
+                        assert result.get().isChordal();
                         break;
                     }
                 }

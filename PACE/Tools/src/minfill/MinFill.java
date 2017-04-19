@@ -4,6 +4,7 @@ import minfill.data.*;
 import org.jetbrains.annotations.Contract;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.LongAdder;
@@ -22,11 +23,7 @@ public class MinFill {
             return stepB2(g,k);
         } else {
             for (Set<Edge> branch : branches) {
-                Graph gPrime = g;
-                for (Edge edge : branch) {
-                    gPrime = gPrime.addEdge(edge);
-                }
-
+                Graph gPrime = g.addEdges(branch);
                 int kPrime = k - branch.size();
 
                 Optional<Graph> res = stepB1(gPrime, kPrime);
@@ -39,6 +36,7 @@ public class MinFill {
 
     @Contract(pure = true)
     public Optional<Graph> stepB2(Graph g, int k) {
+        System.err.printf("Step B2: Non-reducible instance found. k=%d\n", k);
         Set<Set<Integer>> piI = generateVitalPotentialMaximalCliques(g, k);
 
         return stepC(g, k, piI);
@@ -92,6 +90,7 @@ public class MinFill {
 
     @Contract(pure = true)
     public Optional<Graph> stepC(Graph g, int k, Set<Set<Integer>> piI) {
+        System.err.println("Step C: All vital potential maximal cliques found.");
         Map<Pair, Set<Set<Integer>>> piSC = generatePiSC(g, piI);
         Map<Graph, Set<Edge>> memoizer = new HashMap<>();
         for (Set<Integer> omega : piI) {
@@ -182,7 +181,7 @@ public class MinFill {
     @Contract(pure = true)
     public Set<Set<Edge>> branch(Graph g, int k) {
         double h = Math.sqrt(k);
-        Set<Set<Edge>> changes = Set.empty();
+        java.util.Set<Set<Edge>> changes = new HashSet<>();
 
         for (Edge nonEdge : g.getNonEdges()) {
             int u = nonEdge.from, v = nonEdge.to;
@@ -194,7 +193,7 @@ public class MinFill {
 
             // W = V(G)\{u,v} such that every vertex is nonadjacent to at least h vertices of x.
             Set<Integer> w = Set.empty();
-            for (Integer vertex : g.vertices()) {
+            for (Integer vertex : g.vertices().minus(x)) {
                 // for all vertices, except u and v.
                 if (vertex == u || vertex == v) continue;
 
@@ -210,7 +209,7 @@ public class MinFill {
                 Set<Edge> c = Set.empty();
 
                 // case 0: add edge between u and v.
-                changes = changes.add(c.add(nonEdge));
+                changes.add(c.add(nonEdge));
 
                 // Find a shortest u,v-path in gw.
                 Set<Integer> path = Set.of(gw.shortestPath(u, v)).minus(nonEdge.vertices());
@@ -226,15 +225,14 @@ public class MinFill {
                     }
 
                     // If number of added edges is greater than k, then we cannot use this subgraph.
-                    // TODO: Check if this is sound.
                     if (!c.isEmpty() && c.size() <= k) {
                         // Case i done, add to branch-list.
-                        changes = changes.add(c);
+                        changes.add(c);
                     }
                 }
             }
         }
-        return changes;
+        return Set.of(changes);
     }
 }
 
