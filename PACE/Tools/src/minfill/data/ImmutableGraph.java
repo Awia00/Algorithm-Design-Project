@@ -136,7 +136,7 @@ public class ImmutableGraph implements Graph {
     public Pair<List<Integer>, Set<Edge>> maximumCardinalitySearchM() { // todo handle components
         List<Integer> order = new ArrayList<>(vertices.size());
         java.util.Set<Integer> numbered = new HashSet<>(vertices.size());
-        TreeMap<Integer, Integer> weightMap = new TreeMap<>();
+        Map<Integer, Integer> weightMap = new HashMap<>();
         Set<Edge> F = Set.empty();
         for (Integer vertex : vertices) {
             weightMap.put(vertex,0);
@@ -171,16 +171,14 @@ public class ImmutableGraph implements Graph {
     @Override
     @Contract(pure = true)
     public boolean isChordal() { // todo handle components
-        for (Set<Integer> component : components()) {
-            List<Integer> order = this.inducedBy(component).maximumCardinalitySearch();
+        List<Integer> order = maximumCardinalitySearch();
 
-            for (int i = 0; i < order.size(); i++) {
-                Set<Integer> madj = mAdj(order, i);
-                if (!isClique(madj))
-                    return false;
-            }
+        for (int i = 0; i < order.size(); i++) {
+            Set<Integer> mAdj = mAdj(order, i);
+            if (!isClique(mAdj))
+                return false;
         }
-        return true; // might not be how to check that it has an ordering.
+        return true;
     }
 
     @Override
