@@ -119,13 +119,15 @@ public class ImmutableSet<T> implements Set<T> {
     public Set<Set<T>> subsetsOfSizeAtMost(int size) {
         Pair<java.util.Set<Set<T>>, java.util.Set<Set<T>>> results = subsetHelper(size);
 
-        return new ImmutableSet<>(results.o1);
+        return Set.of(results.o1);
     }
 
     private Pair<java.util.Set<Set<T>>, java.util.Set<Set<T>>> subsetHelper(int size) {
-        if (size == 0) {
+        if (size == 1) {
             java.util.Set<Set<T>> result = new HashSet<>();
-            result.add(Set.empty());
+            for (T t : inner) {
+                result.add(Set.of(t));
+            }
 
             return new Pair<>(result, new HashSet<>(result));
         }
