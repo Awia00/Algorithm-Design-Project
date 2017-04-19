@@ -97,15 +97,16 @@ public class ImmutableGraph implements Graph {
 
     @Contract(pure = true)
     public Integer unNumberedMaximumWeightVertex(Map<Integer, Integer> weightMap, java.util.Set<Integer> numbered){
-        Optional<Map.Entry<Integer, Integer>> max = weightMap.entrySet().stream()
-                .filter(entry -> !numbered.contains(entry.getKey()))
-                .max(Comparator.comparing(Map.Entry::getValue));
+        int key = -1, value = Integer.MIN_VALUE;
 
-        if (max.isPresent()) {
-            return max.get().getKey();
+        for (Map.Entry<Integer, Integer> entry : weightMap.entrySet()) {
+            if (!numbered.contains(entry.getKey()) && entry.getValue() > value) {
+                key = entry.getKey();
+                value = entry.getValue();
+            }
         }
 
-        throw new RuntimeException("no element not in order");
+        return key;
     }
 
     @Override
