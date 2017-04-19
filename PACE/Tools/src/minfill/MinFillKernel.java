@@ -34,67 +34,57 @@ public class MinFillKernel {
         do {
             cycleFound = false;
 
-            for (int v : B) {
-                Set<Integer> neighborhoodV = g.neighborhood(v);
-                for (int w : neighborhoodV.intersect(B)) {
-                    Graph gPrime = g
-                            .inducedBy(g.vertices().minus(neighborhoodV.intersect(g.neighborhood(w))))
-                            .removeEdge(new Edge(v, w));
+            for (Integer u : A) {
+                for (Integer x : g.neighborhood(u).intersect(B)) {
+                    Graph gPrime = g.inducedBy(g.vertices().remove(x));
+                    Set<Integer> R = (g.neighborhood(x).minus(g.neighborhood(u))).intersect(B);
 
-                    if (gPrime.hasPath(v, w)) {
-                        cycleFound = true;
-                        List<Integer> path = gPrime.shortestPath(v, w);
+                    for (Integer v : R) {
+                        if (gPrime.hasPath(u, v)) {
+                            cycleFound = true;
+                            List<Integer> path = gPrime.shortestPath(u, v);
+                            path.add(x);
 
-                        List<Set<Integer>> subPaths = new ArrayList<>();
+                            List<Set<Integer>> subPaths = new ArrayList<>();
 
-                        int startIndex = -1;
-                        for (int i = 0; i < path.size(); i++) {
-                            if (A.contains(path.get(i))) {
-                                startIndex = i;
-                                break;
-                            }
-                        }
-
-                        assert startIndex != -1;
-
-                        boolean prevInB = false;
-                        java.util.Set<Integer> subPath = new HashSet<>();
-                        for (int i = startIndex; i < path.size() + startIndex; i++) {
-                            Integer vertex = path.get(i % path.size());
-                            if (prevInB) {
-                                if (B.contains(vertex)) {
-                                    subPath.add(vertex);
+                            boolean prevInB = false;
+                            java.util.Set<Integer> subPath = new HashSet<>();
+                            for (Integer vertex : path) {
+                                if (prevInB) {
+                                    if (B.contains(vertex)) {
+                                        subPath.add(vertex);
+                                    } else {
+                                        subPaths.add(Set.of(subPath));
+                                        subPath = new HashSet<>();
+                                        prevInB = false;
+                                    }
                                 } else {
-                                    subPaths.add(Set.of(subPath));
-                                    subPath = new HashSet<>();
-                                    prevInB = false;
-                                }
-                            } else {
-                                if (B.contains(vertex)) {
-                                    subPath.add(vertex);
-                                    prevInB = true;
+                                    if (B.contains(vertex)) {
+                                        subPath.add(vertex);
+                                        prevInB = true;
+                                    }
                                 }
                             }
-                        }
-                        if(!subPath.isEmpty()) subPaths.add(Set.of(subPath));
+                            if(!subPath.isEmpty()) subPaths.add(Set.of(subPath));
 
-                        Set<Integer> vertices = Set.of(path);
-                        A = A.union(vertices);
-                        B = B.minus(vertices);
+                            Set<Integer> vertices = Set.of(path);
+                            A = A.union(vertices);
+                            B = B.minus(vertices);
 
-                        subPaths.sort(Comparator.comparing(sub -> -sub.size()));
+                            subPaths.sort(Comparator.comparing(sub -> -sub.size()));
 
-                        if (subPaths.size() == 1) {
-                            if (subPaths.get(0).size() == path.size() - 2) {
-                                kMin += subPaths.get(0).size() - 1;
+                            if (subPaths.size() == 1) {
+                                if (subPaths.get(0).size() == path.size() - 2) {
+                                    kMin += subPaths.get(0).size() - 1;
+                                } else {
+                                    kMin += subPaths.get(0).size();
+                                }
                             } else {
-                                kMin += subPaths.get(0).size();
+                                kMin += Math.max(subPaths.stream().mapToInt(Set::size).sum() / 2, subPaths.get(0).size());
                             }
-                        } else {
-                            kMin += Math.max(subPaths.stream().mapToInt(Set::size).sum() / 2, subPaths.get(0).size());
-                        }
 
-                        continue p2;
+                            continue p2;
+                        }
                     }
                 }
             }
