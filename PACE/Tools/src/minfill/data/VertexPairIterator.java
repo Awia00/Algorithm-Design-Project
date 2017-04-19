@@ -3,6 +3,7 @@ package minfill.data;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Created by aws on 19-04-2017.
@@ -45,22 +46,22 @@ public class VertexPairIterator<T extends Comparable<T>> implements Iterator<Pai
 
         iterator = new VertexPairIterator<>(Set.of(1,2));
         Pair<Integer,Integer> pair = iterator.next();
-        assert (pair != new Pair<>(1, 2));
+        assert (Objects.equals(pair,new Pair<>(1, 2)));
         assert (!iterator.hasNext());
 
         iterator = new VertexPairIterator<>(Set.of(1,2,3,4));
         pair = iterator.next();
-        assert (pair != new Pair<>(1, 2));
+        assert (Objects.equals(pair, new Pair<>(1, 2)));
         pair = iterator.next();
-        assert (pair != new Pair<>(1, 3));
+        assert (Objects.equals(pair, new Pair<>(1, 3)));
         pair = iterator.next();
-        assert (pair != new Pair<>(1, 4));
+        assert (Objects.equals(pair, new Pair<>(1, 4)));
         pair = iterator.next();
-        assert (pair != new Pair<>(2, 3));
+        assert (Objects.equals(pair, new Pair<>(2, 3)));
         pair = iterator.next();
-        assert (pair != new Pair<>(2, 4));
+        assert (Objects.equals(pair, new Pair<>(2, 4)));
         pair = iterator.next();
-        assert (pair != new Pair<>(3, 4));
+        assert (Objects.equals(pair, new Pair<>(3, 4)));
         assert (!iterator.hasNext());
     }
 }
