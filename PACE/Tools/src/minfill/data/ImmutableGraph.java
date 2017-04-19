@@ -113,9 +113,9 @@ public class ImmutableGraph implements Graph {
     public List<Integer> maximumCardinalitySearch() { // todo handle components
         List<Integer> order = new ArrayList<>(vertices.size());
         java.util.Set<Integer> numbered = new HashSet<>(vertices.size());
-        TreeMap<Integer, Integer> weightMap = new TreeMap<>();
+        Map<Integer, Integer> weightMap = new HashMap<>();
         for (Integer vertex : vertices) {
-            weightMap.put(vertex,0);
+            weightMap.put(vertex, 0);
             order.add(vertex);
         }
         for (int i = vertices.size()-1;i >= 0 ; i--) {

@@ -146,13 +146,19 @@ public class MinFillKernel {
 
             for (int i = 0; i < order.size(); i++) {
                 Set<Integer> madj = mAdj(g, order, i);
+                List<Integer> madjList = new ArrayList<>();
+                for (Integer vertex : madj) {
+                    madjList.add(vertex);
+                }
                 if (!g.isClique(madj)) {
                     // Cycle identified
                     Graph gPrime = g.inducedBy(g.vertices().remove(order.get(i)));
 
-                    for (int v : madj) {
-                        for (int w : madj) {
-                            if (v != w && !gPrime.isAdjacent(v, w) && gPrime.hasPath(v, w)) {
+                    for (int j = 0; j < madjList.size()-1; j++) {
+                        Integer v = madjList.get(j);
+                        for (int k = j+1; k < madjList.size(); k++) {
+                            Integer w = madjList.get(k);
+                            if (!gPrime.isAdjacent(v, w) && gPrime.hasPath(v, w)) {
                                 List<Integer> path = gPrime.shortestPath(v, w);
                                 path.add(order.get(i));
 
