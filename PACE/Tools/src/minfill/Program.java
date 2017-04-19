@@ -18,12 +18,15 @@ public class Program {
         MinFill mfi = new MinFill();
 
         Graph entireGraph = io.parse();
+        System.err.printf("Graph of size (|V|, |E|) = (%d, %d)\n", entireGraph.vertices().size(), entireGraph.getEdges().size());
 
         for (Set<Integer> component : entireGraph.components()) {
             Graph g = entireGraph.inducedBy(component);
+            System.err.printf("Component of size (|V|, |E|) = (%d, %d)\n", component.size(), g.getEdges().size());
+
             Triple<Set<Integer>, Set<Integer>, Integer> abk = kernel.kernelProcedure1And2(g);
 
-            System.err.println("Kernel procedure 1 and 2 done");
+            System.err.printf("Kernel procedure 1 and 2 done. k=%d\n", abk.c);
 
             int k = abk.c;
             while (true) {

@@ -39,7 +39,7 @@ public class ImmutableGraph implements Graph {
 
     @Override
     @Contract(pure = true)
-    public Set<Integer> neighborhood(int n) {
+    public Set<Integer> neighborhood(Integer n) {
         if (!vertices.contains(n)) throw new IllegalArgumentException("Unknown vertex");
         return neighborhoods.get(n);
     }
@@ -58,7 +58,7 @@ public class ImmutableGraph implements Graph {
 
     @Override
     @Contract(pure = true)
-    public boolean isAdjacent(int a, int b) {
+    public boolean isAdjacent(Integer a, Integer b) {
         if (!vertices.contains(a)) throw new IllegalArgumentException("Unknown vertex");
         if (!vertices.contains(b)) throw new IllegalArgumentException("Unknown vertex");
 
@@ -67,7 +67,7 @@ public class ImmutableGraph implements Graph {
 
     @Override
     @Contract(pure = true)
-    public boolean hasPath(int a, int b) {
+    public boolean hasPath(Integer a, Integer b) {
         if (!vertices.contains(a)) throw new IllegalArgumentException("Unknown vertex");
         if (!vertices.contains(b)) throw new IllegalArgumentException("Unknown vertex");
 
@@ -76,8 +76,8 @@ public class ImmutableGraph implements Graph {
         queue.add(a);
 
         while (!queue.isEmpty()) {
-            int vertex = queue.poll();
-            if (vertex == b) return true;
+            Integer vertex = queue.poll();
+            if (Objects.equals(vertex, b)) return true;
             if (!marked.contains(vertex)) {
                 marked.add(vertex);
                 for (Integer neighbor : neighborhood(vertex)) {
@@ -281,7 +281,7 @@ public class ImmutableGraph implements Graph {
 
     @Override
     @Contract(pure = true)
-    public List<Integer> shortestPath(int from, int to) {
+    public List<Integer> shortestPath(Integer from, Integer to) {
         if (!vertices.contains(from)) throw new IllegalArgumentException("Unknown vertex");
         if (!vertices.contains(to)) throw new IllegalArgumentException("Unknown vertex");
 
@@ -297,7 +297,7 @@ public class ImmutableGraph implements Graph {
                 if (!marked.contains(neighbor)) {
                     marked.add(neighbor);
                     edgeFrom.put(neighbor, vertex);
-                    if (neighbor == to) break;
+                    if (Objects.equals(neighbor, to)) break;
                     queue.add(neighbor);
                 }
             }

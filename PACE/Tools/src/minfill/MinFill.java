@@ -1,12 +1,10 @@
 package minfill;
 
 import minfill.data.*;
+import minfill.data.Set;
 import org.jetbrains.annotations.Contract;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.atomic.LongAdder;
 
 public class MinFill {
@@ -184,7 +182,7 @@ public class MinFill {
         java.util.Set<Set<Edge>> changes = new HashSet<>();
 
         for (Edge nonEdge : g.getNonEdges()) {
-            int u = nonEdge.from, v = nonEdge.to;
+            Integer u = nonEdge.from, v = nonEdge.to;
 
             // See the proof of Lemma 3.2.
 
@@ -195,7 +193,7 @@ public class MinFill {
             Set<Integer> w = Set.empty();
             for (Integer vertex : g.vertices().minus(x)) {
                 // for all vertices, except u and v.
-                if (vertex == u || vertex == v) continue;
+                if (Objects.equals(vertex, u) || Objects.equals(vertex, v)) continue;
 
                 // vertex is nonadjacent to at least h vertices of X.
                 if (x.minus(g.neighborhood(vertex)).size() >= h) {

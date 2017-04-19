@@ -10,16 +10,16 @@ public interface Graph {
     Set<Integer> vertices();
 
     @Contract(pure = true)
-    Set<Integer> neighborhood(int n);
+    Set<Integer> neighborhood(Integer n);
 
     @Contract(pure = true)
     Set<Integer> neighborhood(Set<Integer> vertices);
 
     @Contract(pure = true)
-    boolean isAdjacent(int a, int b);
+    boolean isAdjacent(Integer a, Integer b);
 
     @Contract(pure = true)
-    boolean hasPath(int a, int b);
+    boolean hasPath(Integer a, Integer b);
 
     @Contract(pure = true)
     List<Integer> maximumCardinalitySearch();
@@ -69,7 +69,7 @@ public interface Graph {
     Set<Set<Integer>> maximalCliquesOfChordalGraph(); // TODO: We have an algorithm for this. [3]
 
     @Contract(pure = true)
-    List<Integer> shortestPath(int from, int to);
+    List<Integer> shortestPath(Integer from, Integer to);
 
     @Contract(pure = true)
     Graph addEdge(Edge e);
