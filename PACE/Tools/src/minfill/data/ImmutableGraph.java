@@ -372,25 +372,21 @@ public class ImmutableGraph implements Graph {
     public Set<Edge> getNonEdges() {
         Set<Edge> nonEdges = Set.empty();
 
-        for (Integer v1 : vertices) {
-            for (Integer v2 : vertices) {
-                if (v1 < v2 && !isAdjacent(v1, v2)) {
-                    nonEdges = nonEdges.add(new Edge(v1, v2));
-                }
+        VertexPairIterable<Integer> vertexPairs = new VertexPairIterable<>(vertices);
+        for(Pair<Integer, Integer> pair : vertexPairs){
+            if (!isAdjacent(pair.o1, pair.o2)) {
+                nonEdges = nonEdges.add(new Edge(pair.o1, pair.o2));
             }
         }
-
         return nonEdges;
     }
 
     public int getNumberOfNonEdges() {
         int number = 0;
-
-        for (Integer v1 : vertices) {
-            for (Integer v2 : vertices) {
-                if (v1 < v2 && !isAdjacent(v1, v2)) {
-                    number++;
-                }
+        VertexPairIterable<Integer> vertexPairs = new VertexPairIterable<>(vertices);
+        for(Pair<Integer, Integer> pair : vertexPairs){
+            if (!isAdjacent(pair.o1, pair.o2)) {
+                number++;
             }
         }
         return number;
@@ -428,11 +424,10 @@ public class ImmutableGraph implements Graph {
 
         java.util.Set<Edge> fill = new HashSet<>();
 
-        for (Integer v1 : vertices) {
-            for (Integer v2 : vertices) {
-                if (!Objects.equals(v1, v2) && v1 < v2 && !isAdjacent(v1, v2)) {
-                    fill.add(new Edge(v1, v2));
-                }
+        VertexPairIterable<Integer> vertexPairs = new VertexPairIterable<>(vertices);
+        for(Pair<Integer, Integer> pair : vertexPairs){
+            if (!isAdjacent(pair.o1, pair.o2)) {
+                fill.add(new Edge(pair.o1, pair.o2));
             }
         }
 
@@ -443,9 +438,11 @@ public class ImmutableGraph implements Graph {
     @Contract(pure = true)
     public boolean isClique(Set<Integer> vertices) {
         if (!vertices.isSubsetOf(this.vertices)) throw new IllegalArgumentException("Unknown vertex");
-        for (Integer v1 : vertices) {
-            for (Integer v2 : vertices) {
-                if (!Objects.equals(v1, v2) && !isAdjacent(v1, v2)) return false;
+
+        VertexPairIterable<Integer> vertexPairs = new VertexPairIterable<>(vertices);
+        for(Pair<Integer, Integer> pair : vertexPairs){
+            if (!isAdjacent(pair.o1, pair.o2)) {
+                return false;
             }
         }
         return true;
