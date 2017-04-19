@@ -136,7 +136,7 @@ public class ImmutableGraph implements Graph {
     public Pair<List<Integer>, Set<Edge>> maximumCardinalitySearchM() { // todo handle components
         List<Integer> order = new ArrayList<>(vertices.size());
         java.util.Set<Integer> numbered = new HashSet<>(vertices.size());
-        TreeMap<Integer, Integer> weightMap = new TreeMap<>();
+        Map<Integer, Integer> weightMap = new HashMap<>();
         Set<Edge> F = Set.empty();
         for (Integer vertex : vertices) {
             weightMap.put(vertex,0);
