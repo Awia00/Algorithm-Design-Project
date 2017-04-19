@@ -1,9 +1,6 @@
 package minfill;
 
-import minfill.data.Edge;
-import minfill.data.Graph;
-import minfill.data.Pair;
-import minfill.data.Set;
+import minfill.data.*;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -21,25 +18,32 @@ public class Program {
         MinFill mfi = new MinFill();
 
 
-        Graph g = io.parse();
+        Graph entireGraph = io.parse();
 
-        int k = 0;
-        while (true) {
-            Optional<Pair<Graph, Integer>> tmp = kernel.kernelize(g, k);
-            if (tmp.isPresent()) {
-                Graph gPrime = tmp.get().o1;
-                int kPrime = tmp.get().o2;
+        for (Set<Integer> component : entireGraph.components()) {
+            Graph g = entireGraph.inducedBy(component);
+            Triple<Set<Integer>, Set<Integer>, Integer> abk = kernel.kernelProcedure1And2(g);
 
-                Optional<Graph> result = mfi.stepB1(gPrime, kPrime);
+            int k = abk.c;
+            while (true) {
+                Optional<Pair<Graph, Integer>> tmp = kernel.kernelProcedure3(g, abk.a, abk.b, k);
+                if (tmp.isPresent()) {
+                    Graph gPrime = tmp.get().o1;
+                    int kPrime = tmp.get().o2;
 
-                if (result.isPresent()) {
-                    Set<Edge> minimumFill = result.get().getEdges().minus(g.getEdges());
-                    io.print(minimumFill);
-                    System.err.println("Memoizer hits: " + MinFill.memoizerHits.longValue());
-                    return;
+                    Optional<Graph> result = mfi.stepB1(gPrime, kPrime);
+
+                    if (result.isPresent()) {
+                        Set<Edge> minimumFill = result.get().getEdges().minus(entireGraph.getEdges());
+                        io.print(minimumFill);
+                        System.err.println("Memoizer hits: " + MinFill.memoizerHits.longValue());
+                        break;
+                    }
                 }
+                k++;
             }
-            k++;
         }
+
+
     }
 }

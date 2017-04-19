@@ -1,8 +1,6 @@
 package minfill;
 
-import minfill.data.Edge;
-import minfill.data.Graph;
-import minfill.data.Pair;
+import minfill.data.*;
 import minfill.data.Set;
 import org.jetbrains.annotations.Contract;
 
@@ -10,11 +8,9 @@ import java.util.*;
 
 public class MinFillKernel {
     @Contract(pure = true)
-    public Optional<Pair<Graph, Integer>> kernelize(Graph g, int k) {
-        //throw new RuntimeException("Not implemented");
+    public Triple<Set<Integer>, Set<Integer>, Integer> kernelProcedure1And2(Graph g) {
         Set<Integer> A = Set.empty(), B = g.vertices();
-        int cc = 0;
-        int kPrime = k;
+        int kMin = 0;
 
         // P1
         boolean cycleFound;
@@ -26,12 +22,10 @@ public class MinFillKernel {
                 Set<Integer> cycleSet = Set.of(cycle.get());
                 assert cycleSet.size() >= 4;
 
-                cc += cycleSet.size() - 3;
+                kMin += cycleSet.size() - 3;
 
                 A = A.union(cycleSet);
                 B = B.minus(cycleSet);
-
-                if (cc > k) return Optional.empty();
             }
         } while (cycleFound);
 
@@ -50,8 +44,6 @@ public class MinFillKernel {
                     if (gPrime.hasPath(v, w)) {
                         cycleFound = true;
                         List<Integer> path = gPrime.shortestPath(v, w);
-
-                        if (path.size() > k + 3) return Optional.empty();
 
                         List<Set<Integer>> subPaths = new ArrayList<>();
 
@@ -94,20 +86,26 @@ public class MinFillKernel {
 
                         if (subPaths.size() == 1) {
                             if (subPaths.get(0).size() == path.size() - 2) {
-                                cc += subPaths.get(0).size() - 1;
+                                kMin += subPaths.get(0).size() - 1;
                             } else {
-                                cc += subPaths.get(0).size();
+                                kMin += subPaths.get(0).size();
                             }
                         } else {
-                            cc += Math.max(subPaths.stream().mapToInt(Set::size).sum() / 2, subPaths.get(0).size());
+                            kMin += Math.max(subPaths.stream().mapToInt(Set::size).sum() / 2, subPaths.get(0).size());
                         }
 
-                        if (cc > k) return Optional.empty();
                         continue p2;
                     }
                 }
             }
         } while (cycleFound);
+
+        return new Triple<>(A, B, kMin);
+    }
+
+    @Contract(pure = true)
+    public Optional<Pair<Graph, Integer>> kernelProcedure3(Graph g, Set<Integer> A, Set<Integer> B, int k) {
+        int kPrime = k;
 
         // P3
         for (Edge nonEdge : g.inducedBy(A).getNonEdges()) {
