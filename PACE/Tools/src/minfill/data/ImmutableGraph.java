@@ -207,14 +207,17 @@ public class ImmutableGraph implements Graph {
                 java.util.Set<Integer> component = new HashSet<>();
                 Queue<Integer> queue = new ArrayDeque<>();
                 queue.add(i);
+                component.add(i);
+                marked.add(i);
 
-                while (!queue.isEmpty()) {
+
+                while (!queue.isEmpty() && marked.size() != vertices.size()) {
                     int vertex = queue.poll();
-                    marked.add(vertex);
-                    component.add(vertex);
 
                     for (Integer neighbor : neighborhood(vertex)) {
                         if (!marked.contains(neighbor)) {
+                            marked.add(neighbor);
+                            component.add(neighbor);
                             queue.add(neighbor);
                         }
                     }
