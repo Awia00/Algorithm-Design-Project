@@ -108,13 +108,14 @@ public class MinFill {
     public Set<Set<Integer>> generateVitalPotentialMaximalCliques(Graph g, int k) {
         // enumerate quasi-cliques. (Step 1)
         Set<Set<Integer>> potentialMaximalCliques = enumerateQuasiCliques(g, k);
-
+        System.err.println("step B2: case 1 done)");
         // all vertex subsets of size at most 5*sqrt(k)+2 (step 2)
         for (Set<Integer> vertices : g.vertices().subsetsOfSizeAtMost((int) (5 * Math.sqrt(k) + 2))) {
             if (g.isVitalPotentialMaximalClique(vertices, k)) {
                 potentialMaximalCliques = potentialMaximalCliques.add(vertices);
             }
         }
+        System.err.println("step B2: case 2 done)");
 
         // step 3 of generating vital potential maximal cliques
         for (Integer vertex : g.vertices()) {
@@ -123,6 +124,7 @@ public class MinFill {
 
             potentialMaximalCliques = potentialMaximalCliques.union(enumerateQuasiCliques(h, k));
         }
+        System.err.println("step B2: case 3 done)");
         return potentialMaximalCliques;
     }
 
@@ -132,6 +134,7 @@ public class MinFill {
     private Set<Set<Integer>> enumerateQuasiCliques(Graph g, int k) {
         Set<Set<Integer>> potentialMaximalCliques = Set.empty();
         Set<Set<Integer>> vertexSubsets = g.vertices().subsetsOfSizeAtMost((int)(5*Math.sqrt(k)));
+        System.err.println("quasi subsets done");
 
         for (Set<Integer> z : vertexSubsets) {
             Set<Integer> gMinusZ = g.vertices().minus(z);
