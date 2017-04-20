@@ -105,12 +105,12 @@ public class MinFill {
     @Contract(pure = true)
     public Set<Set<Integer>> generateVitalPotentialMaximalCliques(Graph g, int k) {
         // enumerate quasi-cliques. (Step 1)
-        Set<Set<Integer>> potentialMaximalCliques = enumerateQuasiCliques(g, k);
+        java.util.Set<Set<Integer>> potentialMaximalCliques = enumerateQuasiCliques(g, k);
         System.err.println("step B2: case 1 done");
         // all vertex subsets of size at most 5*sqrt(k)+2 (step 2)
         for (Set<Integer> vertices : Set.subsetsOfSizeAtMost(g.vertices(), (int) (5 * Math.sqrt(k) + 2))) {
             if (g.isVitalPotentialMaximalClique(vertices, k)) {
-                potentialMaximalCliques = potentialMaximalCliques.add(vertices);
+                potentialMaximalCliques.add(vertices);
             }
         }
         System.err.println("step B2: case 2 done");
@@ -120,19 +120,18 @@ public class MinFill {
             Set<Edge> fill = g.cliqueify(g.neighborhood(vertex));
             Graph h = g.addEdges(fill);
 
-            potentialMaximalCliques = potentialMaximalCliques.union(enumerateQuasiCliques(h, k));
+            potentialMaximalCliques.addAll(enumerateQuasiCliques(h, k));
         }
         System.err.println("step B2: case 3 done");
-        return potentialMaximalCliques;
+        return Set.of(potentialMaximalCliques);
     }
 
     // Implementation of Lemma 4.1
     // TODO: Check that we branch correctly on component size.
     @Contract(pure = true)
-    private Set<Set<Integer>> enumerateQuasiCliques(Graph g, int k) {
-        Set<Set<Integer>> potentialMaximalCliques = Set.empty();
+    private java.util.Set<Set<Integer>> enumerateQuasiCliques(Graph g, int k) {
+        java.util.Set<Set<Integer>> potentialMaximalCliques = new HashSet<>();
         Iterable<Set<Integer>> vertexSubsets = Set.subsetsOfSizeAtMost(g.vertices(), (int)(5*Math.sqrt(k)));
-        System.err.println("quasi subsets done");
 
         for (Set<Integer> z : vertexSubsets) {
             Set<Integer> gMinusZ = g.vertices().minus(z);
@@ -143,7 +142,7 @@ public class MinFill {
                 if(g.isClique(s)){
                     Set<Integer> c = s.union(z);
                     if (g.isVitalPotentialMaximalClique(c, k)) {
-                        potentialMaximalCliques = potentialMaximalCliques.add(c);
+                        potentialMaximalCliques.add(c);
                     }
                 }
             }
@@ -153,23 +152,27 @@ public class MinFill {
                 if (g.isClique(maximalClique)) {
                     Set<Integer> c = maximalClique.union(z);
                     if (g.isVitalPotentialMaximalClique(c, k)) {
-                        potentialMaximalCliques = potentialMaximalCliques.add(c);
+                        potentialMaximalCliques.add(c);
                     }
                 }
 
                 // Case 3
+                Graph gMinusKUnionZ = g.inducedBy(g.vertices().minus(maximalClique.union(z)));
                 for (Integer y : z) {
-                    Set<Integer> Y = Set.empty();
-                    for (Set<Integer> bi : g.inducedBy(g.vertices().minus(z.union(maximalClique))).components()) {
-                        Y = Y.union(bi.add(y));
+                    Set<Integer> Y = Set.of(y);
+                    for (Set<Integer> bi : gMinusKUnionZ.components()) {
+                        if (g.neighborhood(bi).contains(y)) {
+                            Y = Y.union(bi);
+                        }
                     }
                     Set<Integer> c = g.neighborhood(Y).add(y);
                     if (g.isVitalPotentialMaximalClique(c, k)) {
-                        potentialMaximalCliques = potentialMaximalCliques.add(c);
+                        potentialMaximalCliques.add(c);
                     }
                 }
             }
         }
+        System.err.println("quasi subsets done");
         return potentialMaximalCliques;
     }
 
