@@ -1,13 +1,18 @@
 package minfill.data;
 
-public class Edge {
-    public final int from, to;
+import java.util.Objects;
 
-    public Set<Integer> vertices() {
-        return Set.of(from, to);
+public class Edge {
+    public final Integer from, to;
+    private Set<Integer> vertices;
+
+    public Set<Integer> vertices()
+    {
+        if (vertices == null) vertices = Set.of(from, to);
+        return vertices;
     }
 
-    public Edge(int from, int to) {
+    public Edge(Integer from, Integer to) {
         this.from = from;
         this.to = to;
     }
@@ -19,10 +24,8 @@ public class Edge {
 
         Edge edge = (Edge) o;
 
-        if (from == edge.from && to == edge.to) return true;
-        if (from == edge.to && to == edge.from) return true;
-
-        return false;
+        return (Objects.equals(from, edge.from) && Objects.equals(to, edge.to)) ||
+               (Objects.equals(from, edge.to) && Objects.equals(to, edge.from));
     }
 
     @Override

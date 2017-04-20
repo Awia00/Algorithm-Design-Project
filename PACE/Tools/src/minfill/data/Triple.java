@@ -1,5 +1,7 @@
 package minfill.data;
 
+import java.util.Objects;
+
 public class Triple<A, B, C> {
     public final A a;
     public final B b;
@@ -18,9 +20,9 @@ public class Triple<A, B, C> {
 
         Triple<?, ?, ?> triple = (Triple<?, ?, ?>) o;
 
-        if (!a.equals(triple.a)) return false;
-        if (!b.equals(triple.b)) return false;
-        return c.equals(triple.c);
+        return Objects.equals(a, triple.a) &&
+               Objects.equals(b, triple.b) &&
+               Objects.equals(c, triple.c);
     }
 
     @Override

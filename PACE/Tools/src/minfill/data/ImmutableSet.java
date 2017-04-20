@@ -2,10 +2,9 @@ package minfill.data;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class ImmutableSet<T> implements Set<T> {
     private final java.util.Set<T> inner;
@@ -32,11 +31,6 @@ public class ImmutableSet<T> implements Set<T> {
     @Override
     public boolean isEmpty() {
         return inner.isEmpty();
-    }
-
-    @Override
-    public boolean isProperSubsetOf(Set<T> other) {
-        return size() < other.size() && isSubsetOf(other);
     }
 
     @Override
@@ -115,40 +109,6 @@ public class ImmutableSet<T> implements Set<T> {
         return newSet(copy);
     }
 
-
-
-//    @Override
-//    public Set<Set<T>> subsetsOfSizeAtMost(int size) {
-//        Pair<java.util.Set<Set<T>>, java.util.Set<Set<T>>> results = subsetHelper(size);
-//
-//        return Set.of(results.o1);
-//    }
-//
-//    private Pair<java.util.Set<Set<T>>, java.util.Set<Set<T>>> subsetHelper(int size) {
-//        if (size == 1) {
-//            java.util.Set<Set<T>> result = new HashSet<>();
-//            for (T t : inner) {
-//                result.add(Set.of(t));
-//            }
-//
-//            return new Pair<>(result, new HashSet<>(result));
-//        }
-//
-//        Pair<java.util.Set<Set<T>>, java.util.Set<Set<T>>> previousResults = subsetHelper(size - 1);
-//
-//        java.util.Set<Set<T>> myResults = new HashSet<>();
-//
-//        for (T element : inner) {
-//            for (Set<T> prevSet : previousResults.o2) {
-//                if (!prevSet.contains(element)) myResults.add(prevSet.add(element));
-//            }
-//        }
-//
-//        previousResults.o1.addAll(myResults);
-//
-//        return new Pair<>(previousResults.o1, myResults);
-//    }
-
     @NotNull
     @Override
     public Iterator<T> iterator() {
@@ -175,21 +135,22 @@ public class ImmutableSet<T> implements Set<T> {
         return inner.hashCode();
     }
 
-//    public static void main(String[] args) {
-//        for (int i = 1; i < 15; i++) {
-//            Set<Integer> elements = new ImmutableSet<>(IntStream.range(0, i).boxed().collect(Collectors.toSet()));
-//
-//            Set<Set<Integer>> subsets = elements.subsetsOfSizeAtMost(i);
-//
-//            assert (((int) Math.pow(2, i)) == subsets.size());
-//        }
-//
-//
-//        assert (
-//                new ImmutableSet<>(
-//                        IntStream.range(0, 3).boxed().collect(Collectors.toSet()))
-//                        .subsetsOfSizeAtMost(3)
-//                        .contains(
-//                                new ImmutableSet<>(Arrays.asList(0, 1, 2))));
-//    }
+    public static void main(String[] args) {
+        for (int i = 1; i < 15; i++) {
+            Set<Integer> elements = Set.of(IntStream.range(0, i).boxed().collect(Collectors.toSet()));
+
+            int count = 0;
+            for (Set<Integer> ignored : Set.subsetsOfSizeAtMost(elements, i)) {
+                count++;
+            }
+
+            assert (((int) Math.pow(2, i)) == count);
+        }
+
+        boolean found = false;
+        for (Set<Integer> subset : Set.subsetsOfSizeAtMost(Set.of(0, 1, 2), 3)) {
+            if (subset.equals(Set.of(0, 1, 2))) found = true;
+        }
+        assert found;
+    }
 }

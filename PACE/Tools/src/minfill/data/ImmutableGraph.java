@@ -91,10 +91,10 @@ public class ImmutableGraph implements Graph {
 
     @Contract(pure = true)
     public Integer unNumberedMaximumWeightVertex(Map<Integer, Integer> weightMap, java.util.Set<Integer> numbered){
-        int key = -1, value = Integer.MIN_VALUE;
+        Integer key = -1, value = Integer.MIN_VALUE;
 
         for (Map.Entry<Integer, Integer> entry : weightMap.entrySet()) {
-            if (!numbered.contains(entry.getKey()) && entry.getValue() > value) {
+            if (!numbered.contains(entry.getKey()) && entry.getValue().compareTo(value) > 0) {
                 key = entry.getKey();
                 value = entry.getValue();
             }
@@ -164,7 +164,7 @@ public class ImmutableGraph implements Graph {
     }
     @Override
     @Contract(pure = true)
-    public boolean isChordal() { // todo handle components
+    public boolean isChordal() {
         List<Integer> order = maximumCardinalitySearch();
 
         for (int i = 0; i < order.size(); i++) {
@@ -334,7 +334,21 @@ public class ImmutableGraph implements Graph {
     @Override
     @Contract(pure = true)
     public Graph addEdges(Set<Edge> edges) {
-        return new ImmutableGraph(vertices, getEdges().union(edges));
+        boolean change = false;
+
+        Map<Integer, Set<Integer>> copy = new HashMap<>(neighborhoods);
+
+        for (Edge e : edges) {
+            assert vertices.contains(e.from);
+            assert vertices.contains(e.to);
+
+            if (!isAdjacent(e.from, e.to)) change = true;
+
+            copy.put(e.from, copy.get(e.from).add(e.to));
+            copy.put(e.to, copy.get(e.to).add(e.from));
+        }
+
+        return change ? new ImmutableGraph(vertices, copy) : this;
     }
 
     @Override

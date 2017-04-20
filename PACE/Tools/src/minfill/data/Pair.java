@@ -1,5 +1,7 @@
 package minfill.data;
 
+import java.util.Objects;
+
 public class Pair<T1, T2> {
     public final T1 o1;
     public final T2 o2;
@@ -17,8 +19,7 @@ public class Pair<T1, T2> {
 
         Pair<?, ?> pair = (Pair<?, ?>) o;
 
-        if (!o1.equals(pair.o1)) return false;
-        return o2.equals(pair.o2);
+        return Objects.equals(o1, pair.o1) && Objects.equals(o2, pair.o2);
     }
 
     @Override
@@ -30,6 +31,6 @@ public class Pair<T1, T2> {
 
     @Override
     public String toString() {
-        return "{" + o1 + ", " + o2 + "}";
+        return "(" + o1 + ", " + o2 + ")";
     }
 }

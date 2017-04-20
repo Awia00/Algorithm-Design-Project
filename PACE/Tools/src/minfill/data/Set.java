@@ -10,7 +10,9 @@ public interface Set<T> extends Iterable<T>  {
     boolean isEmpty();
 
     @Contract(pure = true)
-    boolean isProperSubsetOf(Set<T> other);
+    default boolean isProperSubsetOf(Set<T> other) {
+        return size() < other.size() && isSubsetOf(other);
+    }
 
     @Contract(pure = true)
     boolean isSubsetOf(Set<T> other);
@@ -43,9 +45,10 @@ public interface Set<T> extends Iterable<T>  {
 
     @Contract(pure = true)
     static <T> Set<T> of(T element) {
-        return new ImmutableSet<T>(element);
+        return new ImmutableSet<>(element);
     }
 
+    @SafeVarargs
     @Contract(pure = true)
     static <T> Set<T> of(T... elements) {
         if (elements.length == 0) return empty();

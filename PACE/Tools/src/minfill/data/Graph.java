@@ -2,8 +2,8 @@ package minfill.data;
 
 import org.jetbrains.annotations.Contract;
 
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 
 public interface Graph {
     @Contract(pure = true)
@@ -36,13 +36,13 @@ public interface Graph {
     @Contract(pure = true)
     default boolean isPotentialMaximalClique(Set<Integer> k){
         Graph gk = inducedBy(vertices().minus(k));
-        Set<Set<Integer>> s = Set.empty();
+        java.util.Set<Set<Integer>> s = new HashSet<>();
         for (Set<Integer> component : gk.components()) {
             Set<Integer> sI = neighborhood(component).intersect(k);
-            s = s.add(sI);
             if(!sI.isProperSubsetOf(k)){
                 return false;
             }
+            s.add(sI);
         }
         Graph cliqueChecker = this;
         for (Set<Integer> sI : s) {

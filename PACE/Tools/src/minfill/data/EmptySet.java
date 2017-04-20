@@ -42,7 +42,7 @@ public class EmptySet<T> implements Set<T> {
 
     @Override
     public Set<T> add(T element) {
-        return new ImmutableSet<>(element);
+        return Set.of(element);
     }
 
     @Override
@@ -77,7 +77,7 @@ public class EmptySet<T> implements Set<T> {
         return "[]";
     }
 
-    static class EmptySetIterator<T> implements Iterator<T> {
+    private static class EmptySetIterator<T> implements Iterator<T> {
         @Override
         public boolean hasNext() {
             return false;
