@@ -9,6 +9,7 @@ public class IOManager {
     private String[] nodeNames;
 
     public void print(Set<Edge> minFill) {
+        System.err.flush(); // Flush the error stream to avoid overlaps.
         for (Edge edge : minFill) {
             System.out.printf("%s %s\n", nodeNames[edge.from], nodeNames[edge.to]);
         }

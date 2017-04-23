@@ -30,8 +30,6 @@ public class Edge {
 
     @Override
     public int hashCode() {
-        int result = from;
-        result = 31 * result + to;
-        return result;
+        return 31 * from + to;
     }
 }
