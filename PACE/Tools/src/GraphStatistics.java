@@ -9,9 +9,7 @@ public class GraphStatistics {
 
 		try (Scanner scanner = new Scanner(Util.getInput(args))) {
 			while (scanner.hasNextLine()) {
-				String line = scanner.nextLine();
-
-				String[] split = line.split(" ");
+				String[] split = scanner.nextLine().split(" ");
 
 				vertices.add(split[0]);
 				vertices.add(split[1]);

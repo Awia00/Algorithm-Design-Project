@@ -27,3 +27,5 @@
 *.exe
 *.out
 *.app
+PACE/cppTools/src/PaceToDot
+PACE/cppTools/src/GraphStatistics

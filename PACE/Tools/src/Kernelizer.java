@@ -1,66 +1,31 @@
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.*;
+import minfill.IOManager;
+import minfill.MinFillKernel;
+import minfill.data.Graph;
+import minfill.data.Pair;
+import minfill.data.Set;
+import minfill.data.Triple;
 
-/**
- * Created by aws on 16-03-2017.
- */
+import java.io.IOException;
+import java.util.Optional;
+
 public class Kernelizer {
 
-    public static void main(String[] args) throws IOException
-    {
-        InputStream input;
-        if (args.length == 0)
-            input = System.in;
-        else
-            input = new FileInputStream(new File(args[0]));
-
-        try (Scanner scanner = new Scanner(input)) {
-            HashMap<String, List<String>> graph = new HashMap<>();
-            while (scanner.hasNextLine()) {
-                String line = scanner.nextLine();
-
-                String[] split = line.split(" ");
-                if(graph.containsKey(split[0]))
-                    graph.get(split[0]).add(split[1]);
-                else{
-                    List<String> list = new ArrayList<>();
-                    list.add(split[1]);
-                    graph.put(split[0], list);
-                }
-                if(graph.containsKey(split[1]))
-                    graph.get(split[1]).add(split[0]);
-                else{
-                    List<String> list = new ArrayList<>();
-                    list.add(split[0]);
-                    graph.put(split[1], list);
-                }
-            }
-            boolean hasChanged = true;
-            while(hasChanged)
-            {
-                hasChanged = false;
-                for (Map.Entry<String, List<String>> vertexAndEdges : graph.entrySet()) {
-                    if(vertexAndEdges.getValue().size()==1)
-                    {
-                        String other = vertexAndEdges.getValue().get(0);
-                        graph.get(other).remove(vertexAndEdges.getKey());
-                        vertexAndEdges.getValue().remove(other);
-                        hasChanged = true;
-                    }
-                }
-            }
-            HashSet<String> outputted = new HashSet<>();
-            for (Map.Entry<String, List<String>> vertexAndEdges : graph.entrySet()) {
-                for (String s : vertexAndEdges.getValue()) {
-                    if(!outputted.contains(s)){
-                        System.out.println(vertexAndEdges.getKey() + " " + s);
-                        outputted.add(vertexAndEdges.getKey());
-                    }
-                }
-            }
+    public static void main(String[] args) throws IOException {
+        try (IOManager io = new IOManager(Util.getInput(args))) {
+            io.print(kernelize(io.parse()).getEdges());
         }
+    }
+
+    public static Graph kernelize(Graph g) {
+        MinFillKernel kernel = new MinFillKernel();
+        Triple<Set<Integer>, Set<Integer>, Integer> abk = kernel.kernelProcedure1And2(g);
+
+        int k = abk.c - 1;
+        Optional<Pair<Graph, Integer>> gk;
+        do {
+            gk = kernel.kernelProcedure3(g, abk.a, abk.b, ++k);
+        } while(!gk.isPresent());
+
+        return gk.get().a;
     }
 }

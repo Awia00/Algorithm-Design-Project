@@ -132,7 +132,7 @@ public class MinFillKernel {
     }
 
 
-    private Optional<List<Integer>> findChordlessCycle(Graph g) {
+    private static Optional<List<Integer>> findChordlessCycle(Graph g) {
         for (Set<Integer> component : g.components()) {
             List<Integer> order = g.inducedBy(component).maximumCardinalitySearch();
 
@@ -166,7 +166,7 @@ public class MinFillKernel {
         return Optional.empty();
     }
 
-    private Set<Integer> mAdj(Graph g, List<Integer> peo, int index) {
+    private static Set<Integer> mAdj(Graph g, List<Integer> peo, int index) {
         Set<Integer> neighborhood = g.neighborhood(peo.get(index));
         return neighborhood.intersect(
                 Set.of(
