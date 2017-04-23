@@ -368,29 +368,31 @@ public class ImmutableGraph implements Graph {
 
     @Contract(pure = true)
     public Set<Edge> getEdges(){
-        java.util.Set<Edge> edges = new HashSet<>();
+        Set<Edge> edges = Set.empty();
 
-        for (Pair<Integer, Integer> pair : new VertexPairIterable<>(vertices)) {
-            if (isAdjacent(pair.o1, pair.o2)) {
-                edges.add(new Edge(pair.o1, pair.o2));
+        for (Integer v1 : vertices) {
+            for (Integer v2 : vertices) {
+                if (v1 < v2 && isAdjacent(v1, v2)) {
+                    edges = edges.add(new Edge(v1, v2));
+                }
             }
         }
 
-        return Set.of(edges);
+        return edges;
     }
 
     @Override
     @Contract(pure = true)
     public Set<Edge> getNonEdges() {
-        java.util.Set<Edge> nonEdges = new HashSet<>();
+        Set<Edge> nonEdges = Set.empty();
 
         VertexPairIterable<Integer> vertexPairs = new VertexPairIterable<>(vertices);
         for(Pair<Integer, Integer> pair : vertexPairs){
             if (!isAdjacent(pair.o1, pair.o2)) {
-                nonEdges.add(new Edge(pair.o1, pair.o2));
+                nonEdges = nonEdges.add(new Edge(pair.o1, pair.o2));
             }
         }
-        return Set.of(nonEdges);
+        return nonEdges;
     }
 
     public int getNumberOfNonEdges() {
