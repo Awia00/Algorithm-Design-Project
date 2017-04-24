@@ -141,7 +141,7 @@ public class MinFill {
             for (Set<Integer> s : h.minimalSeparatorsOfChordalGraph()) {
                 if(g.isClique(s)){
                     Set<Integer> c = s.union(z);
-                    if (g.isVitalPotentialMaximalClique(c, k)) {
+                    if (!potentialMaximalCliques.contains(c) && g.isVitalPotentialMaximalClique(c, k)) {
                         potentialMaximalCliques.add(c);
                     }
                 }
@@ -151,7 +151,7 @@ public class MinFill {
                 // Case 2
                 if (g.isClique(maximalClique)) {
                     Set<Integer> c = maximalClique.union(z);
-                    if (g.isVitalPotentialMaximalClique(c, k)) {
+                    if (!potentialMaximalCliques.contains(c) && g.isVitalPotentialMaximalClique(c, k)) {
                         potentialMaximalCliques.add(c);
                     }
                 }
@@ -166,7 +166,7 @@ public class MinFill {
                         }
                     }
                     Set<Integer> c = g.neighborhood(Y).add(y);
-                    if (g.isVitalPotentialMaximalClique(c, k)) {
+                    if (!potentialMaximalCliques.contains(c) && g.isVitalPotentialMaximalClique(c, k)) {
                         potentialMaximalCliques.add(c);
                     }
                 }
