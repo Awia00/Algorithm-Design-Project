@@ -52,7 +52,6 @@ public interface Graph {
         return cliqueChecker.inducedBy(k).isClique();
     }
 
-    // TODO: isPotentialMaximalClique could probably be implemented in terms of this.
     @Contract(pure = true)
     boolean isVitalPotentialMaximalClique(Set<Integer> vertices, int k);
 
@@ -63,12 +62,6 @@ public interface Graph {
     Set<Set<Integer>> fullComponents(Set<Integer> separator);
 
     @Contract(pure = true)
-    Set<Set<Integer>> minimalSeparatorsOfChordalGraph();
-
-    @Contract(pure = true)
-    Set<Set<Integer>> maximalCliquesOfChordalGraph(); // TODO: We have an algorithm for this. [3]
-
-    @Contract(pure = true)
     List<Integer> shortestPath(Integer from, Integer to);
 
     @Contract(pure = true)
@@ -76,9 +69,6 @@ public interface Graph {
 
     @Contract(pure = true)
     Graph addEdges(Set<Edge> edges);
-
-    @Contract(pure = true)
-    Graph removeEdge(Edge edge);
 
     @Contract(pure = true)
     Set<Edge> getNonEdges();
@@ -92,7 +82,7 @@ public interface Graph {
     Graph inducedBy(Set<Integer> vertices);
 
     @Contract(pure = true)
-    Graph minimalTriangulation();
+    ChordalGraph minimalTriangulation();
 
     @Contract(pure = true)
     Set<Edge> cliqueify(Set<Integer> vertices);

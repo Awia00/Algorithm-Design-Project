@@ -27,9 +27,11 @@ public class Triple<A, B, C> {
 
     @Override
     public int hashCode() {
-        int result = a.hashCode();
-        result = 31 * result + b.hashCode();
-        result = 31 * result + c.hashCode();
-        return result;
+        return 31 * (31 * a.hashCode() + b.hashCode()) + c.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return String.format("(%s, %s, %s)", a, b, c);
     }
 }

@@ -3,12 +3,24 @@ package minfill;
 import minfill.data.*;
 import minfill.data.Set;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
 
-public class IOManager {
+public class IOManager implements AutoCloseable {
     private String[] nodeNames;
+    private final InputStream input;
+
+    public IOManager() {
+        this(System.in);
+    }
+
+    public IOManager(InputStream input) {
+        this.input = input;
+    }
 
     public void print(Set<Edge> minFill) {
+        System.err.flush(); // Flush the error stream to avoid overlaps.
         for (Edge edge : minFill) {
             System.out.printf("%s %s\n", nodeNames[edge.from], nodeNames[edge.to]);
         }
@@ -19,7 +31,7 @@ public class IOManager {
         Map<String, Integer> nodeIndexer = new HashMap<>();
         int nextNodeId = 0;
         java.util.Set<Edge> edges = new HashSet<>();
-        try (Scanner scanner = new Scanner(System.in)) {
+        try (Scanner scanner = new Scanner(input)) {
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine();
 
@@ -42,6 +54,12 @@ public class IOManager {
             nodeNames[entry.getValue()] = entry.getKey();
         }
 
-        return new ImmutableGraph(new ImmutableSet<>(nodeIndexer.values()), new ImmutableSet<>(edges));
+        return new ImmutableGraph(Set.of(nodeIndexer.values()), Set.of(edges));
+    }
+
+    @Override
+    public void close() throws IOException {
+        nodeNames = null;
+        input.close();
     }
 }

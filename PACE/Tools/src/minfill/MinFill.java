@@ -135,10 +135,10 @@ public class MinFill {
 
         for (Set<Integer> z : vertexSubsets) {
             Set<Integer> gMinusZ = g.vertices().minus(z);
-            Graph h = g.inducedBy(gMinusZ).minimalTriangulation();
+            ChordalGraph h = g.inducedBy(gMinusZ).minimalTriangulation();
 
             // Case 1
-            for (Set<Integer> s : h.minimalSeparatorsOfChordalGraph()) {
+            for (Set<Integer> s : h.minimalSeparators()) {
                 if(g.isClique(s)){
                     Set<Integer> c = s.union(z);
                     if (!potentialMaximalCliques.contains(c) && g.isVitalPotentialMaximalClique(c, k)) {
@@ -147,7 +147,7 @@ public class MinFill {
                 }
             }
 
-            for (Set<Integer> maximalClique : h.maximalCliquesOfChordalGraph()) {
+            for (Set<Integer> maximalClique : h.maximalCliques()) {
                 // Case 2
                 if (g.isClique(maximalClique)) {
                     Set<Integer> c = maximalClique.union(z);

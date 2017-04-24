@@ -26,7 +26,7 @@ public class ImmutableGraph implements Graph {
         }
     }
 
-    private ImmutableGraph(Set<Integer> vertices, Map<Integer, Set<Integer>> neighborhoods) {
+    protected ImmutableGraph(Set<Integer> vertices, Map<Integer, Set<Integer>> neighborhoods) {
         this.vertices = vertices;
         this.neighborhoods = neighborhoods;
     }
@@ -105,7 +105,7 @@ public class ImmutableGraph implements Graph {
 
     @Override
     @Contract(pure = true)
-    public List<Integer> maximumCardinalitySearch() { // todo handle components
+    public List<Integer> maximumCardinalitySearch() {
         List<Integer> order = new ArrayList<>(vertices.size());
         java.util.Set<Integer> numbered = new HashSet<>(vertices.size());
         Map<Integer, Integer> weightMap = new HashMap<>();
@@ -127,7 +127,7 @@ public class ImmutableGraph implements Graph {
     }
     @Override
     @Contract(pure = true) // berry page 5
-    public Pair<List<Integer>, Set<Edge>> maximumCardinalitySearchM() { // todo handle components
+    public Pair<List<Integer>, Set<Edge>> maximumCardinalitySearchM() {
         List<Integer> order = new ArrayList<>(vertices.size());
         java.util.Set<Integer> numbered = new HashSet<>(vertices.size());
         Map<Integer, Integer> weightMap = new HashMap<>();
@@ -235,41 +235,7 @@ public class ImmutableGraph implements Graph {
         return fullComponents;
     }
 
-    @Override
-    @Contract(pure = true) // Kumar, Madhavan page 10(164)
-    public Set<Set<Integer>> minimalSeparatorsOfChordalGraph() { // todo might not work.
-        if (!isChordal())
-            throw new UnsupportedOperationException("minimalSeparatorsOfChordalGraph can only be used on chordal graphs");
-        List<Integer> peo = maximumCardinalitySearch();
-        Set<Set<Integer>> separators = Set.empty();
-        for (int i = 0; i < peo.size()-1; i++) {
-            Set<Integer> separator = mAdj(peo, i);
-            if(separator.size() <= mAdj(peo, i+1).size()){
-                separators = separators.add(separator);
-            }
-        }
-        return separators;
-    }
-
-    @Override
-    @Contract(pure = true) // blair page 20
-    public Set<Set<Integer>> maximalCliquesOfChordalGraph() {
-        if (!isChordal())
-            throw new UnsupportedOperationException("maximalCliquesOfChordalGraph can only be used on chordal graphs");
-        List<Integer> peo = maximumCardinalitySearch();
-        Set<Set<Integer>> cliques = Set.empty();
-        for (int i = 0; i < peo.size()-1; i++) {
-            Integer v1 = peo.get(i);
-            Integer v2 = peo.get(i+1);
-            if(i == 0) cliques = cliques.add(neighborhood(v1).add(v1));
-            if(mAdj(peo, i).size() <= mAdj(peo, i+1).size()) { // Li = vertices with labels greater than i but we already know how many we have left since we go in order
-                cliques = cliques.add(neighborhood(v2).add(v2));
-            }
-        }
-        return cliques;
-    }
-
-    private Set<Integer> mAdj(List<Integer> peo, int index) {
+    protected Set<Integer> mAdj(List<Integer> peo, int index) {
         Set<Integer> neighborhood = neighborhood(peo.get(index));
         return neighborhood.intersect(
                 Set.of(
@@ -351,28 +317,15 @@ public class ImmutableGraph implements Graph {
         return change ? new ImmutableGraph(vertices, copy) : this;
     }
 
-    @Override
-    public Graph removeEdge(Edge e) {
-        if (!vertices.contains(e.from)) throw new IllegalArgumentException("Unknown vertex");
-        if (!vertices.contains(e.to)) throw new IllegalArgumentException("Unknown vertex");
-
-        if (!isAdjacent(e.from, e.to)) return this;
-
-        Map<Integer, Set<Integer>> copy = new HashMap<>(neighborhoods);
-
-        copy.put(e.from, copy.get(e.from).remove(e.to));
-        copy.put(e.to, copy.get(e.to).remove(e.from));
-
-        return new ImmutableGraph(vertices, copy);
-    }
-
     @Contract(pure = true)
     public Set<Edge> getEdges(){
         java.util.Set<Edge> edges = new HashSet<>();
 
-        for (Pair<Integer, Integer> pair : new VertexPairIterable<>(vertices)) {
-            if (isAdjacent(pair.o1, pair.o2)) {
-                edges.add(new Edge(pair.o1, pair.o2));
+        for (Integer v1 : vertices) {
+            for (Integer v2 : vertices) {
+                if (v1 < v2 && isAdjacent(v1, v2)) {
+                    edges.add(new Edge(v1, v2));
+                }
             }
         }
 
@@ -386,8 +339,8 @@ public class ImmutableGraph implements Graph {
 
         VertexPairIterable<Integer> vertexPairs = new VertexPairIterable<>(vertices);
         for(Pair<Integer, Integer> pair : vertexPairs){
-            if (!isAdjacent(pair.o1, pair.o2)) {
-                nonEdges.add(new Edge(pair.o1, pair.o2));
+            if (!isAdjacent(pair.a, pair.b)) {
+                nonEdges.add(new Edge(pair.a, pair.b));
             }
         }
         return Set.of(nonEdges);
@@ -397,7 +350,7 @@ public class ImmutableGraph implements Graph {
         int number = 0;
         VertexPairIterable<Integer> vertexPairs = new VertexPairIterable<>(vertices);
         for(Pair<Integer, Integer> pair : vertexPairs){
-            if (!isAdjacent(pair.o1, pair.o2)) {
+            if (!isAdjacent(pair.a, pair.b)) {
                 number++;
             }
         }
@@ -425,8 +378,15 @@ public class ImmutableGraph implements Graph {
 
     @Override
     @Contract(pure = true)
-    public Graph minimalTriangulation() {
-        return addEdges(maximumCardinalitySearchM().o2);
+    public ChordalGraph minimalTriangulation() {
+        Map<Integer, Set<Integer>> copy = new HashMap<>(neighborhoods);
+
+        for (Edge edge : maximumCardinalitySearchM().b) {
+            copy.put(edge.from, copy.get(edge.from).add(edge.to));
+            copy.put(edge.to, copy.get(edge.to).add(edge.from));
+        }
+
+        return new ImmutableChordalGraph(vertices, copy);
     }
 
     @Override
@@ -438,8 +398,8 @@ public class ImmutableGraph implements Graph {
 
         VertexPairIterable<Integer> vertexPairs = new VertexPairIterable<>(vertices);
         for(Pair<Integer, Integer> pair : vertexPairs){
-            if (!isAdjacent(pair.o1, pair.o2)) {
-                fill.add(new Edge(pair.o1, pair.o2));
+            if (!isAdjacent(pair.a, pair.b)) {
+                fill.add(new Edge(pair.a, pair.b));
             }
         }
 
@@ -453,7 +413,7 @@ public class ImmutableGraph implements Graph {
 
         VertexPairIterable<Integer> vertexPairs = new VertexPairIterable<>(vertices);
         for(Pair<Integer, Integer> pair : vertexPairs){
-            if (!isAdjacent(pair.o1, pair.o2)) {
+            if (!isAdjacent(pair.a, pair.b)) {
                 return false;
             }
         }

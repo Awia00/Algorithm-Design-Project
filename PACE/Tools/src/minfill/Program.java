@@ -34,8 +34,8 @@ public class Program {
                 Optional<Pair<Graph, Integer>> tmp = kernel.kernelProcedure3(g, abk.a, abk.b, k);
                 System.err.printf("Kernel procedure 3 for k=%d done\n", k);
                 if (tmp.isPresent()) {
-                    Graph gPrime = tmp.get().o1;
-                    int kPrime = tmp.get().o2;
+                    Graph gPrime = tmp.get().a;
+                    int kPrime = tmp.get().b;
 
                     System.err.printf("k'=%d\n", kPrime);
 

@@ -1,5 +1,6 @@
 package minfill.data;
 
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Iterator;
@@ -8,6 +9,7 @@ public class EmptySet<T> implements Set<T> {
     private static final EmptySetIterator iterator = new EmptySetIterator();
     private static final EmptySet instance = new EmptySet();
 
+    @Contract(pure = true)
     @SuppressWarnings("unchecked")
     public static <T> Set<T> instance() {
         return instance;

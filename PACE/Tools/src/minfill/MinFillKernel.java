@@ -1,7 +1,11 @@
 package minfill;
 
-import minfill.data.*;
+import minfill.data.Edge;
+import minfill.data.Graph;
+import minfill.data.Pair;
 import minfill.data.Set;
+import minfill.data.Triple;
+import minfill.data.Tuple;
 import org.jetbrains.annotations.Contract;
 
 import java.util.*;
@@ -90,7 +94,7 @@ public class MinFillKernel {
             }
         } while (cycleFound);
 
-        return new Triple<>(A, B, kMin);
+        return Tuple.of(A, B, kMin);
     }
 
     @Contract(pure = true)
@@ -114,7 +118,7 @@ public class MinFillKernel {
 
             if (Axy.size() > 2*k) {
                 g = g.addEdge(nonEdge);
-                kPrime--; // TODO: Should we reduce k instead (for later non-edges)?.
+                kPrime--;
 
                 if (kPrime < 0) return Optional.empty();
             } else {
@@ -124,11 +128,11 @@ public class MinFillKernel {
             }
         }
 
-        return Optional.of(new Pair<>(g.inducedBy(A), kPrime));
+        return Optional.of(Tuple.of(g.inducedBy(A), kPrime));
     }
 
 
-    private Optional<List<Integer>> findChordlessCycle(Graph g) {
+    private static Optional<List<Integer>> findChordlessCycle(Graph g) {
         for (Set<Integer> component : g.components()) {
             List<Integer> order = g.inducedBy(component).maximumCardinalitySearch();
 
@@ -162,7 +166,7 @@ public class MinFillKernel {
         return Optional.empty();
     }
 
-    private Set<Integer> mAdj(Graph g, List<Integer> peo, int index) {
+    private static Set<Integer> mAdj(Graph g, List<Integer> peo, int index) {
         Set<Integer> neighborhood = g.neighborhood(peo.get(index));
         return neighborhood.intersect(
                 Set.of(
