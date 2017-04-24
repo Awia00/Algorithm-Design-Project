@@ -137,7 +137,7 @@ public class MinFillKernel {
             List<Integer> order = g.inducedBy(component).maximumCardinalitySearch();
 
             for (int i = 0; i < order.size(); i++) {
-                Set<Integer> madj = mAdj(g, order, i);
+                Set<Integer> madj = g.mAdj(order, i);
                 List<Integer> madjList = new ArrayList<>();
                 for (Integer vertex : madj) {
                     madjList.add(vertex);
@@ -164,13 +164,5 @@ public class MinFillKernel {
             }
         }
         return Optional.empty();
-    }
-
-    private static Set<Integer> mAdj(Graph g, List<Integer> peo, int index) {
-        Set<Integer> neighborhood = g.neighborhood(peo.get(index));
-        return neighborhood.intersect(
-                Set.of(
-                        peo.subList(index + 1, peo.size())
-                ));
     }
 }

@@ -108,25 +108,29 @@ public class MinFill {
 
     @Contract(pure = true)
     public Set<Set<Integer>> generateVitalPotentialMaximalCliques(Graph g, int k) {
+        java.util.Set<Set<Integer>> potentialMaximalCliques = new HashSet<>();
+
         // enumerate quasi-cliques. (Step 1)
-        java.util.Set<Set<Integer>> potentialMaximalCliques = enumerateQuasiCliques(g, k);
-        System.err.println("step B2: case 1 done");
+        potentialMaximalCliques.addAll(enumerateQuasiCliques(g, k));
+        System.err.println("step B2: case 1 done: " + potentialMaximalCliques.size());
+
         // all vertex subsets of size at most 5*sqrt(k)+2 (step 2)
         for (Set<Integer> vertices : Set.subsetsOfSizeAtMost(g.vertices(), (int) (5 * Math.sqrt(k) + 2))) {
             if (g.isVitalPotentialMaximalClique(vertices, k)) {
                 potentialMaximalCliques.add(vertices);
             }
         }
-        System.err.println("step B2: case 2 done");
+        System.err.println("step B2: case 2 done: " + potentialMaximalCliques.size());
 
         // step 3 of generating vital potential maximal cliques
         for (Integer vertex : g.vertices()) {
             Set<Edge> fill = g.cliqueify(g.neighborhood(vertex));
-            Graph h = g.addEdges(fill);
-
-            potentialMaximalCliques.addAll(enumerateQuasiCliques(h, k));
+            if(!fill.isEmpty()) {
+                Graph h = g.addEdges(fill);
+                potentialMaximalCliques.addAll(enumerateQuasiCliques(h, k));
+            }
         }
-        System.err.println("step B2: case 3 done");
+        System.err.println("step B2: case 3 done: " + potentialMaximalCliques.size());
         return Set.of(potentialMaximalCliques);
     }
 
