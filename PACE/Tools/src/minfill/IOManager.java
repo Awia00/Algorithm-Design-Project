@@ -54,7 +54,7 @@ public class IOManager implements AutoCloseable {
             nodeNames[entry.getValue()] = entry.getKey();
         }
 
-        return new ImmutableGraph(Set.of(nodeIndexer.values()), Set.of(edges));
+        return new AdjacencySetGraph(Set.of(nodeIndexer.values()), Set.of(edges));
     }
 
     @Override

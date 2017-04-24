@@ -1,6 +1,6 @@
 import minfill.data.Edge;
 import minfill.data.Graph;
-import minfill.data.ImmutableGraph;
+import minfill.data.AdjacencySetGraph;
 import minfill.data.Set;
 import org.junit.jupiter.api.Test;
 
@@ -22,7 +22,7 @@ class KernelizerTest {
                 new Edge(5, 8),
                 new Edge(8, 9));
 
-        Graph g = new ImmutableGraph(vertices, edges);
+        Graph g = new AdjacencySetGraph(vertices, edges);
 
         Graph kernelized = Kernelizer.kernelize(g);
 
