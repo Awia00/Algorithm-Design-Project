@@ -1,4 +1,4 @@
-package minfill.data;
+package minfill.sets;
 
 import org.jetbrains.annotations.NotNull;
 

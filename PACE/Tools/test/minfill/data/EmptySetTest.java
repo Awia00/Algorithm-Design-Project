@@ -1,5 +1,7 @@
 package minfill.data;
 
+import minfill.sets.EmptySet;
+import minfill.sets.Set;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

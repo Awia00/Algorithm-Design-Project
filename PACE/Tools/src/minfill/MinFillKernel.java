@@ -1,11 +1,11 @@
 package minfill;
 
-import minfill.data.Edge;
-import minfill.data.Graph;
-import minfill.data.Pair;
-import minfill.data.Set;
-import minfill.data.Triple;
-import minfill.data.Tuple;
+import minfill.graphs.Edge;
+import minfill.graphs.Graph;
+import minfill.tuples.Pair;
+import minfill.sets.Set;
+import minfill.tuples.Triple;
+import minfill.tuples.Tuple;
 import org.jetbrains.annotations.Contract;
 
 import java.util.*;

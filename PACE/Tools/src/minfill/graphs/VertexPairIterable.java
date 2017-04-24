@@ -1,5 +1,7 @@
-package minfill.data;
+package minfill.graphs;
 
+import minfill.sets.Set;
+import minfill.tuples.Pair;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Iterator;

@@ -1,5 +1,6 @@
-package minfill.data;
+package minfill.graphs;
 
+import minfill.sets.Set;
 import org.jetbrains.annotations.Contract;
 
 import java.util.HashMap;

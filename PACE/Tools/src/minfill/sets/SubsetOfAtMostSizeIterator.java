@@ -1,19 +1,19 @@
-package minfill.data;
+package minfill.sets;
 
 import java.util.*;
 
-public class SubsetOfAtMostSizeIterator<T extends Comparable<T>> implements Iterator<Set<T>> {
+public class SubsetOfAtMostSizeIterator<T extends Comparable<T>> implements Iterator<minfill.sets.Set<T>> {
     private final List<T> elements;
-    private final Iterator<Set<T>> inner;
+    private final Iterator<minfill.sets.Set<T>> inner;
     private final int maxSize;
 
     private int index;
-    private Set<T> sub;
+    private minfill.sets.Set<T> sub;
     private boolean nextTaken = true;
-    private Set<T> next;
+    private minfill.sets.Set<T> next;
 
     @SuppressWarnings("unchecked")
-    public SubsetOfAtMostSizeIterator(Set<T> elements, int maxSize) {
+    public SubsetOfAtMostSizeIterator(minfill.sets.Set<T> elements, int maxSize) {
         this.elements = new ArrayList<>(elements.size());
         for (T element : elements) {
             this.elements.add(element);
@@ -91,17 +91,17 @@ public class SubsetOfAtMostSizeIterator<T extends Comparable<T>> implements Iter
     }
 
     @Override
-    public Set<T> next() {
+    public minfill.sets.Set<T> next() {
         if (hasNext()) {
             nextTaken = true;
-            Set<T> next = this.next;
+            minfill.sets.Set<T> next = this.next;
             this.next = null;
             return next;
         }
         throw new IllegalStateException("No more elements");
     }
 
-    private static class SetIterator<T> implements Iterator<Set<T>> {
+    private static class SetIterator<T> implements Iterator<minfill.sets.Set<T>> {
         private final Iterator<T> inner;
 
         private SetIterator(List<T> elements) {
@@ -114,17 +114,17 @@ public class SubsetOfAtMostSizeIterator<T extends Comparable<T>> implements Iter
         }
 
         @Override
-        public Set<T> next() {
-            return Set.of(inner.next());
+        public minfill.sets.Set<T> next() {
+            return minfill.sets.Set.of(inner.next());
         }
     }
 
     public static void main(String[] args) {
-        Iterator<Set<Integer>> ite = new SubsetOfAtMostSizeIterator<>(Set.of(1, 2, 3, 4, 5), 2);
+        Iterator<minfill.sets.Set<Integer>> ite = new SubsetOfAtMostSizeIterator<>(minfill.sets.Set.of(1, 2, 3, 4, 5), 2);
 
         // Check for duplicate elements:
         int count = 0;
-        java.util.Set<Set<Integer>> retrieved = new HashSet<>();
+        java.util.Set<minfill.sets.Set<Integer>> retrieved = new HashSet<>();
         while (ite.hasNext()) {
             count++;
             retrieved.add(ite.next());
@@ -134,15 +134,15 @@ public class SubsetOfAtMostSizeIterator<T extends Comparable<T>> implements Iter
 
 
         // Check for known elements in subsets.
-        ite = new SubsetOfAtMostSizeIterator<>(Set.of(1, 2, 3), 2);
+        ite = new SubsetOfAtMostSizeIterator<>(minfill.sets.Set.of(1, 2, 3), 2);
 
-        java.util.Set<Set<Integer>> expected = new HashSet<>();
-        expected.add(Set.of(1));
-        expected.add(Set.of(2));
-        expected.add(Set.of(3));
-        expected.add(Set.of(1, 2));
-        expected.add(Set.of(1, 3));
-        expected.add(Set.of(2, 3));
+        java.util.Set<minfill.sets.Set<Integer>> expected = new HashSet<>();
+        expected.add(minfill.sets.Set.of(1));
+        expected.add(minfill.sets.Set.of(2));
+        expected.add(minfill.sets.Set.of(3));
+        expected.add(minfill.sets.Set.of(1, 2));
+        expected.add(minfill.sets.Set.of(1, 3));
+        expected.add(minfill.sets.Set.of(2, 3));
 
         while (ite.hasNext()) {
             assert expected.remove(ite.next());

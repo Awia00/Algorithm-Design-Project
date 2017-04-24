@@ -1,9 +1,12 @@
+package utils;
+
+
 import minfill.IOManager;
 import minfill.MinFillKernel;
-import minfill.data.Graph;
-import minfill.data.Pair;
-import minfill.data.Set;
-import minfill.data.Triple;
+import minfill.graphs.Graph;
+import minfill.tuples.Pair;
+import minfill.sets.Set;
+import minfill.tuples.Triple;
 
 import java.io.IOException;
 import java.util.Optional;

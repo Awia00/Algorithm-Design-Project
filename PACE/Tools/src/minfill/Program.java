@@ -1,6 +1,10 @@
 package minfill;
 
-import minfill.data.*;
+import minfill.graphs.Edge;
+import minfill.graphs.Graph;
+import minfill.sets.Set;
+import minfill.tuples.Pair;
+import minfill.tuples.Triple;
 
 import java.io.File;
 import java.io.FileInputStream;

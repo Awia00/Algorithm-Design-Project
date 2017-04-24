@@ -1,7 +1,11 @@
 package minfill;
 
-import minfill.data.*;
-import minfill.data.Set;
+import minfill.graphs.ChordalGraph;
+import minfill.graphs.Edge;
+import minfill.graphs.Graph;
+import minfill.sets.ImmutableSet;
+import minfill.tuples.Pair;
+import minfill.sets.Set;
 import org.jetbrains.annotations.Contract;
 
 import java.util.*;

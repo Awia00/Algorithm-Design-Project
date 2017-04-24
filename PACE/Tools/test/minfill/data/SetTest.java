@@ -1,5 +1,7 @@
 package minfill.data;
 
+import minfill.sets.EmptySet;
+import minfill.sets.Set;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;

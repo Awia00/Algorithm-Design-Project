@@ -1,7 +1,8 @@
-import minfill.data.Edge;
-import minfill.data.Graph;
-import minfill.data.AdjacencySetGraph;
-import minfill.data.Set;
+import utils.Kernelizer;
+import minfill.graphs.Edge;
+import minfill.graphs.Graph;
+import minfill.graphs.AdjacencySetGraph;
+import minfill.sets.Set;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

@@ -1,19 +1,21 @@
-package minfill.data;
+package minfill.graphs;
 
+import minfill.tuples.Pair;
+import minfill.tuples.Tuple;
 import org.jetbrains.annotations.Contract;
 
 import java.util.*;
 
 public interface Graph {
     @Contract(pure = true)
-    Set<Integer> vertices();
+    minfill.sets.Set<Integer> vertices();
 
     @Contract(pure = true)
-    Set<Integer> neighborhood(Integer n);
+    minfill.sets.Set<Integer> neighborhood(Integer n);
 
     @Contract(pure = true)
-    default Set<Integer> neighborhood(Set<Integer> vertices) {
-        Set<Integer> neighborhood = Set.empty();
+    default minfill.sets.Set<Integer> neighborhood(minfill.sets.Set<Integer> vertices) {
+        minfill.sets.Set<Integer> neighborhood = minfill.sets.Set.empty();
 
         for (Integer vertex : vertices) {
             neighborhood = neighborhood.union(neighborhood(vertex));
@@ -90,11 +92,11 @@ public interface Graph {
     }
 
     @Contract(pure = true) // berry page 5
-    default Pair<List<Integer>, Set<Edge>> maximumCardinalitySearchM() {
+    default Pair<List<Integer>, minfill.sets.Set<Edge>> maximumCardinalitySearchM() {
         List<Integer> order = new ArrayList<>(vertices().size());
         java.util.Set<Integer> numbered = new HashSet<>(vertices().size());
         Map<Integer, Integer> weightMap = new HashMap<>();
-        Set<Edge> F = Set.empty();
+        minfill.sets.Set<Edge> F = minfill.sets.Set.empty();
         for (Integer vertex : vertices()) {
             weightMap.put(vertex,0);
             order.add(vertex);
@@ -108,7 +110,7 @@ public interface Graph {
             for (Integer y : vertices()) {
                 if(!numbered.contains(y)){
                     Integer yWeight = weightCopy.get(y);
-                    Set<Integer> possibleGraph = Set.of(z,y);
+                    minfill.sets.Set<Integer> possibleGraph = minfill.sets.Set.of(z,y);
 
                     for (Integer Xi : vertices()) {
                         if(!numbered.contains(Xi) && weightCopy.get(Xi) < yWeight){ // w{z-}(xi) < w_{z-}(y) so maybe wrong maybe we need a path of increasing weight or something
@@ -131,7 +133,7 @@ public interface Graph {
         List<Integer> order = maximumCardinalitySearch();
 
         for (int i = 0; i < order.size(); i++) {
-            Set<Integer> mAdj = mAdj(order, i);
+            minfill.sets.Set<Integer> mAdj = mAdj(order, i);
             if (!isClique(mAdj))
                 return false;
         }
@@ -144,26 +146,26 @@ public interface Graph {
     }
 
     @Contract(pure = true)
-    default boolean isPotentialMaximalClique(Set<Integer> k){
+    default boolean isPotentialMaximalClique(minfill.sets.Set<Integer> k){
         Graph gk = inducedBy(vertices().minus(k));
-        java.util.Set<Set<Integer>> s = new HashSet<>();
-        for (Set<Integer> component : gk.components()) {
-            Set<Integer> sI = neighborhood(component).intersect(k);
+        java.util.Set<minfill.sets.Set<Integer>> s = new HashSet<>();
+        for (minfill.sets.Set<Integer> component : gk.components()) {
+            minfill.sets.Set<Integer> sI = neighborhood(component).intersect(k);
             if(!sI.isProperSubsetOf(k)){
                 return false;
             }
             s.add(sI);
         }
         Graph cliqueChecker = this;
-        for (Set<Integer> sI : s) {
-            Set<Edge> fillEdges = cliqueChecker.cliqueify(sI);
+        for (minfill.sets.Set<Integer> sI : s) {
+            minfill.sets.Set<Edge> fillEdges = cliqueChecker.cliqueify(sI);
             cliqueChecker = cliqueChecker.addEdges(fillEdges);
         }
         return cliqueChecker.inducedBy(k).isClique();
     }
 
     @Contract(pure = true)
-    default boolean isVitalPotentialMaximalClique(Set<Integer> vertices, int k) {
+    default boolean isVitalPotentialMaximalClique(minfill.sets.Set<Integer> vertices, int k) {
         if (!vertices.isSubsetOf(vertices())) throw new IllegalArgumentException("Unknown vertex");
         return k >= 0 &&
                 inducedBy(vertices).getNumberOfNonEdges() <= k &&
@@ -171,9 +173,9 @@ public interface Graph {
     }
 
     @Contract(pure = true)
-    default Set<Set<Integer>> components() {
+    default minfill.sets.Set<minfill.sets.Set<Integer>> components() {
         java.util.Set<Integer> marked = new HashSet<>();
-        java.util.Set<Set<Integer>> components = new HashSet<>();
+        java.util.Set<minfill.sets.Set<Integer>> components = new HashSet<>();
 
         for (Integer i : vertices()) {
             if (!marked.contains(i)) {
@@ -195,23 +197,23 @@ public interface Graph {
                         }
                     }
                 }
-                components.add(Set.of(component));
+                components.add(minfill.sets.Set.of(component));
             }
         }
 
-        return Set.of(components);
+        return minfill.sets.Set.of(components);
     }
 
     @Contract(pure = true)
-    default Set<Set<Integer>> fullComponents(Set<Integer> separator) {
-        java.util.Set<Set<Integer>> fullComponents = new HashSet<>();
+    default minfill.sets.Set<minfill.sets.Set<Integer>> fullComponents(minfill.sets.Set<Integer> separator) {
+        java.util.Set<minfill.sets.Set<Integer>> fullComponents = new HashSet<>();
         Graph gMinusS = this.inducedBy(this.vertices().minus(separator));
-        for (Set<Integer> component : gMinusS.components()) {
+        for (minfill.sets.Set<Integer> component : gMinusS.components()) {
             if (neighborhood(component).equals(separator)) {
                 fullComponents.add(component);
             }
         }
-        return Set.of(fullComponents);
+        return minfill.sets.Set.of(fullComponents);
     }
 
     @Contract(pure = true)
@@ -254,10 +256,10 @@ public interface Graph {
     Graph addEdge(Edge e);
 
     @Contract(pure = true)
-    Graph addEdges(Set<Edge> edges);
+    Graph addEdges(minfill.sets.Set<Edge> edges);
 
     @Contract(pure = true)
-    default Set<Edge> getNonEdges() {
+    default minfill.sets.Set<Edge> getNonEdges() {
         java.util.Set<Edge> nonEdges = new HashSet<>();
 
         VertexPairIterable<Integer> vertexPairs = new VertexPairIterable<>(vertices());
@@ -266,11 +268,11 @@ public interface Graph {
                 nonEdges.add(new Edge(pair.a, pair.b));
             }
         }
-        return Set.of(nonEdges);
+        return minfill.sets.Set.of(nonEdges);
     }
 
     @Contract(pure = true)
-    default Set<Edge> getEdges() {
+    default minfill.sets.Set<Edge> getEdges() {
         java.util.Set<Edge> edges = new HashSet<>();
 
         for (Integer v1 : vertices()) {
@@ -281,7 +283,7 @@ public interface Graph {
             }
         }
 
-        return Set.of(edges);
+        return minfill.sets.Set.of(edges);
     }
 
     default int getNumberOfNonEdges() {
@@ -296,22 +298,22 @@ public interface Graph {
     }
 
     @Contract(pure = true)
-    Graph inducedBy(Set<Integer> vertices);
+    Graph inducedBy(minfill.sets.Set<Integer> vertices);
 
     @Contract(pure = true)
     ChordalGraph minimalTriangulation();
 
     @Contract(pure = true)
-    default Set<Integer> mAdj(List<Integer> peo, int index) {
-        Set<Integer> neighborhood = neighborhood(peo.get(index));
+    default minfill.sets.Set<Integer> mAdj(List<Integer> peo, int index) {
+        minfill.sets.Set<Integer> neighborhood = neighborhood(peo.get(index));
         return neighborhood.intersect(
-                Set.of(
+                minfill.sets.Set.of(
                         peo.subList(index + 1, peo.size())
                 ));
     }
 
     @Contract(pure = true)
-    default Set<Edge> cliqueify(Set<Integer> vertices) {
+    default minfill.sets.Set<Edge> cliqueify(minfill.sets.Set<Integer> vertices) {
         assert vertices.isSubsetOf(vertices());
 
         java.util.Set<Edge> fill = new HashSet<>();
@@ -323,11 +325,11 @@ public interface Graph {
             }
         }
 
-        return Set.of(fill);
+        return minfill.sets.Set.of(fill);
     }
 
     @Contract(pure = true)
-    default boolean isClique(Set<Integer> vertices) {
+    default boolean isClique(minfill.sets.Set<Integer> vertices) {
         assert vertices.isSubsetOf(vertices());
 
         VertexPairIterable<Integer> vertexPairs = new VertexPairIterable<>(vertices);

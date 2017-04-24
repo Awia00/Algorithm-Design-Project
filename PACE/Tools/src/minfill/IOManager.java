@@ -1,7 +1,9 @@
 package minfill;
 
-import minfill.data.*;
-import minfill.data.Set;
+import minfill.graphs.AdjacencySetGraph;
+import minfill.graphs.Edge;
+import minfill.graphs.Graph;
+import minfill.sets.Set;
 
 import java.io.IOException;
 import java.io.InputStream;

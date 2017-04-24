@@ -1,4 +1,7 @@
-package minfill.data;
+package minfill.graphs;
+
+import minfill.sets.Set;
+import minfill.tuples.Pair;
 
 import java.util.ArrayList;
 import java.util.Iterator;

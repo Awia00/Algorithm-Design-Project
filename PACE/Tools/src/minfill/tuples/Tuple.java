@@ -1,4 +1,4 @@
-package minfill.data;
+package minfill.tuples;
 
 public class Tuple {
     public static <A, B, C> Triple<A, B, C> of(A a, B b, C c) {

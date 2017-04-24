@@ -1,4 +1,4 @@
-package minfill.data;
+package minfill.tuples;
 
 import java.util.Objects;
 

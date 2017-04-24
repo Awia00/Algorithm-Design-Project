@@ -1,4 +1,6 @@
-package minfill.data;
+package minfill.graphs;
+
+import minfill.sets.Set;
 
 import java.util.Map;
 
