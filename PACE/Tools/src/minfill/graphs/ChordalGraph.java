@@ -26,11 +26,16 @@ public interface ChordalGraph extends Graph {
         for (int i = 0; i < peo.size()-1; i++) {
             Integer v1 = peo.get(i);
             Integer v2 = peo.get(i+1);
-            if(i == 0) cliques = cliques.add(neighborhood(v1).add(v1));
+            if(i == 0) cliques = cliques.add(neighborhood(v1).toSet().add(v1));
             if(mAdj(peo, i).size() <= mAdj(peo, i+1).size()) { // Li = vertices with labels greater than i but we already know how many we have left since we go in order
-                cliques = cliques.add(neighborhood(v2).add(v2));
+                cliques = cliques.add(neighborhood(v2).toSet().add(v2));
             }
         }
         return cliques;
+    }
+
+    @Override
+    default ChordalGraph minimalTriangulation() {
+        return this;
     }
 }

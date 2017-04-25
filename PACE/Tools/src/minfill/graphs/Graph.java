@@ -11,14 +11,14 @@ public interface Graph {
     minfill.sets.Set<Integer> vertices();
 
     @Contract(pure = true)
-    minfill.sets.Set<Integer> neighborhood(Integer n);
+    Neighborhood neighborhood(Integer n);
 
     @Contract(pure = true)
     default minfill.sets.Set<Integer> neighborhood(minfill.sets.Set<Integer> vertices) {
         minfill.sets.Set<Integer> neighborhood = minfill.sets.Set.empty();
 
         for (Integer vertex : vertices) {
-            neighborhood = neighborhood.union(neighborhood(vertex));
+            neighborhood = neighborhood.union(neighborhood(vertex).toSet());
         }
 
         return neighborhood.minus(vertices);
@@ -305,7 +305,7 @@ public interface Graph {
 
     @Contract(pure = true)
     default minfill.sets.Set<Integer> mAdj(List<Integer> peo, int index) {
-        minfill.sets.Set<Integer> neighborhood = neighborhood(peo.get(index));
+        minfill.sets.Set<Integer> neighborhood = neighborhood(peo.get(index)).toSet();
         return neighborhood.intersect(
                 minfill.sets.Set.of(
                         peo.subList(index + 1, peo.size())
