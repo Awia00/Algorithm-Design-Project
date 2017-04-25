@@ -101,9 +101,22 @@ public class MinFill {
     @Contract(pure = true)
     public Optional<Graph> stepB2(Graph g, int k) {
         System.err.printf("Step B2: Non-reducible instance found. k=%d\n", k);
-        Set<Set<Integer>> piI = generateVitalPotentialMaximalCliques(g, k);
+        Set<Set<Integer>> piI = k < 24 ? generateVitalPotentialMaximalCliquesLowK(g, k+2) : generateVitalPotentialMaximalCliques(g, k);
 
         return stepC(g, k, piI);
+    }
+
+    @Contract(pure = true)
+    public Set<Set<Integer>> generateVitalPotentialMaximalCliquesLowK(Graph g, int k) {
+        java.util.Set<Set<Integer>> potentialMaximalCliques = new HashSet<>();
+
+        // all vertex subsets of size at most 5*sqrt(k)+2 (step 2)
+        for (Set<Integer> vertices : Set.subsetsOfSizeAtMost(g.vertices(), k)) {
+            if (g.isVitalPotentialMaximalClique(vertices, k)) {
+                potentialMaximalCliques.add(vertices);
+            }
+        }
+        return Set.of(potentialMaximalCliques);
     }
 
     @Contract(pure = true)
