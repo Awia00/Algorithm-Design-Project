@@ -20,7 +20,7 @@ public class MinFillKernel {
         boolean cycleFound;
         do {
             cycleFound = false;
-            Optional<List<Integer>> cycle = findChordlessCycle(g.inducedBy(B));
+            Optional<List<Integer>> cycle = g.inducedBy(B).findChordlessCycle();
             if (cycle.isPresent()) {
                 cycleFound = true;
                 Set<Integer> cycleSet = Set.of(cycle.get());
@@ -129,40 +129,5 @@ public class MinFillKernel {
         }
 
         return Optional.of(Tuple.of(g.inducedBy(A), kPrime));
-    }
-
-
-    private static Optional<List<Integer>> findChordlessCycle(Graph g) {
-        for (Set<Integer> component : g.components()) {
-            List<Integer> order = g.inducedBy(component).maximumCardinalitySearch();
-
-            for (int i = 0; i < order.size(); i++) {
-                Set<Integer> madj = g.mAdj(order, i);
-                List<Integer> madjList = new ArrayList<>();
-                for (Integer vertex : madj) {
-                    madjList.add(vertex);
-                }
-                if (!g.isClique(madj)) {
-                    // Cycle identified
-                    Graph gPrime = g.inducedBy(g.vertices().remove(order.get(i)));
-
-                    for (int j = 0; j < madjList.size()-1; j++) {
-                        Integer v = madjList.get(j);
-                        for (int k = j+1; k < madjList.size(); k++) {
-                            Integer w = madjList.get(k);
-                            if (!gPrime.isAdjacent(v, w) && gPrime.hasPath(v, w)) {
-                                List<Integer> path = gPrime.shortestPath(v, w);
-                                path.add(order.get(i));
-
-                                assert path.size() >= 4;
-
-                                return Optional.of(path);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return Optional.empty();
     }
 }

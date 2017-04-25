@@ -341,6 +341,40 @@ public interface Graph {
         return true;
     }
 
+    default Optional<List<Integer>> findChordlessCycle() {
+        for (minfill.sets.Set<Integer> component : components()) {
+            List<Integer> order = inducedBy(component).maximumCardinalitySearch();
+
+            for (int i = 0; i < order.size(); i++) {
+                minfill.sets.Set<Integer> madj = mAdj(order, i);
+                List<Integer> madjList = new ArrayList<>();
+                for (Integer vertex : madj) {
+                    madjList.add(vertex);
+                }
+                if (!isClique(madj)) {
+                    // Cycle identified
+                    Graph gPrime = inducedBy(vertices().remove(order.get(i)));
+
+                    for (int j = 0; j < madjList.size()-1; j++) {
+                        Integer v = madjList.get(j);
+                        for (int k = j+1; k < madjList.size(); k++) {
+                            Integer w = madjList.get(k);
+                            if (!gPrime.isAdjacent(v, w) && gPrime.hasPath(v, w)) {
+                                List<Integer> path = gPrime.shortestPath(v, w);
+                                path.add(order.get(i));
+
+                                assert path.size() >= 4;
+
+                                return Optional.of(path);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return Optional.empty();
+    }
+
     @Override
     @Contract(pure = true)
     int hashCode();

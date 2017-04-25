@@ -3,7 +3,9 @@ package minfill.graphs;
 import minfill.sets.Set;
 import org.jetbrains.annotations.Contract;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public interface ChordalGraph extends Graph {
     @Contract(pure = true) // Kumar, Madhavan page 10(164)
@@ -37,5 +39,9 @@ public interface ChordalGraph extends Graph {
     @Override
     default ChordalGraph minimalTriangulation() {
         return this;
+    }
+
+    default Optional<List<Integer>> findChordlessCycle() {
+        return Optional.empty();
     }
 }
