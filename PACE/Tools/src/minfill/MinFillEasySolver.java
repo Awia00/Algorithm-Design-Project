@@ -12,7 +12,7 @@ import java.util.Optional;
  * Created by aws on 25-04-2017.
  */
 public class MinFillEasySolver {
-    public static Set<Edge> addEasyEdges(Graph g){
+    public Set<Edge> findEasyEdges(Graph g){
         boolean hasChanged = true;
         Set<Edge> result = Set.empty();
         while(hasChanged)
@@ -28,7 +28,7 @@ public class MinFillEasySolver {
                             neighbourhoodList.add(vertex);
                         }
 
-                        if(g.neighborhood(neighbourhoodList.get(0)).toSet().size() == 2 || g.neighborhood(neighbourhoodList.get(1)).toSet().size() == 2){
+                        if(g.neighborhood(neighbourhoodList.get(0)).toSet().size() == 2 && g.neighborhood(neighbourhoodList.get(1)).toSet().size() == 2){
                             Edge edge = new Edge(neighbourhoodList.get(0), neighbourhoodList.get(1));
                             result = result.add(edge);
                             g = g.addEdge(edge);
