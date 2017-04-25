@@ -52,7 +52,7 @@ public class MinFill {
             // See the proof of Lemma 3.2.
 
             // X = N(u) \\union N(v)
-            Set<Integer> x = g.neighborhood(u).intersect(g.neighborhood(v));
+            Set<Integer> x = g.neighborhood(u).toSet().intersect(g.neighborhood(v).toSet());
 
             // W = V(G)\{u,v} such that every vertex is nonadjacent to at least h vertices of x.
             Set<Integer> w = Set.empty();
@@ -61,7 +61,7 @@ public class MinFill {
                 if (vertex == u || vertex == v) continue;
 
                 // vertex is nonadjacent to at least h vertices of X.
-                if (x.minus(g.neighborhood(vertex)).size() >= h) {
+                if (x.minus(g.neighborhood(vertex).toSet()).size() >= h) {
                     w = w.add(vertex);
                 }
             }
@@ -137,7 +137,7 @@ public class MinFill {
 
         // step 3 of generating vital potential maximal cliques
         for (Integer vertex : g.vertices()) {
-            Set<Edge> fill = g.cliqueify(g.neighborhood(vertex));
+            Set<Edge> fill = g.cliqueify(g.neighborhood(vertex).toSet());
             if(!fill.isEmpty()) {
                 Graph h = g.addEdges(fill);
                 potentialMaximalCliques.addAll(enumerateQuasiCliques(h, k));

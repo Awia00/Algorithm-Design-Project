@@ -1,6 +1,7 @@
 package minfill;
 
-import minfill.graphs.AdjacencySetGraph;
+import minfill.graphs.adjacencymatrix.AdjacencyMatrixGraph;
+import minfill.graphs.adjacencyset.AdjacencySetGraph;
 import minfill.graphs.Edge;
 import minfill.graphs.Graph;
 import minfill.sets.Set;

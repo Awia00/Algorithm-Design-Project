@@ -1,5 +1,6 @@
-package minfill.graphs;
+package minfill.graphs.adjacencyset;
 
+import minfill.graphs.ChordalGraph;
 import minfill.sets.Set;
 
 import java.util.Map;
@@ -9,9 +10,4 @@ public class AdjacencySetChordalGraph extends AdjacencySetGraph implements Chord
         super(vertices, neighborhoods);
         assert isChordal();
     }
-
-    @Override
-    public ChordalGraph minimalTriangulation() {
-        return this;
-    } // Since we are already a chordal graph.
 }

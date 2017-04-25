@@ -1,7 +1,7 @@
 import utils.Kernelizer;
 import minfill.graphs.Edge;
 import minfill.graphs.Graph;
-import minfill.graphs.AdjacencySetGraph;
+import minfill.graphs.adjacencyset.AdjacencySetGraph;
 import minfill.sets.Set;
 import org.junit.jupiter.api.Test;
 

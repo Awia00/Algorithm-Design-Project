@@ -39,9 +39,9 @@ public class MinFillKernel {
             cycleFound = false;
 
             for (Integer u : A) {
-                for (Integer x : g.neighborhood(u).intersect(B)) {
+                for (Integer x : g.neighborhood(u).toSet().intersect(B)) {
                     Graph gPrime = g.inducedBy(g.vertices().remove(x));
-                    Set<Integer> R = (g.neighborhood(x).minus(g.neighborhood(u))).intersect(B);
+                    Set<Integer> R = (g.neighborhood(x).toSet().minus(g.neighborhood(u).toSet())).intersect(B);
 
                     for (Integer v : R) {
                         if (gPrime.hasPath(u, v)) {
@@ -105,7 +105,7 @@ public class MinFillKernel {
         for (Edge nonEdge : g.inducedBy(A).getNonEdges()) {
             int x = nonEdge.from, y = nonEdge.to;
 
-            Set<Integer> bNeighbors = g.neighborhood(x).intersect(g.neighborhood(y)).intersect(B);
+            Set<Integer> bNeighbors = g.neighborhood(x).toSet().intersect(g.neighborhood(y).toSet()).intersect(B);
             java.util.Set<Integer> Axy = new HashSet<>();
 
             for (Integer b : bNeighbors) {

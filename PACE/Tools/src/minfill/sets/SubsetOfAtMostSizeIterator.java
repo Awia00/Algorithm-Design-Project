@@ -118,35 +118,4 @@ public class SubsetOfAtMostSizeIterator<T extends Comparable<T>> implements Iter
             return minfill.sets.Set.of(inner.next());
         }
     }
-
-    public static void main(String[] args) {
-        Iterator<minfill.sets.Set<Integer>> ite = new SubsetOfAtMostSizeIterator<>(minfill.sets.Set.of(1, 2, 3, 4, 5), 2);
-
-        // Check for duplicate elements:
-        int count = 0;
-        java.util.Set<minfill.sets.Set<Integer>> retrieved = new HashSet<>();
-        while (ite.hasNext()) {
-            count++;
-            retrieved.add(ite.next());
-        }
-
-        assert count == retrieved.size();
-
-
-        // Check for known elements in subsets.
-        ite = new SubsetOfAtMostSizeIterator<>(minfill.sets.Set.of(1, 2, 3), 2);
-
-        java.util.Set<minfill.sets.Set<Integer>> expected = new HashSet<>();
-        expected.add(minfill.sets.Set.of(1));
-        expected.add(minfill.sets.Set.of(2));
-        expected.add(minfill.sets.Set.of(3));
-        expected.add(minfill.sets.Set.of(1, 2));
-        expected.add(minfill.sets.Set.of(1, 3));
-        expected.add(minfill.sets.Set.of(2, 3));
-
-        while (ite.hasNext()) {
-            assert expected.remove(ite.next());
-        }
-        assert expected.isEmpty();
-    }
 }
