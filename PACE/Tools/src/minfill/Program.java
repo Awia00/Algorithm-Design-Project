@@ -13,6 +13,7 @@ import java.util.Optional;
 
 public class Program {
     private static MinFillKernel kernel;
+    private static MinFillEasySolver easySolver;
     private static MinFill mfi;
     private static IOManager io;
 
@@ -24,17 +25,21 @@ public class Program {
 
         io = new IOManager();
         kernel = new MinFillKernel();
+        easySolver = new MinFillEasySolver();
         mfi = new MinFill();
 
         Graph entireGraph = io.parse();
         System.err.printf("Graph of size (|V|, |E|) = (%d, %d)\n", entireGraph.vertices().size(), entireGraph.getEdges().size());
 
+        Set<Edge> componentResult = Set.empty();
         for (Set<Integer> component : entireGraph.components()) {
-            perComponent(entireGraph.inducedBy(component));
+            componentResult = componentResult.union(perComponent(entireGraph.inducedBy(component)));
         }
+        io.print(componentResult);
+        assert entireGraph.addEdges(componentResult).isChordal();
     }
 
-    private static void perComponent(Graph g) {
+    private static Set<Edge> perComponent(Graph g) {
         System.err.printf("Component of size (|V|, |E|) = (%d, %d)\n", g.vertices().size(), g.getEdges().size());
 
         Triple<Set<Integer>, Set<Integer>, Integer> abk = kernel.kernelProcedure1And2(g);
@@ -53,10 +58,11 @@ public class Program {
                 Set<Set<Integer>> components = gPrime.components();
 
                 if (components.size() > 1) {
+                    Set<Edge> componentResult = Set.empty();
                     for (Set<Integer> component : components) {
-                        perComponent(gPrime.inducedBy(component));
+                        componentResult = componentResult.union(perComponent(gPrime.inducedBy(component)));
                     }
-                    break;
+                    return componentResult;
                 }
 
                 System.err.printf("k'=%d\n", kPrime);
@@ -65,10 +71,15 @@ public class Program {
 
                 if (result.isPresent()) {
                     Set<Edge> minimumFill = result.get().getEdges().minus(g.getEdges());
-                    io.print(minimumFill);
+                    //io.print(minimumFill);
+                    //io.print(edgesThisRound);
+
                     System.err.println("Memoizer hits: " + MinFill.memoizerHits.longValue());
+
                     assert result.get().isChordal();
-                    break;
+                    assert gPrime.addEdges(minimumFill).isChordal();
+
+                    return minimumFill;
                 }
             }
             k++;
