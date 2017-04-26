@@ -12,10 +12,10 @@ import java.io.FileNotFoundException;
 import java.util.Optional;
 
 public class Program {
-    private static MinFillKernel kernel;
-    private static MinFillEasySolver easySolver;
-    private static MinFill mfi;
-    private static IOManager io;
+    private static MinFillKernel kernel = new MinFillKernel();
+    private static MinFillEasySolver easySolver = new MinFillEasySolver();
+    private static MinFill mfi = new MinFill();
+    private static IOManager io = new IOManager();
 
     public static void main(String[] args) throws FileNotFoundException {
         //System.err.close();
@@ -23,22 +23,21 @@ public class Program {
             System.setIn(new FileInputStream(new File(args[0])));
         }
 
-        io = new IOManager();
-        kernel = new MinFillKernel();
-        easySolver = new MinFillEasySolver();
-        mfi = new MinFill();
-
         Graph entireGraph = io.parse();
         System.err.printf("Graph of size (|V|, |E|) = (%d, %d)\n", entireGraph.vertices().size(), entireGraph.getEdges().size());
 
+        io.print(minFill(entireGraph));
+    }
+
+    public static Set<Edge> minFill(Graph entireGraph){
         Set<Edge> componentResult = Set.empty();
         for (Set<Integer> component : entireGraph.components()) {
             componentResult = componentResult.union(perComponent(entireGraph.inducedBy(component)));
         }
 
         System.err.println(componentResult.size());
-        io.print(componentResult);
         assert entireGraph.addEdges(componentResult).isChordal();
+        return componentResult;
     }
 
     private static Set<Edge> perComponent(Graph g) {
