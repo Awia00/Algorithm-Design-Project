@@ -51,6 +51,26 @@ public class AdjacencySetGraph implements Graph {
     }
 
     @Override
+    public Graph removeEdges(Set<Edge> edges) {
+        boolean change = false;
+
+        Map<Integer, Set<Integer>> copy = new HashMap<>(neighborhoods);
+
+        for (Edge e : edges) {
+            assert vertices.contains(e.from);
+            assert vertices.contains(e.to);
+
+            if (isAdjacent(e.from, e.to)) {
+                change = true;
+                copy.put(e.from, copy.get(e.from).remove(e.to));
+                copy.put(e.to, copy.get(e.to).remove(e.from));
+            }
+        }
+
+        return change ? new AdjacencySetGraph(vertices, copy) : this;
+    }
+
+    @Override
     @Contract(pure = true)
     public Graph addEdge(Edge e) {
         assert vertices.contains(e.from);

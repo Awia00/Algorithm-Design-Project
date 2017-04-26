@@ -44,4 +44,8 @@ public interface ChordalGraph extends Graph {
     default Optional<List<Integer>> findChordlessCycle() {
         return Optional.empty();
     }
+
+    default Set<List<Integer>> findChordlessCycles() {
+        return Set.empty();
+    }
 }

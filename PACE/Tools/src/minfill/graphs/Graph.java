@@ -14,6 +14,9 @@ public interface Graph {
     Neighborhood neighborhood(Integer n);
 
     @Contract(pure = true)
+    Graph removeEdges(minfill.sets.Set<Edge> edges);
+
+    @Contract(pure = true)
     default minfill.sets.Set<Integer> neighborhood(minfill.sets.Set<Integer> vertices) {
         minfill.sets.Set<Integer> neighborhood = minfill.sets.Set.empty();
 
@@ -373,6 +376,43 @@ public interface Graph {
             }
         }
         return Optional.empty();
+    }
+
+    default minfill.sets.Set<List<Integer>> findChordlessCycles() {
+        minfill.sets.Set<List<Integer>> cycles = minfill.sets.Set.empty();
+        for (minfill.sets.Set<Integer> component : components()) {
+            List<Integer> order = inducedBy(component).maximumCardinalitySearch();
+
+            for (int i = 0; i < order.size(); i++) {
+                minfill.sets.Set<Integer> madj = mAdj(order, i);
+                List<Integer> madjList = new ArrayList<>();
+                for (Integer vertex : madj) {
+                    madjList.add(vertex);
+                }
+                if (!isClique(madj)) {
+                    // Cycle identified
+                    Graph gPrime = inducedBy(vertices().remove(order.get(i)));
+
+                    for (int j = 0; j < madjList.size()-1; j++) {
+                        Integer v = madjList.get(j);
+                        for (int k = j+1; k < madjList.size(); k++) {
+                            Integer w = madjList.get(k);
+                            if (!gPrime.isAdjacent(v, w) && gPrime.hasPath(v, w)) {
+                                List<Integer> path = gPrime.shortestPath(v, w);
+                                path.add(order.get(i));
+
+                                assert path.size() >= 4;
+
+                                // todo check if path already in.
+                                cycles = cycles.add(path);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return cycles;
     }
 
     @Override

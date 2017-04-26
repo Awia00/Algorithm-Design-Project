@@ -13,30 +13,31 @@ import java.util.Optional;
 
 public class Program {
     static final boolean printDebug = false;
-    private static MinFillKernel kernel;
-    private static MinFillEasySolver easySolver;
-    private static MinFill mfi;
-    private static IO io;
+    private static MinFillKernel kernel = new MinFillKernel();
+    private static MinFillEasySolver easySolver = new MinFillEasySolver();
+    private static MinFill mfi = new MinFill();
+    private static IO io = new IO();
 
     public static void main(String[] args) throws FileNotFoundException {
         if (args.length != 0 && !args[0].startsWith("-")) { // Hack to read from file
             System.setIn(new FileInputStream(new File(args[0])));
         }
 
-        io = new IO();
-        kernel = new MinFillKernel();
-        easySolver = new MinFillEasySolver();
-        mfi = new MinFill();
-
         Graph entireGraph = io.parse();
         IO.printf("Graph of size (|V|, |E|) = (%d, %d)\n", entireGraph.vertices().size(), entireGraph.getEdges().size());
 
+        io.print(minFill(entireGraph));
+    }
+
+    public static Set<Edge> minFill(Graph entireGraph){
         Set<Edge> componentResult = Set.empty();
         for (Set<Integer> component : entireGraph.components()) {
             componentResult = componentResult.union(perComponent(entireGraph.inducedBy(component)));
         }
-        io.print(componentResult);
+
+        System.err.println(componentResult.size());
         assert entireGraph.addEdges(componentResult).isChordal();
+        return componentResult;
     }
 
     private static Set<Edge> perComponent(Graph g) {
@@ -57,6 +58,8 @@ public class Program {
 
                 Set<Edge> kernelAddedEdges = gPrime.getEdges().minus(g.getEdges());
                 Set<Edge> easyEdges = easySolver.findEasyEdges(gPrime);
+                System.err.println("Easy edges done, found " + easyEdges.size());
+
                 gPrime = gPrime.addEdges(easyEdges);
                 kPrime -= easyEdges.size();
 

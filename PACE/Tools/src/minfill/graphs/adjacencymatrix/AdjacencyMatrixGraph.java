@@ -55,6 +55,26 @@ public class AdjacencyMatrixGraph implements Graph {
         return new AdjacencyMatrixNeighborhood(mapToExternal, mapToInternal, neighborhoods[mapToInternal.get(n)]);
     }
 
+    @Override
+    public Graph removeEdges(Set<Edge> edges) {
+        boolean[][] copy = deepCopy();
+
+        boolean change = false;
+
+        for (Edge e : edges) {
+            int from = mapToInternal.get(e.from),
+                    to = mapToInternal.get(e.to);
+
+            if (neighborhoods[from][to]) {
+                change = true;
+                copy[from][to] = copy[to][from] = false;
+            }
+        }
+
+        if (change) return new AdjacencyMatrixGraph(copy, mapToInternal, mapToExternal);
+        return this;
+    }
+
 
     public static int adjacentCount = 0;
     @Override
