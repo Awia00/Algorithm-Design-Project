@@ -100,7 +100,7 @@ public class MinFill {
 
     @Contract(pure = true)
     public Optional<Graph> stepB2(Graph g, int k) {
-        System.err.printf("Step B2: Non-reducible instance found. k=%d\n", k);
+        IO.printf("Step B2: Non-reducible instance found. k=%d\n", k);
         int subsetMaxSize = (int)(5*Math.sqrt(k)+2);
         Set<Set<Integer>> piI;
         if(subsetMaxSize > g.vertices().size())
@@ -129,7 +129,7 @@ public class MinFill {
 
         // enumerate quasi-cliques. (Step 1)
         potentialMaximalCliques.addAll(enumerateQuasiCliques(g, k));
-        System.err.println("step B2: case 1 done: " + potentialMaximalCliques.size());
+        IO.println("step B2: case 1 done: " + potentialMaximalCliques.size());
 
         // all vertex subsets of size at most 5*sqrt(k)+2 (step 2)
         for (Set<Integer> vertices : Set.subsetsOfSizeAtMost(g.vertices(), (int) (5 * Math.sqrt(k) + 2))) {
@@ -137,7 +137,7 @@ public class MinFill {
                 potentialMaximalCliques.add(vertices);
             }
         }
-        System.err.println("step B2: case 2 done: " + potentialMaximalCliques.size());
+        IO.println("step B2: case 2 done: " + potentialMaximalCliques.size());
 
         // step 3 of generating vital potential maximal cliques
         for (Integer vertex : g.vertices()) {
@@ -147,7 +147,7 @@ public class MinFill {
                 potentialMaximalCliques.addAll(enumerateQuasiCliques(h, k));
             }
         }
-        System.err.println("step B2: case 3 done: " + potentialMaximalCliques.size());
+        IO.println("step B2: case 3 done: " + potentialMaximalCliques.size());
         return Set.of(potentialMaximalCliques);
     }
 
@@ -197,13 +197,13 @@ public class MinFill {
                 }
             }
         }
-        System.err.println("quasi subsets done");
+        IO.println("quasi subsets done");
         return potentialMaximalCliques;
     }
 
     @Contract(pure = true)
     public Optional<Graph> stepC(Graph g, int k, Set<Set<Integer>> piI) {
-        System.err.println("Step C: All vital potential maximal cliques found.");
+        IO.println("Step C: All vital potential maximal cliques found.");
         Map<Pair, Set<Set<Integer>>> piSC = generatePiSC(g, piI);
         Map<Graph, Set<Edge>> memoizer = new HashMap<>();
         for (Set<Integer> omega : piI) {

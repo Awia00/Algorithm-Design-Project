@@ -1,7 +1,7 @@
 package utils;
 
 
-import minfill.IOManager;
+import minfill.IO;
 import minfill.MinFillKernel;
 import minfill.graphs.Graph;
 import minfill.tuples.Pair;
@@ -14,7 +14,7 @@ import java.util.Optional;
 public class Kernelizer {
 
     public static void main(String[] args) throws IOException {
-        try (IOManager io = new IOManager(Util.getInput(args))) {
+        try (IO io = new IO(Util.getInput(args))) {
             io.print(kernelize(io.parse()).getEdges());
         }
     }
