@@ -1,9 +1,9 @@
-CXXFLAGS:= -Wall -O3
 
-all: GraphStatistics PaceToDot
-
-GraphStatistics: GraphStatistics.cpp
-PaceToDot: PaceToDot.cpp
+fill:
+	$(MAKE) -C minfill
+util:
+	$(MAKE) -C utils
 
 clean:
-	$(RM) GraphStatistics PaceToDot
+	$(MAKE) -C utils clean
+	$(MAKE) -C minfill clean
