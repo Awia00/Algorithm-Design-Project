@@ -14,6 +14,9 @@ public interface Graph {
     Neighborhood neighborhood(Integer n);
 
     @Contract(pure = true)
+    Graph removeEdges(minfill.sets.Set<Edge> edges);
+
+    @Contract(pure = true)
     default minfill.sets.Set<Integer> neighborhood(minfill.sets.Set<Integer> vertices) {
         minfill.sets.Set<Integer> neighborhood = minfill.sets.Set.empty();
 
