@@ -16,12 +16,14 @@ public class Program {
     private static MinFillKernel kernel = new MinFillKernel();
     private static MinFillEasySolver easySolver = new MinFillEasySolver();
     private static MinFill mfi = new MinFill();
-    private static IO io = new IO();
+    private static IO io;
 
     public static void main(String[] args) throws FileNotFoundException {
         if (args.length != 0 && !args[0].startsWith("-")) { // Hack to read from file
             System.setIn(new FileInputStream(new File(args[0])));
         }
+
+        io = new IO();
 
         Graph entireGraph = io.parse();
         IO.printf("Graph of size (|V|, |E|) = (%d, %d)\n", entireGraph.vertices().size(), entireGraph.getEdges().size());
