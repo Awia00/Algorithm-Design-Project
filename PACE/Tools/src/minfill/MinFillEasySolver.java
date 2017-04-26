@@ -16,7 +16,9 @@ import java.util.Optional;
 public class MinFillEasySolver {
 
     public Set<Edge> findEasyEdges(Graph g){
-        return findEasyEdgesStep1(g).union(findEasyEdgesStep2(g));
+        Set<Edge> step1 = findEasyEdgesStep1(g);
+        Set<Edge> step2 = findEasyEdgesStep2(g.addEdges(step1));
+        return step1.union(step2);
     }
 
     @Contract(pure=true)
@@ -24,12 +26,12 @@ public class MinFillEasySolver {
         boolean hasChanged = true;
         Set<Edge> result = Set.empty();
         // step 1
+        outer:
         while(hasChanged)
         {
             hasChanged = false;
-            Optional<List<Integer>> chordlessCycle = g.findChordlessCycle();
-            if(chordlessCycle.isPresent()){
-                for (Integer u : chordlessCycle.get()) {
+            for (List<Integer> cycle : g.findChordlessCycles()) {
+                for (Integer u : cycle) {
                     Set<Integer> neighbourhood = g.neighborhood(u).toSet();
                     if(neighbourhood.size() == 2){
                         ArrayList<Integer> neighbourhoodList = new ArrayList<>();
@@ -43,7 +45,7 @@ public class MinFillEasySolver {
                             g = g.addEdge(edge);
                             g = g.inducedBy(g.vertices().remove(u));
                             hasChanged=true;
-                            break;
+                            continue outer;
                         }
                     }
                 }
@@ -57,24 +59,26 @@ public class MinFillEasySolver {
         boolean hasChanged = true;
         Set<Edge> result = Set.empty();
 
+        outer:
         while(hasChanged)
         {
             hasChanged = false;
-            Optional<List<Integer>> chordlessCycle = g.findChordlessCycle();
-            if(chordlessCycle.isPresent()){
-                List<Integer> cycle = chordlessCycle.get();
+            for (List<Integer> cycle : g.findChordlessCycles()) {
                 for (int i = 0; i < cycle.size(); i++) {
                     Integer u = cycle.get(i);
                     Integer w = cycle.get((i+1)%cycle.size());
                     Integer v = cycle.get((i+2)%cycle.size());
 
-                    g = g.removeEdges(Set.of(new Edge(u,w), new Edge(w,v)));
-                    if(!g.hasPath(w,u)){
+                    Graph gPrime = g.removeEdges(Set.of(new Edge(u,w), new Edge(w,v)));
+                    if(!gPrime.hasPath(w,u)){
                         result = result.add(new Edge(u,v));
+                        g = g.addEdge(new Edge(u,v));
+                        hasChanged = true;
+                        continue outer;
                     }
                 }
             }
         }
-        return Set.empty();
+        return result;
     }
 }
