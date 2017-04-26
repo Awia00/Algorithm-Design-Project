@@ -27,7 +27,7 @@ public class MinFillAlgorithmTest {
         graphs = new ArrayList<>();
         badGraphs = new ArrayList<>();
 
-        badGraphs.add("1.graph");
+        badGraphs.add("1.graph"); // kernel takes long time
         badGraphs.add("10.graph");
         badGraphs.add("100.graph");
         badGraphs.add("11.graph");
@@ -38,10 +38,21 @@ public class MinFillAlgorithmTest {
         badGraphs.add("18.graph"); // non reducible creates a lot of edges
         badGraphs.add("19.graph"); // lot of easy edges - still k too high
         badGraphs.add("2.graph"); // k = 41
-        badGraphs.add("21.graph"); // one component too big
+        badGraphs.add("21.graph"); // one component too big - kernel takes long time
         badGraphs.add("22.graph"); // k=79
         badGraphs.add("23.graph"); // k=59
-        badGraphs.add("24.graph"); // k=11
+        badGraphs.add("24.graph"); // k=11 should be doable
+        badGraphs.add("25.graph"); // kernel takes long time
+        badGraphs.add("26.graph"); // k=26
+        badGraphs.add("28.graph"); // k=53
+        badGraphs.add("29.graph"); // k=45
+        badGraphs.add("3.graph"); // k=11 should be doable
+        badGraphs.add("30.graph"); // k=47
+        badGraphs.add("31.graph"); // k=27
+        badGraphs.add("32.graph"); // easy solver takes long time - lot of easy edges, k=173 - branching takes long time
+        badGraphs.add("33.graph"); // kernel takes too long
+        badGraphs.add("34.graph"); // kernel takes too long one component too big.
+        badGraphs.add("35.graph"); // kernel takes too long
 
         File folder = new File("res/instances/");
         if(folder.listFiles() != null){

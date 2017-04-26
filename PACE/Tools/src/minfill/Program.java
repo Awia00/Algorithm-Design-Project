@@ -15,12 +15,12 @@ public class Program {
     private static MinFillKernel kernel = new MinFillKernel();
     private static MinFillEasySolver easySolver = new MinFillEasySolver();
     private static MinFill mfi = new MinFill();
-    private static IOManager io = new IOManager();
 
     public static void main(String[] args) throws FileNotFoundException {
         //System.err.close();
+        IOManager io = new IOManager();
         if (args.length != 0 && !args[0].startsWith("-")) { // Hack to read from file
-            System.setIn(new FileInputStream(new File(args[0])));
+            io = new IOManager(new FileInputStream(new File(args[0])));
         }
 
         Graph entireGraph = io.parse();
@@ -51,20 +51,12 @@ public class Program {
 
         while (true) {
             Optional<Pair<Graph, Integer>> tmp = kernel.kernelProcedure3(g, abk.a, abk.b, k);
-            System.err.printf("Kernel procedure 3 for k=%d done\n", k);
             if (tmp.isPresent()) {
                 Graph gPrime = tmp.get().a;
                 int kPrime = tmp.get().b;
 
                 Set<Edge> kernelAddedEdges = gPrime.getEdges().minus(g.getEdges());
-                Set<Edge> easyEdges = easySolver.findEasyEdges(gPrime);
-                System.err.println("Easy edges done, found " + easyEdges.size());
-
-                gPrime = gPrime.addEdges(easyEdges);
-                kPrime -= easyEdges.size();
-
-                if(!easyEdges.isEmpty())
-                    return perComponent(gPrime).union(kernelAddedEdges).union(easyEdges);
+                System.err.printf("Kernel procedure 3 for k=%d, vertices pruned=%d \n", kPrime, kernelAddedEdges.size());
 
                 Set<Set<Integer>> components = gPrime.components();
 
@@ -73,8 +65,17 @@ public class Program {
                     for (Set<Integer> component : components) {
                         componentResult = componentResult.union(perComponent(gPrime.inducedBy(component)));
                     }
-                    return componentResult.union(kernelAddedEdges).union(easyEdges);
+                    return componentResult.union(kernelAddedEdges);
                 }
+
+                Set<Edge> easyEdges = easySolver.findEasyEdges(gPrime);
+                System.err.println("Easy edges done, found " + easyEdges.size());
+
+                gPrime = gPrime.addEdges(easyEdges);
+                kPrime -= easyEdges.size();
+
+                if(!easyEdges.isEmpty())
+                    return perComponent(gPrime).union(kernelAddedEdges).union(easyEdges);
 
                 System.err.printf("k'=%d\n", kPrime);
 

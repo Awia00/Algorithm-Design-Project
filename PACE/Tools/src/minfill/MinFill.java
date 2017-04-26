@@ -248,6 +248,8 @@ public class MinFill {
         }
 
         Set<Edge> result = f.getNonEdges();
+        if(!piSC.containsKey(sc))
+            System.err.println("SC not found in piSC");
         for (Set<Integer> omegaPrime : piSC.get(sc)) {
             Set<Edge> fill = f.cliqueify(omegaPrime);
             Graph filled = f.addEdges(fill);
