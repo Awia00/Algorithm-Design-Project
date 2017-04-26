@@ -24,4 +24,11 @@ namespace std
 			return 31*x.getTo()+x.getFrom();
 		}
     };
+    template<>
+	struct equal_to<minfill::graphs::Edge> {
+		bool operator()(const minfill::graphs::Edge& x, const minfill::graphs::Edge& y) const {
+			return (x.getFrom() == y.getFrom() && x.getTo() == y.getTo()) ||
+				   (x.getFrom() == y.getTo() && x.getTo() == y.getFrom());
+		}
+	};
 }
