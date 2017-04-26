@@ -55,6 +55,14 @@ public class Program {
                 Graph gPrime = tmp.get().a;
                 int kPrime = tmp.get().b;
 
+                Set<Edge> kernelAddedEdges = gPrime.getEdges().minus(g.getEdges());
+                Set<Edge> easyEdges = easySolver.findEasyEdges(gPrime);
+                gPrime = gPrime.addEdges(easyEdges);
+                kPrime -= easyEdges.size();
+
+                if(!easyEdges.isEmpty())
+                    return perComponent(gPrime).union(kernelAddedEdges).union(easyEdges);
+
                 Set<Set<Integer>> components = gPrime.components();
 
                 if (components.size() > 1) {
@@ -62,7 +70,7 @@ public class Program {
                     for (Set<Integer> component : components) {
                         componentResult = componentResult.union(perComponent(gPrime.inducedBy(component)));
                     }
-                    return componentResult;
+                    return componentResult.union(kernelAddedEdges).union(easyEdges);
                 }
 
                 System.err.printf("k'=%d\n", kPrime);
@@ -71,15 +79,13 @@ public class Program {
 
                 if (result.isPresent()) {
                     Set<Edge> minimumFill = result.get().getEdges().minus(g.getEdges());
-                    //io.print(minimumFill);
-                    //io.print(edgesThisRound);
 
                     System.err.println("Memoizer hits: " + MinFill.memoizerHits.longValue());
 
                     assert result.get().isChordal();
                     assert gPrime.addEdges(minimumFill).isChordal();
 
-                    return minimumFill;
+                    return minimumFill.union(kernelAddedEdges).union(easyEdges);
                 }
             }
             k++;
