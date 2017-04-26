@@ -67,7 +67,7 @@ public class MinFillAlgorithmTest {
     }
 
     private void testMinFillGraph(String graph) throws FileNotFoundException{
-        IOManager io = new IOManager(new FileInputStream(new File(graph)));
+        IO io = new IO(new FileInputStream(new File(graph)));
 
         Graph entireGraph = io.parse();
 

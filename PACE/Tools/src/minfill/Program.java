@@ -12,19 +12,20 @@ import java.io.FileNotFoundException;
 import java.util.Optional;
 
 public class Program {
+    static final boolean printDebug = true;
     private static MinFillKernel kernel = new MinFillKernel();
     private static MinFillEasySolver easySolver = new MinFillEasySolver();
     private static MinFill mfi = new MinFill();
 
+    private static IO io = new IO();
+
     public static void main(String[] args) throws FileNotFoundException {
-        //System.err.close();
-        IOManager io = new IOManager();
         if (args.length != 0 && !args[0].startsWith("-")) { // Hack to read from file
-            io = new IOManager(new FileInputStream(new File(args[0])));
+            io = new IO(new FileInputStream(new File(args[0])));
         }
 
         Graph entireGraph = io.parse();
-        System.err.printf("Graph of size (|V|, |E|) = (%d, %d)\n", entireGraph.vertices().size(), entireGraph.getEdges().size());
+        io.printf("Graph of size (|V|, |E|) = (%d, %d)\n", entireGraph.vertices().size(), entireGraph.getEdges().size());
 
         io.print(minFill(entireGraph));
     }
@@ -35,17 +36,17 @@ public class Program {
             componentResult = componentResult.union(perComponent(entireGraph.inducedBy(component)));
         }
 
-        System.err.println(componentResult.size());
+        io.printf("minFillSize: %d",componentResult.size());
         assert entireGraph.addEdges(componentResult).isChordal();
         return componentResult;
     }
 
     private static Set<Edge> perComponent(Graph g) {
-        System.err.printf("Component of size (|V|, |E|) = (%d, %d)\n", g.vertices().size(), g.getEdges().size());
+        IO.printf("Component of size (|V|, |E|) = (%d, %d)\n", g.vertices().size(), g.getEdges().size());
 
         Triple<Set<Integer>, Set<Integer>, Integer> abk = kernel.kernelProcedure1And2(g);
 
-        System.err.printf("Kernel procedure 1 and 2 done. k=%d\n", abk.c);
+        IO.printf("Kernel procedure 1 and 2 done. k=%d\n", abk.c);
 
         int k = abk.c;
 
@@ -56,7 +57,7 @@ public class Program {
                 int kPrime = tmp.get().b;
 
                 Set<Edge> kernelAddedEdges = gPrime.getEdges().minus(g.getEdges());
-                System.err.printf("Kernel procedure 3 for k=%d, vertices pruned=%d \n", kPrime, kernelAddedEdges.size());
+                io.printf("Kernel procedure 3 for k=%d, vertices pruned=%d \n", kPrime, kernelAddedEdges.size());
 
                 Set<Set<Integer>> components = gPrime.components();
 
@@ -69,7 +70,7 @@ public class Program {
                 }
 
                 Set<Edge> easyEdges = easySolver.findEasyEdges(gPrime);
-                System.err.println("Easy edges done, found " + easyEdges.size());
+                io.printf("Easy edges done, found %d", easyEdges.size());
 
                 gPrime = gPrime.addEdges(easyEdges);
                 kPrime -= easyEdges.size();
@@ -77,14 +78,14 @@ public class Program {
                 if(!easyEdges.isEmpty())
                     return perComponent(gPrime).union(kernelAddedEdges).union(easyEdges);
 
-                System.err.printf("k'=%d\n", kPrime);
+                IO.printf("k'=%d\n", kPrime);
 
                 Optional<Graph> result = mfi.stepB1(gPrime, kPrime);
 
                 if (result.isPresent()) {
                     Set<Edge> minimumFill = result.get().getEdges().minus(g.getEdges());
 
-                    System.err.println("Memoizer hits: " + MinFill.memoizerHits.longValue());
+                    IO.println("Memoizer hits: " + MinFill.memoizerHits.longValue());
 
                     assert result.get().isChordal();
                     assert gPrime.addEdges(minimumFill).isChordal();

@@ -1,6 +1,5 @@
 package minfill;
 
-import minfill.graphs.adjacencymatrix.AdjacencyMatrixGraph;
 import minfill.graphs.adjacencyset.AdjacencySetGraph;
 import minfill.graphs.Edge;
 import minfill.graphs.Graph;
@@ -10,20 +9,19 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 
-public class IOManager implements AutoCloseable {
+public class IO implements AutoCloseable {
     private String[] nodeNames;
     private final InputStream input;
 
-    public IOManager() {
+    public IO() {
         this(System.in);
     }
 
-    public IOManager(InputStream input) {
+    public IO(InputStream input) {
         this.input = input;
     }
 
     public void print(Set<Edge> minFill) {
-        System.err.flush(); // Flush the error stream to avoid overlaps.
         for (Edge edge : minFill) {
             System.out.printf("%s %s\n", nodeNames[edge.from], nodeNames[edge.to]);
         }
@@ -64,5 +62,17 @@ public class IOManager implements AutoCloseable {
     public void close() throws IOException {
         nodeNames = null;
         input.close();
+    }
+
+    public static void println(String toPrint) {
+        if (Program.printDebug) {
+            System.err.println(toPrint);
+        }
+    }
+
+    public static void printf(String toPrint, Object... objects) {
+        if (Program.printDebug) {
+            System.err.printf(toPrint, objects);
+        }
     }
 }
