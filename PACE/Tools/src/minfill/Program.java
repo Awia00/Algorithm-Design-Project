@@ -12,7 +12,6 @@ import java.io.FileNotFoundException;
 import java.util.Optional;
 
 public class Program {
-    static final boolean printDebug = false;
     private static MinFillKernel kernel = new MinFillKernel();
     private static MinFillEasySolver easySolver = new MinFillEasySolver();
     private static MinFill mfi = new MinFill();
@@ -35,7 +34,7 @@ public class Program {
             componentResult = componentResult.union(perComponent(entireGraph.inducedBy(component)));
         }
 
-        IO.printf("minFillSize: %d",componentResult.size());
+        IO.printf("minFillSize: %d\n",componentResult.size());
         assert entireGraph.addEdges(componentResult).isChordal();
         return componentResult;
     }
@@ -69,7 +68,7 @@ public class Program {
                 }
 
                 Set<Edge> easyEdges = easySolver.findEasyEdges(gPrime);
-                IO.printf("Easy edges done, found %d", easyEdges.size());
+                IO.printf("Easy edges done, found %d\n", easyEdges.size());
 
                 gPrime = gPrime.addEdges(easyEdges);
                 kPrime -= easyEdges.size();
@@ -77,14 +76,13 @@ public class Program {
                 if(!easyEdges.isEmpty())
                     return perComponent(gPrime).union(kernelAddedEdges).union(easyEdges);
 
-                IO.printf("k'=%d\n", kPrime);
-
                 Optional<Graph> result = mfi.stepB1(gPrime, kPrime);
 
                 if (result.isPresent()) {
                     Set<Edge> minimumFill = result.get().getEdges().minus(g.getEdges());
 
                     IO.println("Memoizer hits: " + MinFill.memoizerHits.longValue());
+                    MinFill.memoizerHits.reset();
 
                     assert result.get().isChordal();
                     assert gPrime.addEdges(minimumFill).isChordal();

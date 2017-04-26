@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.util.*;
 
 public class IO implements AutoCloseable {
+    static final boolean printDebug = true;
     private String[] nodeNames;
     private final InputStream input;
 
@@ -65,13 +66,13 @@ public class IO implements AutoCloseable {
     }
 
     public static void println(String toPrint) {
-        if (Program.printDebug) {
+        if (printDebug) {
             System.err.println(toPrint);
         }
     }
 
     public static void printf(String toPrint, Object... objects) {
-        if (Program.printDebug) {
+        if (printDebug) {
             System.err.printf(toPrint, objects);
         }
     }

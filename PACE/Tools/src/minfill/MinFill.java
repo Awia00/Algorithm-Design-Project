@@ -101,10 +101,12 @@ public class MinFill {
     @Contract(pure = true)
     public Optional<Graph> stepB2(Graph g, int k) {
         IO.printf("Step B2: Non-reducible instance found. k=%d\n", k);
-        int subsetMaxSize = (int)(5*Math.sqrt(k)+2);
+        int subsetMaxSize = (int)(5*Math.sqrt(k)+5);
         Set<Set<Integer>> piI;
-        if(subsetMaxSize > g.vertices().size())
+        if(subsetMaxSize > g.vertices().size()) {
+            IO.println("Shortcut for vital potential maximum clique taken");
             piI = generateVitalPotentialMaximalCliquesLowK(g, g.vertices().size());
+        }
         else
             piI = generateVitalPotentialMaximalCliques(g, k);
 
