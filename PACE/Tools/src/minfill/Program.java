@@ -24,7 +24,7 @@ public class Program {
         }
 
         Graph entireGraph = io.parse();
-        io.printf("Graph of size (|V|, |E|) = (%d, %d)\n", entireGraph.vertices().size(), entireGraph.getEdges().size());
+        IO.printf("Graph of size (|V|, |E|) = (%d, %d)\n", entireGraph.vertices().size(), entireGraph.getEdges().size());
 
         io.print(minFill(entireGraph));
     }
@@ -35,7 +35,7 @@ public class Program {
             componentResult = componentResult.union(perComponent(entireGraph.inducedBy(component)));
         }
 
-        io.printf("minFillSize: %d",componentResult.size());
+        IO.printf("minFillSize: %d",componentResult.size());
         assert entireGraph.addEdges(componentResult).isChordal();
         return componentResult;
     }
@@ -56,7 +56,7 @@ public class Program {
                 int kPrime = tmp.get().b;
 
                 Set<Edge> kernelAddedEdges = gPrime.getEdges().minus(g.getEdges());
-                io.printf("Kernel procedure 3 for k=%d, vertices pruned=%d \n", kPrime, kernelAddedEdges.size());
+                IO.printf("Kernel procedure 3 for k=%d, vertices pruned=%d \n", kPrime, kernelAddedEdges.size());
 
                 Set<Set<Integer>> components = gPrime.components();
 
@@ -69,7 +69,7 @@ public class Program {
                 }
 
                 Set<Edge> easyEdges = easySolver.findEasyEdges(gPrime);
-                io.printf("Easy edges done, found %d", easyEdges.size());
+                IO.printf("Easy edges done, found %d", easyEdges.size());
 
                 gPrime = gPrime.addEdges(easyEdges);
                 kPrime -= easyEdges.size();
