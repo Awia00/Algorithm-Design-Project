@@ -12,7 +12,7 @@ import java.io.FileNotFoundException;
 import java.util.Optional;
 
 public class Program {
-    static final boolean printDebug = true;
+    static final boolean printDebug = false;
     private static MinFillKernel kernel = new MinFillKernel();
     private static MinFillEasySolver easySolver = new MinFillEasySolver();
     private static MinFill mfi = new MinFill();
