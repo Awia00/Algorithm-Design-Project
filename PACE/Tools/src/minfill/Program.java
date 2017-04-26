@@ -16,7 +16,6 @@ public class Program {
     private static MinFillKernel kernel = new MinFillKernel();
     private static MinFillEasySolver easySolver = new MinFillEasySolver();
     private static MinFill mfi = new MinFill();
-
     private static IO io = new IO();
 
     public static void main(String[] args) throws FileNotFoundException {

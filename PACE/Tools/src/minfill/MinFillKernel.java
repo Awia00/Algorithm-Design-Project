@@ -78,10 +78,10 @@ public class MinFillKernel {
                             subPaths.sort(Comparator.comparing(sub -> -sub.size()));
 
                             if (subPaths.size() == 1) {
-                                if (subPaths.get(0).size() == path.size() - 2) {
-                                    kMin += subPaths.get(0).size() - 1;
+                                if (subPaths.get(0).size() == path.size() - 1) {
+                                    kMin += subPaths.get(0).size() - 2;
                                 } else {
-                                    kMin += subPaths.get(0).size();
+                                    kMin += subPaths.get(0).size() - 1;
                                 }
                             } else {
                                 kMin += Math.max(subPaths.stream().mapToInt(Set::size).sum() / 2, subPaths.get(0).size());
