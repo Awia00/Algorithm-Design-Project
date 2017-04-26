@@ -18,7 +18,7 @@ public class Program {
     private static IOManager io;
 
     public static void main(String[] args) throws FileNotFoundException {
-        System.err.close();
+        //System.err.close();
         if (args.length != 0 && !args[0].startsWith("-")) { // Hack to read from file
             System.setIn(new FileInputStream(new File(args[0])));
         }
@@ -35,6 +35,8 @@ public class Program {
         for (Set<Integer> component : entireGraph.components()) {
             componentResult = componentResult.union(perComponent(entireGraph.inducedBy(component)));
         }
+
+        System.err.println(componentResult.size());
         io.print(componentResult);
         assert entireGraph.addEdges(componentResult).isChordal();
     }
@@ -57,6 +59,8 @@ public class Program {
 
                 Set<Edge> kernelAddedEdges = gPrime.getEdges().minus(g.getEdges());
                 Set<Edge> easyEdges = easySolver.findEasyEdges(gPrime);
+                System.err.println("Easy edges done, found " + easyEdges.size());
+
                 gPrime = gPrime.addEdges(easyEdges);
                 kPrime -= easyEdges.size();
 

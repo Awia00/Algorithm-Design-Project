@@ -197,7 +197,7 @@ public class MinFill {
                 }
             }
         }
-        System.err.println("quasi subsets done");
+        //System.err.println("quasi subsets done");
         return potentialMaximalCliques;
     }
 
