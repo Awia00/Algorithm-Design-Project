@@ -105,7 +105,7 @@ public class MinFill {
         Set<Set<Integer>> piI;
         if(subsetMaxSize > g.vertices().size()) {
             IO.println("Shortcut for vital potential maximum clique taken");
-            piI = generateVitalPotentialMaximalCliquesLowK(g, g.vertices().size());
+            piI = generateVitalPotentialMaximalCliquesLowK(g, k);
         }
         else
             piI = generateVitalPotentialMaximalCliques(g, k);
@@ -117,7 +117,7 @@ public class MinFill {
     public Set<Set<Integer>> generateVitalPotentialMaximalCliquesLowK(Graph g, int k) {
         java.util.Set<Set<Integer>> potentialMaximalCliques = new HashSet<>();
 
-        for (Set<Integer> vertices : Set.subsetsOfSizeAtMost(g.vertices(), k)) {
+        for (Set<Integer> vertices : Set.subsetsOfSizeAtMost(g.vertices(), g.vertices().size())) {
             if (g.isVitalPotentialMaximalClique(vertices, k)) {
                 potentialMaximalCliques.add(vertices);
             }
@@ -146,7 +146,10 @@ public class MinFill {
             Set<Edge> fill = g.cliqueify(g.neighborhood(vertex).toSet());
             if(!fill.isEmpty()) {
                 Graph h = g.addEdges(fill);
-                potentialMaximalCliques.addAll(enumerateQuasiCliques(h, k));
+                for (Set<Integer> set : enumerateQuasiCliques(h, k)) {
+                    if(g.isVitalPotentialMaximalClique(set,k))
+                        potentialMaximalCliques.add(set);
+                }
             }
         }
         IO.println("step B2: case 3 done: " + potentialMaximalCliques.size());
@@ -205,7 +208,7 @@ public class MinFill {
 
     @Contract(pure = true)
     public Optional<Graph> stepC(Graph g, int k, Set<Set<Integer>> piI) {
-        IO.println("Step C: All vital potential maximal cliques found.");
+        IO.println("Step C: All ("+piI.size()+") vital potential maximal cliques found.");
         Map<Pair, Set<Set<Integer>>> piSC = generatePiSC(g, piI);
         Map<Graph, Set<Edge>> memoizer = new HashMap<>();
         for (Set<Integer> omega : piI) {
