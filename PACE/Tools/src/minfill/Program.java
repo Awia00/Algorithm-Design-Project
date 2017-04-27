@@ -55,7 +55,8 @@ public class Program {
                 int kPrime = tmp.get().b;
 
                 Set<Edge> kernelAddedEdges = gPrime.getEdges().minus(g.getEdges());
-                IO.printf("Kernel procedure 3 for k=%d, vertices pruned=%d \n", kPrime, kernelAddedEdges.size());
+                int amtOfRemovedVertices = g.vertices().size()-gPrime.vertices().size();
+                IO.printf("Kernel procedure 3 for k=%d, vertices pruned=%d \n", kPrime, amtOfRemovedVertices);
 
                 Set<Set<Integer>> components = gPrime.components();
 
