@@ -7,6 +7,7 @@ import minfill.sets.ImmutableSet;
 import minfill.tuples.Pair;
 import minfill.sets.Set;
 import org.jetbrains.annotations.Contract;
+import utils.Kernelizer;
 
 import java.util.*;
 import java.util.concurrent.atomic.LongAdder;
@@ -130,7 +131,7 @@ public class MinFill {
         java.util.Set<Set<Integer>> potentialMaximalCliques = new HashSet<>();
 
         // enumerate quasi-cliques. (Step 1)
-        potentialMaximalCliques.addAll(enumerateQuasiCliques(g, k));
+        potentialMaximalCliques.addAll(enumerateVitalQuasiCliques(g, k));
         IO.println("step B2: case 1 done: " + potentialMaximalCliques.size());
 
         // all vertex subsets of size at most 5*sqrt(k)+2 (step 2)
@@ -147,7 +148,7 @@ public class MinFill {
             if(!fill.isEmpty()) {
                 Graph h = g.addEdges(fill);
                 for (Set<Integer> set : enumerateQuasiCliques(h, k)) {
-                    if(g.isVitalPotentialMaximalClique(set,k))
+                    if(g.isVitalPotentialMaximalClique(set, k))
                         potentialMaximalCliques.add(set);
                 }
             }
@@ -160,6 +161,56 @@ public class MinFill {
     // TODO: Check that we branch correctly on component size.
     @Contract(pure = true)
     private java.util.Set<Set<Integer>> enumerateQuasiCliques(Graph g, int k) {
+        java.util.Set<Set<Integer>> potentialMaximalCliques = new HashSet<>();
+        Iterable<Set<Integer>> vertexSubsets = Set.subsetsOfSizeAtMost(g.vertices(), (int)(5*Math.sqrt(k)));
+
+        for (Set<Integer> z : vertexSubsets) {
+            Set<Integer> gMinusZ = g.vertices().minus(z);
+            ChordalGraph h = g.inducedBy(gMinusZ).minimalTriangulation();
+
+            // Case 1
+            for (Set<Integer> s : h.minimalSeparators()) {
+                if(g.isClique(s)){
+                    Set<Integer> c = s.union(z);
+                    if (!potentialMaximalCliques.contains(c) && g.isPotentialMaximalClique(c)) {
+                        potentialMaximalCliques.add(c);
+                    }
+                }
+            }
+
+            for (Set<Integer> maximalClique : h.maximalCliques()) {
+                // Case 2
+                if (g.isClique(maximalClique)) {
+                    Set<Integer> c = maximalClique.union(z);
+                    if (!potentialMaximalCliques.contains(c) && g.isPotentialMaximalClique(c)) {
+                        potentialMaximalCliques.add(c);
+                    }
+                }
+
+                // Case 3
+                Graph gMinusKUnionZ = g.inducedBy(g.vertices().minus(maximalClique.union(z)));
+                for (Integer y : z) {
+                    Set<Integer> Y = Set.of(y);
+                    for (Set<Integer> bi : gMinusKUnionZ.components()) {
+                        if (g.neighborhood(bi).contains(y)) {
+                            Y = Y.union(bi);
+                        }
+                    }
+                    Set<Integer> c = g.neighborhood(Y).add(y);
+                    if (!potentialMaximalCliques.contains(c) && g.isPotentialMaximalClique(c)) {
+                        potentialMaximalCliques.add(c);
+                    }
+                }
+            }
+        }
+        //IO.println("quasi subsets done");
+        return potentialMaximalCliques;
+    }
+
+    // Implementation of Lemma 4.1
+    // TODO: Check that we branch correctly on component size.
+    @Contract(pure = true)
+    private java.util.Set<Set<Integer>> enumerateVitalQuasiCliques(Graph g, int k) {
         java.util.Set<Set<Integer>> potentialMaximalCliques = new HashSet<>();
         Iterable<Set<Integer>> vertexSubsets = Set.subsetsOfSizeAtMost(g.vertices(), (int)(5*Math.sqrt(k)));
 
@@ -253,8 +304,10 @@ public class MinFill {
         }
 
         Set<Edge> result = f.getNonEdges();
-        if(!piSC.containsKey(sc))
+        if(!piSC.containsKey(sc)){
             IO.println("SC not found in piSC");
+            return result;
+        }
         for (Set<Integer> omegaPrime : piSC.get(sc)) {
             Set<Edge> fill = f.cliqueify(omegaPrime);
             Graph filled = f.addEdges(fill);

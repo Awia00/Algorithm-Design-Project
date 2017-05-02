@@ -13,6 +13,17 @@ import java.util.List;
  */
 public class MinFillEasySolver {
 
+    public Set<Integer> findRemovableVertices(Graph g){
+        Set<Integer> result = Set.empty();
+        for (Integer integer : g.vertices()) {
+            if(g.isClique(g.neighborhood(integer).toSet()))
+            {
+                result = result.add(integer);
+            }
+        }
+        return result;
+    }
+
     public Set<Edge> findEasyEdges(Graph g){
         Set<Edge> step1 = findEasyEdgesStep1(g);
         Set<Edge> step2 = findEasyEdgesStep2(g.addEdges(step1));
