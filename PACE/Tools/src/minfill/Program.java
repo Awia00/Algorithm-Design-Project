@@ -36,6 +36,9 @@ public class Program {
 
         IO.printf("minFillSize: %d\n",componentResult.size());
         assert entireGraph.addEdges(componentResult).isChordal();
+        for (Edge edge : componentResult) {
+            assert !entireGraph.addEdges(componentResult.remove(edge)).isChordal(); // minimality
+        }
         return componentResult;
     }
 

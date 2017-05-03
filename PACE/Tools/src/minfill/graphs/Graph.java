@@ -367,6 +367,7 @@ public interface Graph {
                                 path.add(order.get(i));
 
                                 assert path.size() >= 4;
+                                assert !inducedBy(minfill.sets.Set.of(path)).isChordal();
 
                                 return Optional.of(path);
                             }
