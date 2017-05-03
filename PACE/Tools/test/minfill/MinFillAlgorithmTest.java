@@ -78,7 +78,7 @@ public class MinFillAlgorithmTest {
         badGraphs.add("71.graph"); // k=81
         badGraphs.add("72.graph"); // k=83
         badGraphs.add("75.graph"); // k=18
-        badGraphs.add("76.graph"); // weird: k = 6 in a non reducible instance but takes long time to finish.
+        badGraphs.add("76.graph"); // weird: k = 6, 39 vertices in a non reducible instance but takes long time to finish.
         badGraphs.add("77.graph"); // k=49
         badGraphs.add("78.graph"); // k=60
         badGraphs.add("79.graph"); // k=44
