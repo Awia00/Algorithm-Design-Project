@@ -16,6 +16,7 @@ public class SubsetOfAtMostSizeIterable<T extends Comparable<T>> implements Iter
     @NotNull
     @Override
     public Iterator<Set<T>> iterator() {
+        if(maxSize==1) return new SubsetOfAtMostSizeIterator.SetIterator(elements);
         return new SubsetOfAtMostSizeIterator<>(elements, maxSize);
     }
 }

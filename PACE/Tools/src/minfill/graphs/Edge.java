@@ -1,10 +1,11 @@
 package minfill.graphs;
 
 import minfill.sets.Set;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
-public class Edge {
+public class Edge implements Comparable<Edge>{
     public final Integer from, to;
     private Set<Integer> vertices;
 
@@ -15,8 +16,13 @@ public class Edge {
     }
 
     public Edge(Integer from, Integer to) {
-        this.from = from;
-        this.to = to;
+        if(from < to){
+            this.from = from;
+            this.to = to;
+        }else{
+            this.to = from;
+            this.from = to;
+        }
     }
 
     @Override
@@ -26,14 +32,20 @@ public class Edge {
 
         Edge edge = (Edge) o;
 
-        return (Objects.equals(from, edge.from) && Objects.equals(to, edge.to)) ||
-               (Objects.equals(from, edge.to) && Objects.equals(to, edge.from));
+        return (Objects.equals(from, edge.from) && Objects.equals(to, edge.to));
     }
 
     @Override
     public int hashCode() {
-        if(from < to )
-            return 31 * from + to;
-        return 31 * to + from;
+        return 31 * from + to;
+    }
+
+    @Override
+    public int compareTo(@NotNull Edge o) {
+        int result = from.compareTo(o.from);
+        if(result == 0){
+            return to.compareTo(o.to);
+        }
+        return result;
     }
 }
