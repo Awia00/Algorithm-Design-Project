@@ -101,10 +101,13 @@ public class SubsetOfAtMostSizeIterator<T extends Comparable<T>> implements Iter
         throw new IllegalStateException("No more elements");
     }
 
-    private static class SetIterator<T> implements Iterator<minfill.sets.Set<T>> {
+    public static class SetIterator<T> implements Iterator<minfill.sets.Set<T>> {
         private final Iterator<T> inner;
 
         private SetIterator(List<T> elements) {
+            inner = elements.iterator();
+        }
+        public SetIterator(Set<T> elements) {
             inner = elements.iterator();
         }
 

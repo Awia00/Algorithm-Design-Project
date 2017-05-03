@@ -6,6 +6,7 @@ import minfill.sets.Set;
 import org.jetbrains.annotations.Contract;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -14,14 +15,14 @@ import java.util.List;
 public class MinFillEasySolver {
 
     public Set<Integer> findRemovableVertices(Graph g){
-        Set<Integer> result = Set.empty();
+        java.util.Set<Integer> result = new HashSet<>();
         for (Integer integer : g.vertices()) {
             if(g.isClique(g.neighborhood(integer).toSet()))
             {
-                result = result.add(integer);
+                result.add(integer);
             }
         }
-        return result;
+        return Set.of(result);
     }
 
     public Set<Edge> findEasyEdges(Graph g){

@@ -105,15 +105,31 @@ public class MinFill {
     public Optional<Graph> stepB2(Graph g, int k) {
         IO.printf("Step B2: Non-reducible instance found. k=%d\n", k);
         int subsetMaxSize = (int)(5*Math.sqrt(k)+5);
+
+        Set<Integer> removableIntegers = new MinFillEasySolver().findRemovableVertices(g);
+        Graph gCopy = g;
+        g = g.inducedBy(g.vertices().minus(removableIntegers));
+        IO.printf("Removed %d vertices\n", removableIntegers.size());
+
         Set<Set<Integer>> piI;
         if(subsetMaxSize > g.vertices().size()) {
             IO.println("Shortcut for vital potential maximum clique taken");
             piI = generateVitalPotentialMaximalCliquesLowK(g, k);
         }
+        else if(k<=7){
+            IO.println("Shortcut Non-Edges taken");
+            for (Set<Edge> edges : Set.subsetsOfSizeAtMost(g.getNonEdges(), k)) {
+                Graph gWithSubsetEdges = gCopy.addEdges(edges);
+                if(gWithSubsetEdges.isChordal()){
+                    return Optional.of(gWithSubsetEdges);
+                }
+            }
+            return Optional.empty();
+        }
         else
             piI = generateVitalPotentialMaximalCliques(g, k);
 
-        return stepC(g, k, piI);
+        return stepC(gCopy, k, piI);
     }
 
     @Contract(pure = true)

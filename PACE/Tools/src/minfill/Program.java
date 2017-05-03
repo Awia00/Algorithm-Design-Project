@@ -56,7 +56,7 @@ public class Program {
 
                 Set<Edge> kernelAddedEdges = gPrime.getEdges().minus(g.getEdges());
                 int amtOfRemovedVertices = g.vertices().size()-gPrime.vertices().size();
-                IO.printf("Kernel procedure 3 for k=%d, vertices pruned=%d \n", kPrime, amtOfRemovedVertices);
+                IO.printf("Kernel procedure 3 for k=%d, edges added= %d vertices pruned=%d \n", kPrime, kernelAddedEdges.size(), amtOfRemovedVertices);
 
                 Set<Set<Integer>> components = gPrime.components();
 
@@ -82,7 +82,7 @@ public class Program {
                 if (result.isPresent()) {
                     Set<Edge> minimumFill = result.get().getEdges().minus(g.getEdges());
 
-                    IO.println("Memoizer hits: " + MinFill.memoizerHits.longValue());
+                    IO.printf("MinFill found of size: %d Memoizer hits: %d\n", minimumFill.size(), MinFill.memoizerHits.longValue());
                     MinFill.memoizerHits.reset();
 
                     assert result.get().isChordal();
