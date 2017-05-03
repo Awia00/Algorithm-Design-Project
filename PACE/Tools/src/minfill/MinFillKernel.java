@@ -10,7 +10,8 @@ import org.jetbrains.annotations.Contract;
 
 import java.util.*;
 
-public class MinFillKernel {
+public class MinFillKernel implements MinimumFillKernel {
+    @Override
     @Contract(pure = true)
     public Triple<Set<Integer>, Set<Integer>, Integer> kernelProcedure1And2(Graph g) {
         Set<Integer> A = Set.empty(), B = g.vertices();
@@ -97,6 +98,7 @@ public class MinFillKernel {
         return Tuple.of(A, B, kMin);
     }
 
+    @Override
     @Contract(pure = true)
     public Optional<Pair<Graph, Integer>> kernelProcedure3(Graph g, Set<Integer> A, Set<Integer> B, int k) {
         int kPrime = k;

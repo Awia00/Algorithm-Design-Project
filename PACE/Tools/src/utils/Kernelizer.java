@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.util.Optional;
 
 public class Kernelizer {
+    private static MinFillKernel kernel = new MinFillKernel();
 
     public static void main(String[] args) throws IOException {
         try (IO io = new IO(Util.getInput(args))) {
@@ -20,7 +21,10 @@ public class Kernelizer {
     }
 
     public static Graph kernelize(Graph g) {
-        MinFillKernel kernel = new MinFillKernel();
+        return kernelizeWithK(g).a;
+    }
+
+    public static Pair<Graph, Integer> kernelizeWithK(Graph g) {
         Triple<Set<Integer>, Set<Integer>, Integer> abk = kernel.kernelProcedure1And2(g);
 
         int k = abk.c - 1;
@@ -29,6 +33,6 @@ public class Kernelizer {
             gk = kernel.kernelProcedure3(g, abk.a, abk.b, ++k);
         } while(!gk.isPresent());
 
-        return gk.get().a;
+        return gk.get();
     }
 }

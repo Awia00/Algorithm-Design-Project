@@ -4,12 +4,14 @@ import minfill.graphs.ChordalGraph;
 import minfill.graphs.Edge;
 import minfill.graphs.Graph;
 import minfill.sets.ImmutableSet;
-import minfill.tuples.Pair;
 import minfill.sets.Set;
+import minfill.tuples.Pair;
 import org.jetbrains.annotations.Contract;
-import utils.Kernelizer;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.atomic.LongAdder;
 
 public class MinFill {
