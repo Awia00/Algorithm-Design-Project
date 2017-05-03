@@ -114,7 +114,7 @@ public class MinFill {
             IO.println("Shortcut for vital potential maximum clique taken");
             piI = generateVitalPotentialMaximalCliquesLowK(g, k);
         }
-        else if(k<=7){
+        else if(k < 6){
             IO.println("Shortcut Non-Edges taken");
             for (Set<Edge> edges : Set.subsetsOfSizeAtMost(g.getNonEdges(), k)) {
                 Graph gWithSubsetEdges = gCopy.addEdges(edges);

@@ -28,25 +28,25 @@ public class MinFillAlgorithmTest {
         badGraphs = new ArrayList<>();
 
         badGraphs.add("1.graph"); // kernel takes long time
-        badGraphs.add("10.graph"); // k=53
-        badGraphs.add("100.graph"); // k=60
-        badGraphs.add("11.graph"); // k=13, 92 vertices
-        badGraphs.add("13.graph"); // k=32 lot of easy edges - still k too high
+        badGraphs.add("10.graph"); // k=19 takes time to find non-reducible graph
+        badGraphs.add("100.graph"); // k=50
+        badGraphs.add("11.graph"); // k=11, 92 vertices - takes long tim to find none reducible
+        badGraphs.add("13.graph"); // k=21 lot of easy edges - still k too high
         badGraphs.add("15.graph"); // component too big - takes long time even to load
-        badGraphs.add("16.graph"); // k=55
-        badGraphs.add("17.graph"); // k=266
-        badGraphs.add("18.graph"); // k=21 non reducible creates a lot of edges
-        badGraphs.add("19.graph"); // k=53 lot of easy edges - still k too high
-        badGraphs.add("2.graph"); // k = 41
+        badGraphs.add("16.graph"); // k=31
+        badGraphs.add("17.graph"); // k=266 hmmm kernel now takes too long
+        badGraphs.add("18.graph"); // k=17 non reducible creates a lot of edges
+        badGraphs.add("19.graph"); // k=37 lot of easy edges - still k too high
+        badGraphs.add("2.graph"); // k = 12
         badGraphs.add("21.graph"); // one component too big - kernel takes long time
-        badGraphs.add("22.graph"); // k=79
-        badGraphs.add("23.graph"); // k=59
-        badGraphs.add("24.graph"); // k=11 should be doable
+        badGraphs.add("22.graph"); // k=38
+        badGraphs.add("23.graph"); // k=40
+        badGraphs.add("24.graph"); // k=10 should be doable
         badGraphs.add("25.graph"); // kernel takes long time
         badGraphs.add("26.graph"); // k=26
         badGraphs.add("28.graph"); // k=53
         badGraphs.add("29.graph"); // k=45
-        badGraphs.add("3.graph"); // k=9 should be doable
+        badGraphs.add("3.graph"); // k=8 40 vertices 252 edges should be doable
         badGraphs.add("30.graph"); // k=47
         badGraphs.add("31.graph"); // k=27
         badGraphs.add("32.graph"); // easy solver takes long time - lot of easy edges, k=173 - branching takes long time
@@ -61,8 +61,6 @@ public class MinFillAlgorithmTest {
         badGraphs.add("44.graph"); // K=40
         badGraphs.add("46.graph"); // K=53
         badGraphs.add("47.graph"); // K=58
-        badGraphs.add("50.graph"); // K=13, vertices 30
-        badGraphs.add("51.graph"); // K=18
         badGraphs.add("52.graph"); // K=59
         badGraphs.add("56.graph"); // K=48
         badGraphs.add("57.graph"); // kernel takes too long
@@ -90,7 +88,7 @@ public class MinFillAlgorithmTest {
         badGraphs.add("86.graph"); // k=22
         badGraphs.add("88.graph"); // component too big
         badGraphs.add("89.graph"); // k=39
-        badGraphs.add("9.graph"); // WUT, k=4 in non-reducible instance and only 27 vertices but does not finish
+        badGraphs.add("9.graph"); // k=6 in non-reducible instance and only 27 vertices but does not finish
         badGraphs.add("90.graph"); // lot of components starting with k=450, kernel and simplesolver takes looong time - not too many vertices.
         badGraphs.add("91.graph"); // k=65
         badGraphs.add("92.graph"); // k=50
