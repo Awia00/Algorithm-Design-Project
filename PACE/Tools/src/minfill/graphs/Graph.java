@@ -1,10 +1,12 @@
 package minfill.graphs;
 
+import minfill.sets.*;
 import minfill.tuples.Pair;
 import minfill.tuples.Tuple;
 import org.jetbrains.annotations.Contract;
 
 import java.util.*;
+import java.util.Set;
 
 public interface Graph {
     @Contract(pure = true)
@@ -356,12 +358,15 @@ public interface Graph {
                 }
                 if (!isClique(madj)) {
                     // Cycle identified
-                    Graph gPrime = inducedBy(vertices().remove(order.get(i)));
-
                     for (int j = 0; j < madjList.size()-1; j++) {
                         Integer v = madjList.get(j);
                         for (int k = j+1; k < madjList.size(); k++) {
                             Integer w = madjList.get(k);
+
+                            minfill.sets.Set<Integer> toRemove = madj.minus(minfill.sets.Set.of(v, w)).add(order.get(i));
+
+                            Graph gPrime = inducedBy(vertices().minus(toRemove));
+
                             if (!gPrime.isAdjacent(v, w) && gPrime.hasPath(v, w)) {
                                 List<Integer> path = gPrime.shortestPath(v, w);
                                 path.add(order.get(i));
