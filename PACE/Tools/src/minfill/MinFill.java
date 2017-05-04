@@ -107,29 +107,34 @@ public class MinFill {
         int subsetMaxSize = (int)(5*Math.sqrt(k)+5);
 
         Set<Integer> removableIntegers = new MinFillEasySolver().findRemovableVertices(g);
-        Graph gCopy = g;
-        g = g.inducedBy(g.vertices().minus(removableIntegers));
+        Graph gPrime = g.inducedBy(g.vertices().minus(removableIntegers));
         IO.printf("Removed %d vertices\n", removableIntegers.size());
 
         Set<Set<Integer>> piI;
-        if(subsetMaxSize > g.vertices().size()) {
+        if(subsetMaxSize > gPrime.vertices().size()) {
             IO.println("Shortcut for vital potential maximum clique taken");
-            piI = generateVitalPotentialMaximalCliquesLowK(g, k);
+            piI = generateVitalPotentialMaximalCliquesLowK(gPrime, k);
         }
-        else if(k < 6){
+        else if(k < 5){
             IO.println("Shortcut Non-Edges taken");
-            for (Set<Edge> edges : Set.subsetsOfSizeAtMost(g.getNonEdges(), k)) {
-                Graph gWithSubsetEdges = gCopy.addEdges(edges);
+            return exhaustiveNonEdgeSearch(gPrime, k);
+        }
+        else
+            piI = generateVitalPotentialMaximalCliques(gPrime, k);
+
+        return stepC(g, k, piI);
+    }
+
+    public Optional<Graph> exhaustiveNonEdgeSearch(Graph g, int k){
+        for (Set<Edge> edges : Set.subsetsOfSizeAtMost(g.getNonEdges(), k)) {
+            if(edges.size()==k){
+                Graph gWithSubsetEdges = g.addEdges(edges);
                 if(gWithSubsetEdges.isChordal()){
                     return Optional.of(gWithSubsetEdges);
                 }
             }
-            return Optional.empty();
         }
-        else
-            piI = generateVitalPotentialMaximalCliques(g, k);
-
-        return stepC(gCopy, k, piI);
+        return Optional.empty();
     }
 
     @Contract(pure = true)
