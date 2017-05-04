@@ -16,6 +16,7 @@ public class MinFillEasySolver {
 
     public Set<Integer> findRemovableVertices(Graph g){
         java.util.Set<Integer> result = new HashSet<>();
+        // Simplicial vertices
         for (Integer integer : g.vertices()) {
             if(g.isClique(g.neighborhood(integer).toSet()))
             {
