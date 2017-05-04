@@ -126,12 +126,10 @@ public class MinFill {
     }
 
     public Optional<Graph> exhaustiveNonEdgeSearch(Graph g, int k){
-        for (Set<Edge> edges : Set.subsetsOfSizeAtMost(g.getNonEdges(), k)) {
-            if(edges.size()==k){
-                Graph gWithSubsetEdges = g.addEdges(edges);
-                if(gWithSubsetEdges.isChordal()){
-                    return Optional.of(gWithSubsetEdges);
-                }
+        for (Set<Edge> edges : Set.subsetsOfSize(g.getNonEdges(), k)) {
+            Graph gWithSubsetEdges = g.addEdges(edges);
+            if(gWithSubsetEdges.isChordal()){
+                return Optional.of(gWithSubsetEdges);
             }
         }
         return Optional.empty();

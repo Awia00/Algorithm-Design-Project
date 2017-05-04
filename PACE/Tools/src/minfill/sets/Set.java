@@ -64,4 +64,8 @@ public interface Set<T> extends Iterable<T>  {
     static <T extends Comparable<T>> Iterable<Set<T>> subsetsOfSizeAtMost(Set<T> elements, int maxSize) {
         return new SubsetOfAtMostSizeIterable<>(elements, maxSize);
     }
+
+    static <T extends Comparable<T>> Iterable<Set<T>> subsetsOfSize(Set<T> elements, int size) {
+        return new SubsetOfSizeIterable<>(elements, size);
+    }
 }

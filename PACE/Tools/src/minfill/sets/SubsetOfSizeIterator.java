@@ -1,43 +1,46 @@
 package minfill.sets;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
-public class SubsetOfAtMostSizeIterator<T extends Comparable<T>> implements Iterator<minfill.sets.Set<T>> {
+public class SubsetOfSizeIterator<T extends Comparable<T>> implements Iterator<Set<T>> {
     private final List<T> elements;
-    private final Iterator<minfill.sets.Set<T>> inner;
+    private final Iterator<Set<T>> inner;
     private final int maxSize;
 
     private int index;
-    private minfill.sets.Set<T> sub;
+    private Set<T> sub;
     private boolean nextTaken = true;
-    private minfill.sets.Set<T> next;
+    private Set<T> next;
 
     @SuppressWarnings("unchecked")
-    public SubsetOfAtMostSizeIterator(minfill.sets.Set<T> elements, int size) {
+    public SubsetOfSizeIterator(Set<T> elements, int maxSize) {
         this.elements = new ArrayList<>(elements.size());
         for (T element : elements) {
             this.elements.add(element);
         }
         Collections.sort(this.elements);
 
-        if (size == 2) {
+        if (maxSize == 2) {
             inner = new SetIterator<>(this.elements);
-        } else if (size > 2) {
-            inner = new SubsetOfAtMostSizeIterator<>(this.elements, size - 1);
+        } else if (maxSize > 2) {
+            inner = new SubsetOfSizeIterator<>(this.elements, maxSize - 1);
         } else {
             throw new IllegalArgumentException("maxSize");
         }
 
         index = elements.size();
-        this.maxSize = size;
+        this.maxSize = maxSize;
     }
 
-    private SubsetOfAtMostSizeIterator(List<T> elements, int maxSize) {
+    private SubsetOfSizeIterator(List<T> elements, int maxSize) {
         this.elements = elements;
         if (maxSize == 2) {
             inner = new SetIterator<>(this.elements);
         } else if (maxSize > 2) {
-            inner = new SubsetOfAtMostSizeIterator<>(this.elements, maxSize - 1);
+            inner = new SubsetOfSizeIterator<>(this.elements, maxSize - 1);
         } else {
             throw new IllegalArgumentException("maxSize");
         }
@@ -65,12 +68,6 @@ public class SubsetOfAtMostSizeIterator<T extends Comparable<T>> implements Iter
                     }
                 }
                 index--; // HACK: fix index.
-
-                // First return the sub element.
-                next = sub;
-
-                nextTaken = false;
-                return true;
             }
             if (index >= elements.size() - 1) {
                 sub = null;
@@ -86,22 +83,21 @@ public class SubsetOfAtMostSizeIterator<T extends Comparable<T>> implements Iter
             }
         } while (index < elements.size() - 1 || inner.hasNext());
 
-
         return false;
     }
 
     @Override
-    public minfill.sets.Set<T> next() {
+    public Set<T> next() {
         if (hasNext()) {
             nextTaken = true;
-            minfill.sets.Set<T> next = this.next;
+            Set<T> next = this.next;
             this.next = null;
             return next;
         }
         throw new IllegalStateException("No more elements");
     }
 
-    public static class SetIterator<T> implements Iterator<minfill.sets.Set<T>> {
+    public static class SetIterator<T> implements Iterator<Set<T>> {
         private final Iterator<T> inner;
 
         private SetIterator(List<T> elements) {
@@ -117,8 +113,8 @@ public class SubsetOfAtMostSizeIterator<T extends Comparable<T>> implements Iter
         }
 
         @Override
-        public minfill.sets.Set<T> next() {
-            return minfill.sets.Set.of(inner.next());
+        public Set<T> next() {
+            return Set.of(inner.next());
         }
     }
 }
