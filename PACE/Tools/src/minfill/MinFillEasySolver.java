@@ -18,7 +18,9 @@ public class MinFillEasySolver {
         java.util.Set<Integer> result = new HashSet<>();
         // Simplicial vertices
         for (Integer integer : g.vertices()) {
-            if(g.isClique(g.neighborhood(integer).toSet()))
+            if(g.neighborhood(integer).toSet().size()==g.vertices().size()-1) // check if universal
+                result.add(integer);
+            else if(g.isClique(g.neighborhood(integer).toSet())) // check is simplicial
             {
                 result.add(integer);
             }

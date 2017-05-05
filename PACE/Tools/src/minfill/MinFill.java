@@ -106,7 +106,7 @@ public class MinFill {
         IO.printf("Step B2: Non-reducible instance found. k=%d\n", k);
         int subsetMaxSize = (int)(5*Math.sqrt(k)+5); // 5 is magic value, theoretically should be 2 or 3
 
-        Set<Integer> removableIntegers = new MinFillEasySolver().findRemovableVertices(g);
+        Set<Integer> removableIntegers = Set.empty();//new MinFillEasySolver().findRemovableVertices(g);
         Graph gPrime = g.inducedBy(g.vertices().minus(removableIntegers));
         IO.printf("Removed %d vertices\n", removableIntegers.size());
 
