@@ -39,7 +39,7 @@ public class AdjacencySetGraph implements Graph {
 
     @Override
     @Contract(pure = true)
-    public Set<Integer> vertices() {
+    public Set<Integer> getVertices() {
         return vertices;
     }
 
@@ -111,9 +111,9 @@ public class AdjacencySetGraph implements Graph {
     @Override
     @Contract(pure = true)
     public Graph inducedBy(Set<Integer> vertices) {
-        assert vertices.isSubsetOf(vertices());
+        assert vertices.isSubsetOf(getVertices());
 
-        if (vertices.isProperSubsetOf(vertices())) {
+        if (vertices.isProperSubsetOf(getVertices())) {
             Map<Integer, Set<Integer>> copy = new HashMap<>();
 
             for (Integer vertex : vertices) {
@@ -122,7 +122,7 @@ public class AdjacencySetGraph implements Graph {
 
             return new AdjacencySetGraph(vertices, copy);
         }
-        // If vertices is a subset of V(this), but not a proper subset, then it must be the entire graph.
+        // If getVertices is a subset of V(this), but not a proper subset, then it must be the entire graph.
         return this;
     }
 

@@ -30,7 +30,7 @@ public class MinFillFominAlgorithmTest {
         badGraphs.add("1.graph"); // kernel takes long time
         badGraphs.add("10.graph"); // k=19 takes time to find non-reducible graph
         badGraphs.add("100.graph"); // k=50
-        badGraphs.add("11.graph"); // k=11, 92 vertices - takes long tim to find none reducible
+        badGraphs.add("11.graph"); // k=11, 92 getVertices - takes long tim to find none reducible
         badGraphs.add("13.graph"); // k=21 lot of easy edges - still k too high
         badGraphs.add("15.graph"); // component too big - takes long time even to load
         badGraphs.add("16.graph"); // k=31
@@ -46,7 +46,7 @@ public class MinFillFominAlgorithmTest {
         badGraphs.add("26.graph"); // k=26
         badGraphs.add("28.graph"); // k=53
         badGraphs.add("29.graph"); // k=45
-        badGraphs.add("3.graph"); // k=8 40 vertices 252 edges should be doable
+        badGraphs.add("3.graph"); // k=8 40 getVertices 252 edges should be doable
         badGraphs.add("30.graph"); // k=47
         badGraphs.add("31.graph"); // k=27
         badGraphs.add("32.graph"); // easy solver takes long time - lot of easy edges, k=173 - branching takes long time
@@ -76,7 +76,7 @@ public class MinFillFominAlgorithmTest {
         badGraphs.add("71.graph"); // k=81
         badGraphs.add("72.graph"); // k=83
         badGraphs.add("75.graph"); // k=18
-        badGraphs.add("76.graph"); // weird: k = 6, 39 vertices in a non reducible instance but takes long time to finish.
+        badGraphs.add("76.graph"); // weird: k = 6, 39 getVertices in a non reducible instance but takes long time to finish.
         badGraphs.add("77.graph"); // k=49
         badGraphs.add("78.graph"); // k=60
         badGraphs.add("79.graph"); // k=44
@@ -88,8 +88,8 @@ public class MinFillFominAlgorithmTest {
         badGraphs.add("86.graph"); // k=22
         badGraphs.add("88.graph"); // component too big
         badGraphs.add("89.graph"); // k=39
-        badGraphs.add("9.graph"); // k=6 in non-reducible instance and only 27 vertices but does not finish
-        badGraphs.add("90.graph"); // lot of components starting with k=450, kernel and simplesolver takes looong time - not too many vertices.
+        badGraphs.add("9.graph"); // k=6 in non-reducible instance and only 27 getVertices but does not finish
+        badGraphs.add("90.graph"); // lot of components starting with k=450, kernel and simplesolver takes looong time - not too many getVertices.
         badGraphs.add("91.graph"); // k=65
         badGraphs.add("92.graph"); // k=50
         badGraphs.add("93.graph"); // k=240 but good teamwork between kernel and simpleSolver

@@ -1,7 +1,5 @@
 package minfill.graphs;
 
-import minfill.graphs.ChordalGraph;
-import minfill.graphs.Graph;
 import minfill.iterators.FilterIterator;
 import minfill.sets.Set;
 
@@ -22,7 +20,7 @@ public class PotentialQuasiCliqueIterator implements Iterator<Set<Integer>> {
 
     public PotentialQuasiCliqueIterator(Graph g, int k) {
         this.g = g;
-        vertexSubsets = Set.subsetsOfSizeAtMost(g.vertices(), (int)(5*Math.sqrt(k))).iterator();
+        vertexSubsets = Set.subsetsOfSizeAtMost(g.getVertices(), (int)(5*Math.sqrt(k))).iterator();
     }
 
     @Override
@@ -61,7 +59,7 @@ public class PotentialQuasiCliqueIterator implements Iterator<Set<Integer>> {
     public Set<Integer> next() {
         if(stage == 0){
             z = vertexSubsets.next();
-            Set<Integer> gMinusZ = g.vertices().minus(z);
+            Set<Integer> gMinusZ = g.getVertices().minus(z);
             ChordalGraph h = g.inducedBy(gMinusZ).minimalTriangulation();
             minimalSeparators = new FilterIterator<>(h.minimalSeparators(), g::isClique);
             maximalCliques = h.maximalCliques().iterator();
@@ -77,7 +75,7 @@ public class PotentialQuasiCliqueIterator implements Iterator<Set<Integer>> {
         }
         if(stage == 2){
             Set<Integer> maximalClique = maximalCliques.next();
-            gMinusKUnionZ = g.inducedBy(g.vertices().minus(maximalClique.union(z)));
+            gMinusKUnionZ = g.inducedBy(g.getVertices().minus(maximalClique.union(z)));
             zIterator = z.iterator();
             stage = 3;
             if(g.isClique(maximalClique)){

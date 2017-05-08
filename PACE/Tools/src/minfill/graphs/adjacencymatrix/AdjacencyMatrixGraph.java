@@ -46,7 +46,7 @@ public class AdjacencyMatrixGraph implements Graph {
     }
 
     @Override
-    public Set<Integer> vertices() {
+    public Set<Integer> getVertices() {
         return mapToInternal.keySet();
     }
 
@@ -121,7 +121,7 @@ public class AdjacencyMatrixGraph implements Graph {
 
     @Override
     public Graph inducedBy(Set<Integer> vertices) {
-        assert vertices.isSubsetOf(vertices());
+        assert vertices.isSubsetOf(getVertices());
 
         java.util.Set<Integer> allowedValues = new HashSet<>();
 

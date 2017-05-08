@@ -16,9 +16,9 @@ public class MinFillEasySolver {
 
     public Set<Integer> findRemovableVertices(Graph g){
         java.util.Set<Integer> result = new HashSet<>();
-        // Simplicial vertices
-        for (Integer integer : g.vertices()) {
-            if(g.neighborhood(integer).toSet().size()==g.vertices().size()-1) // check if universal
+        // Simplicial getVertices
+        for (Integer integer : g.getVertices()) {
+            if(g.neighborhood(integer).toSet().size()==g.getVertices().size()-1) // check if universal
                 result.add(integer);
             else if(g.isClique(g.neighborhood(integer).toSet())) // check is simplicial
             {
@@ -56,7 +56,7 @@ public class MinFillEasySolver {
                             Edge edge = new Edge(neighbourhoodList.get(0), neighbourhoodList.get(1));
                             result = result.add(edge);
                             g = g.addEdge(edge);
-                            g = g.inducedBy(g.vertices().remove(u));
+                            g = g.inducedBy(g.getVertices().remove(u));
                             hasChanged=true;
                             continue outer;
                         }

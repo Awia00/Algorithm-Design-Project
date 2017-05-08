@@ -23,7 +23,7 @@ public class MinFill {
         }
 
         Graph entireGraph = io.parse();
-        IO.printf("Graph of size (|V|, |E|) = (%d, %d)\n", entireGraph.vertices().size(), entireGraph.getEdges().size());
+        IO.printf("Graph of size (|V|, |E|) = (%d, %d)\n", entireGraph.getVertices().size(), entireGraph.getEdges().size());
 
         io.print(minFill(entireGraph));
     }
@@ -43,7 +43,7 @@ public class MinFill {
     }
 
     private static Set<Edge> perComponent(Graph g) {
-        IO.printf("Component of size (|V|, |E|) = (%d, %d)\n", g.vertices().size(), g.getEdges().size());
+        IO.printf("Component of size (|V|, |E|) = (%d, %d)\n", g.getVertices().size(), g.getEdges().size());
 
         Triple<Set<Integer>, Set<Integer>, Integer> abk = kernel.kernelProcedure1And2(g);
 
@@ -58,8 +58,8 @@ public class MinFill {
                 int kPrime = tmp.get().b;
 
                 Set<Edge> kernelAddedEdges = gPrime.getEdges().minus(g.getEdges());
-                int amtOfRemovedVertices = g.vertices().size()-gPrime.vertices().size();
-                IO.printf("Kernel procedure 3 for k=%d, edges added= %d vertices pruned=%d \n", kPrime, kernelAddedEdges.size(), amtOfRemovedVertices);
+                int amtOfRemovedVertices = g.getVertices().size()-gPrime.getVertices().size();
+                IO.printf("Kernel procedure 3 for k=%d, edges added= %d getVertices pruned=%d \n", kPrime, kernelAddedEdges.size(), amtOfRemovedVertices);
 
                 Set<Set<Integer>> components = gPrime.components();
 
@@ -77,9 +77,9 @@ public class MinFill {
                 kPrime -= easyEdges.size();
 
                 Set<Integer> removableIntegers = new MinFillEasySolver().findRemovableVertices(gPrime);
-                gPrime = gPrime.inducedBy(gPrime.vertices().minus(removableIntegers));
+                gPrime = gPrime.inducedBy(gPrime.getVertices().minus(removableIntegers));
 
-                IO.printf("%d easy-edges added. %d vertices removed \n", easyEdges.size(), removableIntegers.size());
+                IO.printf("%d easy-edges added. %d getVertices removed \n", easyEdges.size(), removableIntegers.size());
                 if(!easyEdges.isEmpty() || !removableIntegers.isEmpty())
                     return perComponent(gPrime).union(kernelAddedEdges).union(easyEdges);
 

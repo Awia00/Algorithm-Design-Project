@@ -27,13 +27,13 @@ class KernelizerTest {
 
         Graph kernelized = Kernelizer.kernelize(g);
 
-        int numVertices = kernelized.vertices().size();
+        int numVertices = kernelized.getVertices().size();
         int numEdges = kernelized.getEdges().size();
 
         for (Set<Integer> component : g.components()) {
             Graph kernelizedComponent = Kernelizer.kernelize(g.inducedBy(component));
 
-            numVertices -= kernelizedComponent.vertices().size();
+            numVertices -= kernelizedComponent.getVertices().size();
             numEdges -= kernelizedComponent.getEdges().size();
         }
 

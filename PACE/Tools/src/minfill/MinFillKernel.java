@@ -14,7 +14,7 @@ public class MinFillKernel implements MinimumFillKernel {
     @Override
     @Contract(pure = true)
     public Triple<Set<Integer>, Set<Integer>, Integer> kernelProcedure1And2(Graph g) {
-        Set<Integer> A = Set.empty(), B = g.vertices();
+        Set<Integer> A = Set.empty(), B = g.getVertices();
         int kMin = 0;
 
         // P1
@@ -41,7 +41,7 @@ public class MinFillKernel implements MinimumFillKernel {
 
             for (Integer u : A) {
                 for (Integer x : g.neighborhood(u).toSet().intersect(B)) {
-                    Graph gPrime = g.inducedBy(g.vertices().remove(x));
+                    Graph gPrime = g.inducedBy(g.getVertices().remove(x));
                     Set<Integer> R = (g.neighborhood(x).toSet().minus(g.neighborhood(u).toSet())).intersect(B);
 
                     for (Integer v : R) {
@@ -111,7 +111,7 @@ public class MinFillKernel implements MinimumFillKernel {
             java.util.Set<Integer> Axy = new HashSet<>();
 
             for (Integer b : bNeighbors) {
-                Graph gPrime = g.inducedBy(g.vertices().remove(b));
+                Graph gPrime = g.inducedBy(g.getVertices().remove(b));
 
                 if (gPrime.hasPath(x, y)) {
                     Axy.add(b);

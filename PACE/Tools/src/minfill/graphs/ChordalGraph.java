@@ -29,7 +29,7 @@ public interface ChordalGraph extends Graph {
             Integer v1 = peo.get(i);
             Integer v2 = peo.get(i+1);
             if(i == 0) cliques = cliques.add(neighborhood(v1).toSet().add(v1));
-            if(mAdj(peo, i).size() <= mAdj(peo, i+1).size()) { // Li = vertices with labels greater than i but we already know how many we have left since we go in order
+            if(mAdj(peo, i).size() <= mAdj(peo, i+1).size()) { // Li = getVertices with labels greater than i but we already know how many we have left since we go in order
                 cliques = cliques.add(neighborhood(v2).toSet().add(v2));
             }
         }
