@@ -101,20 +101,6 @@ public class MinFillFomin {
         return Set.of(changes);
     }
 
-    public static long choose(long total, long choose){
-        if(total < choose)
-            return 0;
-        if(choose == 0 || choose == total)
-            return 1;
-        return choose(total-1,choose-1)+choose(total-1,choose);
-    }
-    private int numberOfSubsets(int n, int k){
-        int result = 0;
-        for (int i = 1; i < k && n-i>0; i++) {
-            result += choose(n, i);
-        }
-        return result;
-    }
     @Contract(pure = true)
     public Optional<Graph> stepB2(Graph g, int k) {
         IO.printf("Step B2: Non-reducible instance found. k=%d\n", k);
@@ -129,24 +115,14 @@ public class MinFillFomin {
             IO.println("Shortcut for vital potential maximum clique taken");
             piI = exhaustiveVitalPotentialMaximalCliqueSearch(gPrime, k);
         }
-        else if(numberOfSubsets(gPrime.getNumberOfNonEdges(), k) < numberOfSubsets(gPrime.getVertices().size(), maxSubsetSize)) {
+        else if(k < 6) {
             IO.println("Shortcut Non-Edges taken");
-            return exhaustiveNonEdgeSearch(gPrime, k);
+            return MinFillSearchTree.minFillSearchTree(gPrime, k);
         }
         else
             piI = generateVitalPotentialMaximalCliques(gPrime, k);
 
         return stepC(g, k, piI);
-    }
-
-    public Optional<Graph> exhaustiveNonEdgeSearch(Graph g, int k){
-        for (Set<Edge> edges : Set.subsetsOfSize(g.getNonEdges(), k)) {
-            Graph gWithSubsetEdges = g.addEdges(edges);
-            if(gWithSubsetEdges.isChordal()){
-                return Optional.of(gWithSubsetEdges);
-            }
-        }
-        return Optional.empty();
     }
 
     @Contract(pure = true)
@@ -163,6 +139,7 @@ public class MinFillFomin {
 
     @Contract(pure = true)
     public Set<Set<Integer>> generateVitalPotentialMaximalCliques(Graph g, int k) {
+        IO.println("Generating vital potential maximal cliques");
         java.util.Set<Set<Integer>> vitalPotentialMaximalCliques = new HashSet<>();
 
         // all vertex subsets of size at most 5*sqrt(k)+2 (step 2)
