@@ -94,4 +94,17 @@ public class MinFillEasySolver {
         }
         return result;
     }
+
+    private Set<Edge> findEasyEdgesStep3(Graph g) {
+        // step 1
+        boolean hasChanged = true;
+        Set<Edge> result = Set.empty();
+
+        outer:
+        while(hasChanged)
+        {
+            hasChanged = false;
+        }
+        return result;
+    }
 }

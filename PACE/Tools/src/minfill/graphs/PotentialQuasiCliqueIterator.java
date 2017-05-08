@@ -1,5 +1,8 @@
 package minfill.graphs;
 
+import minfill.graphs.ChordalGraph;
+import minfill.graphs.Graph;
+import minfill.iterators.FilterIterator;
 import minfill.sets.Set;
 
 import java.util.*;
@@ -8,10 +11,10 @@ import java.util.*;
  * Created by aws on 19-04-2017.
  */
 public class PotentialQuasiCliqueIterator implements Iterator<Set<Integer>> {
-    private Graph g;
-    private Iterator<Set<Integer>> vertexSubsets;
+    private final Graph g;
+    private final Iterator<Set<Integer>> vertexSubsets;
     private Set<Integer> z;
-    private Iterator<Set<Integer>> minimalSeparators;
+    private FilterIterator<Set<Integer>> minimalSeparators;
     private Iterator<Set<Integer>> maximalCliques;
     private Iterator<Integer> zIterator;
     private Graph gMinusKUnionZ;
@@ -60,16 +63,17 @@ public class PotentialQuasiCliqueIterator implements Iterator<Set<Integer>> {
             z = vertexSubsets.next();
             Set<Integer> gMinusZ = g.vertices().minus(z);
             ChordalGraph h = g.inducedBy(gMinusZ).minimalTriangulation();
-            minimalSeparators = h.minimalSeparators().iterator();
+            minimalSeparators = new FilterIterator<>(h.minimalSeparators(), g::isClique);
             maximalCliques = h.maximalCliques().iterator();
-            stage = 1;
+
+            if(minimalSeparators.hasNext())
+                stage = 1;
+            else
+                stage = 2;
         }
         if(stage == 1){
             Set<Integer> s = minimalSeparators.next();
-            if(g.isClique(s)){
-                return s.union(z);
-            }
-            stage = 2;
+            return s.union(z);
         }
         if(stage == 2){
             Set<Integer> maximalClique = maximalCliques.next();

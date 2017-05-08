@@ -1,4 +1,4 @@
-package minfill.graphs;
+package minfill.iterators;
 
 import minfill.sets.Set;
 import minfill.tuples.Pair;
@@ -11,26 +11,26 @@ import java.util.Objects;
 /**
  * Created by aws on 19-04-2017.
  */
-public class VertexPairIterator<T extends Comparable<T>> implements Iterator<Pair<T,T>> {
-    private List<T> vertices;
+public class PairIterator<T extends Comparable<T>> implements Iterator<Pair<T,T>> {
+    private List<T> source;
     private int outerIndex = 0, innerIndex = 1;
 
-    public VertexPairIterator(Set<T> vertices) {
-        this.vertices = new ArrayList<>();
-        for (T vertex : vertices) {
-            this.vertices.add(vertex);
+    public PairIterator(Set<T> source) {
+        this.source = new ArrayList<>();
+        for (T vertex : source) {
+            this.source.add(vertex);
         }
     }
 
     @Override
     public boolean hasNext() {
-        return outerIndex < vertices.size() && innerIndex < vertices.size();
+        return outerIndex < source.size() && innerIndex < source.size();
     }
 
     @Override
     public Pair<T,T> next() {
-        Pair<T,T> element = new Pair<>(vertices.get(outerIndex), vertices.get(innerIndex));
-        innerIndex = (innerIndex+1)%vertices.size();
+        Pair<T,T> element = new Pair<>(source.get(outerIndex), source.get(innerIndex));
+        innerIndex = (innerIndex+1)% source.size();
         if(innerIndex==0)
         {
             outerIndex++;
@@ -41,18 +41,18 @@ public class VertexPairIterator<T extends Comparable<T>> implements Iterator<Pai
 
 
     public static void main(String[] args){
-        VertexPairIterator<Integer> iterator = new VertexPairIterator<Integer>(Set.empty());
+        PairIterator<Integer> iterator = new PairIterator<Integer>(Set.empty());
         assert(!iterator.hasNext());
 
-        iterator = new VertexPairIterator<>(Set.of(1));
+        iterator = new PairIterator<>(Set.of(1));
         assert(!iterator.hasNext());
 
-        iterator = new VertexPairIterator<>(Set.of(1,2));
+        iterator = new PairIterator<>(Set.of(1,2));
         Pair<Integer,Integer> pair = iterator.next();
         assert (Objects.equals(pair,new Pair<>(1, 2)));
         assert (!iterator.hasNext());
 
-        iterator = new VertexPairIterator<>(Set.of(1,2,3,4));
+        iterator = new PairIterator<>(Set.of(1,2,3,4));
         pair = iterator.next();
         assert (Objects.equals(pair, new Pair<>(1, 2)));
         pair = iterator.next();

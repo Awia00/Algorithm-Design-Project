@@ -16,7 +16,7 @@ import java.util.List;
  * Created by aws on 26-04-2017.
  */
 
-public class MinFillAlgorithmTest {
+public class MinFillFominAlgorithmTest {
 
     private static List<String> graphs;
     private static List<String> badGraphs;
@@ -118,7 +118,7 @@ public class MinFillAlgorithmTest {
 
         Graph entireGraph = io.parse();
 
-        Set<Edge> edges = Program.minFill(entireGraph);
+        Set<Edge> edges = MinFill.minFill(entireGraph);
         // check correct
         assert entireGraph.addEdges(edges).isChordal();
         // check minimality

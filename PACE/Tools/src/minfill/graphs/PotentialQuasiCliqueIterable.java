@@ -1,13 +1,12 @@
 package minfill.graphs;
 
 import minfill.sets.Set;
-import minfill.tuples.Pair;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Iterator;
 
 /**
- * Created by aws on 19-04-2017.    
+ * Created by aws on 19-04-2017.
  */
 public class PotentialQuasiCliqueIterable implements Iterable<Set<Integer>> {
     private final Graph g;
