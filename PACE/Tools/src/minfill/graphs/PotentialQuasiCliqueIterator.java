@@ -1,5 +1,7 @@
 package minfill.graphs;
 
+import minfill.graphs.ChordalGraph;
+import minfill.graphs.Graph;
 import minfill.iterators.FilterIterator;
 import minfill.sets.Set;
 

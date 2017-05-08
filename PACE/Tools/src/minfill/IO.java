@@ -10,7 +10,7 @@ import java.io.InputStream;
 import java.util.*;
 
 public class IO implements AutoCloseable {
-    static final boolean printDebug = false;
+    static final boolean printDebug = true;
     private String[] nodeNames;
     private final InputStream input;
 

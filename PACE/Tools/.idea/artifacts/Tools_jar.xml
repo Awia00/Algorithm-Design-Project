@@ -2,7 +2,7 @@
   <artifact type="jar" build-on-make="true" name="Tools:jar">
     <output-path>$PROJECT_DIR$/out/artifacts/Tools_jar</output-path>
     <root id="archive" name="Tools.jar">
-      <element id="module-output" name="Tools" />
+      <element id="module-output" name="MinfillWindLindemann" />
       <element id="extracted-dir" path="$APPLICATION_HOME_DIR$/redist/annotations-java8.jar" path-in-jar="/" />
     </root>
   </artifact>

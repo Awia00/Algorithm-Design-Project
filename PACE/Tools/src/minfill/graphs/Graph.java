@@ -1,12 +1,11 @@
 package minfill.graphs;
 
-import minfill.sets.*;
+import minfill.iterators.PairIterable;
 import minfill.tuples.Pair;
 import minfill.tuples.Tuple;
 import org.jetbrains.annotations.Contract;
 
 import java.util.*;
-import java.util.Set;
 
 public interface Graph {
     @Contract(pure = true)
@@ -267,7 +266,7 @@ public interface Graph {
     default minfill.sets.Set<Edge> getNonEdges() {
         java.util.Set<Edge> nonEdges = new HashSet<>();
 
-        VertexPairIterable<Integer> vertexPairs = new VertexPairIterable<>(vertices());
+        PairIterable<Integer> vertexPairs = new PairIterable<>(vertices());
         for(Pair<Integer, Integer> pair : vertexPairs){
             if (!isAdjacent(pair.a, pair.b)) {
                 nonEdges.add(new Edge(pair.a, pair.b));
@@ -293,7 +292,7 @@ public interface Graph {
 
     default int getNumberOfNonEdges() {
         int number = 0;
-        VertexPairIterable<Integer> vertexPairs = new VertexPairIterable<>(vertices());
+        PairIterable<Integer> vertexPairs = new PairIterable<>(vertices());
         for(Pair<Integer, Integer> pair : vertexPairs){
             if (!isAdjacent(pair.a, pair.b)) {
                 number++;
@@ -323,7 +322,7 @@ public interface Graph {
 
         java.util.Set<Edge> fill = new HashSet<>();
 
-        VertexPairIterable<Integer> vertexPairs = new VertexPairIterable<>(vertices);
+        PairIterable<Integer> vertexPairs = new PairIterable<>(vertices);
         for(Pair<Integer, Integer> pair : vertexPairs){
             if (!isAdjacent(pair.a, pair.b)) {
                 fill.add(new Edge(pair.a, pair.b));
@@ -337,7 +336,7 @@ public interface Graph {
     default boolean isClique(minfill.sets.Set<Integer> vertices) {
         assert vertices.isSubsetOf(vertices());
 
-        VertexPairIterable<Integer> vertexPairs = new VertexPairIterable<>(vertices);
+        PairIterable<Integer> vertexPairs = new PairIterable<>(vertices);
         for(Pair<Integer, Integer> pair : vertexPairs){
             if (!isAdjacent(pair.a, pair.b)) {
                 return false;
