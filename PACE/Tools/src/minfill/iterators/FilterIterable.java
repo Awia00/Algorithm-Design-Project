@@ -17,6 +17,6 @@ public class FilterIterable<T> implements Iterable<T> {
     @NotNull
     @Override
     public Iterator<T> iterator() {
-        return new FilterIterator<T>(source, predicate);
+        return new FilterIterator<>(source, predicate);
     }
 }
