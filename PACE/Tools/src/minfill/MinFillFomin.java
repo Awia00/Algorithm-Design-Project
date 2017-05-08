@@ -101,21 +101,35 @@ public class MinFillFomin {
         return Set.of(changes);
     }
 
+    public static long choose(long total, long choose){
+        if(total < choose)
+            return 0;
+        if(choose == 0 || choose == total)
+            return 1;
+        return choose(total-1,choose-1)+choose(total-1,choose);
+    }
+    private int numberOfSubsets(int n, int k){
+        int result = 0;
+        for (int i = 1; i < k && n-i>0; i++) {
+            result += choose(n, i);
+        }
+        return result;
+    }
     @Contract(pure = true)
     public Optional<Graph> stepB2(Graph g, int k) {
         IO.printf("Step B2: Non-reducible instance found. k=%d\n", k);
-        int subsetMaxSize = (int)(5*Math.sqrt(k)+5); // 5 is magic value, theoretically should be 2 or 3
+        int maxSubsetSize = (int)(5*Math.sqrt(k)+5); // 5 is magic value, theoretically should be 2 or 3
 
         Set<Integer> removableIntegers = Set.empty();//new MinFillEasySolver().findRemovableVertices(g);
         Graph gPrime = g.inducedBy(g.vertices().minus(removableIntegers));
         IO.printf("Removed %d vertices\n", removableIntegers.size());
 
         Set<Set<Integer>> piI;
-        if(subsetMaxSize > gPrime.vertices().size()) {
+        if(maxSubsetSize > gPrime.vertices().size()) {
             IO.println("Shortcut for vital potential maximum clique taken");
             piI = exhaustiveVitalPotentialMaximalCliqueSearch(gPrime, k);
         }
-        else if(k < 6){ // 6 magic value
+        else if(numberOfSubsets(gPrime.getEdges().size(),k) < numberOfSubsets(gPrime.vertices().size(), maxSubsetSize)) {
             IO.println("Shortcut Non-Edges taken");
             return exhaustiveNonEdgeSearch(gPrime, k);
         }
