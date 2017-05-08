@@ -104,18 +104,18 @@ public class MinFill {
     @Contract(pure = true)
     public Optional<Graph> stepB2(Graph g, int k) {
         IO.printf("Step B2: Non-reducible instance found. k=%d\n", k);
-        int subsetMaxSize = (int)(5*Math.sqrt(k)+5);
+        int subsetMaxSize = (int)(5*Math.sqrt(k)+5); // 5 is magic value, theoretically should be 2 or 3
 
-        Set<Integer> removableIntegers = new MinFillEasySolver().findRemovableVertices(g);
+        Set<Integer> removableIntegers = Set.empty();//new MinFillEasySolver().findRemovableVertices(g);
         Graph gPrime = g.inducedBy(g.vertices().minus(removableIntegers));
         IO.printf("Removed %d vertices\n", removableIntegers.size());
 
         Set<Set<Integer>> piI;
         if(subsetMaxSize > gPrime.vertices().size()) {
             IO.println("Shortcut for vital potential maximum clique taken");
-            piI = generateVitalPotentialMaximalCliquesLowK(gPrime, k);
+            piI = exhaustiveVitalPotentialMaximalCliqueSearch(gPrime, k);
         }
-        else if(k < 5){
+        else if(k < 6){ // 6 magic value
             IO.println("Shortcut Non-Edges taken");
             return exhaustiveNonEdgeSearch(gPrime, k);
         }
@@ -136,7 +136,7 @@ public class MinFill {
     }
 
     @Contract(pure = true)
-    public Set<Set<Integer>> generateVitalPotentialMaximalCliquesLowK(Graph g, int k) {
+    public Set<Set<Integer>> exhaustiveVitalPotentialMaximalCliqueSearch(Graph g, int k) {
         java.util.Set<Set<Integer>> potentialMaximalCliques = new HashSet<>();
 
         for (Set<Integer> vertices : Set.subsetsOfSizeAtMost(g.vertices(), g.vertices().size())) {

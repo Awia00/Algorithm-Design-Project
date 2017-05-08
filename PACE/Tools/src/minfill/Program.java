@@ -72,12 +72,15 @@ public class Program {
                 }
 
                 Set<Edge> easyEdges = easySolver.findEasyEdges(gPrime);
-                IO.printf("Easy edges done, found %d\n", easyEdges.size());
 
                 gPrime = gPrime.addEdges(easyEdges);
                 kPrime -= easyEdges.size();
 
-                if(!easyEdges.isEmpty())
+                Set<Integer> removableIntegers = new MinFillEasySolver().findRemovableVertices(gPrime);
+                gPrime = gPrime.inducedBy(gPrime.vertices().minus(removableIntegers));
+
+                IO.printf("%d easy-edges added. %d vertices removed \n", easyEdges.size(), removableIntegers.size());
+                if(!easyEdges.isEmpty() || !removableIntegers.isEmpty())
                     return perComponent(gPrime).union(kernelAddedEdges).union(easyEdges);
 
                 Optional<Graph> result = mfi.stepB1(gPrime, kPrime);
