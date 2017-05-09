@@ -29,10 +29,8 @@ public class MinFillPolynomialReducer {
 
                 // Cliques
                 for (Set<Integer> component : g.inducedBy(g.getVertices().minus(neighborhood)).components()) {
-                    if (component.size() > 2) {
-                        Set<Integer> fringe = g.neighborhood(component);
-                        neighborhood = neighborhood.minus(fringe).minus(component);
-                    }
+                    Set<Integer> fringe = g.neighborhood(component);
+                    neighborhood = neighborhood.minus(fringe).minus(component);
                 }
                 for (Integer vertex : neighborhood) {
                     result.add(vertex);
@@ -42,10 +40,8 @@ public class MinFillPolynomialReducer {
         //for (Set<Integer> subset : new SubsetOfAtMostSizeIterable<>(g.getVertices(), 4)) {
         //    if(g.isClique(subset)){
         //        for (Set<Integer> component : g.inducedBy(g.getVertices().minus(subset)).components()) {
-        //            if (component.size() > 2) {
-        //                Set<Integer> fringe = g.neighborhood(component);
-        //                subset = subset.minus(fringe).minus(component);
-        //            }
+        //            Set<Integer> fringe = g.neighborhood(component);
+        //            subset = subset.minus(fringe).minus(component);
         //        }
         //        for (Integer vertex : subset) {
         //            result.add(vertex);
