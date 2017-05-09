@@ -13,7 +13,7 @@ import java.util.Optional;
 
 public class MinFill {
     private static MinFillKernel kernel = new MinFillKernel();
-    private static MinFillEasySolver easySolver = new MinFillEasySolver();
+    private static MinFillPolynomialReducer easySolver = new MinFillPolynomialReducer();
     private static MinFillFomin mfi = new MinFillFomin();
     private static IO io = new IO();
 
@@ -71,12 +71,12 @@ public class MinFill {
                     return componentResult.union(kernelAddedEdges);
                 }
 
-                Set<Edge> easyEdges = easySolver.findEasyEdges(gPrime);
+                Set<Edge> easyEdges = easySolver.findSafeEdges(gPrime);
 
                 gPrime = gPrime.addEdges(easyEdges);
                 kPrime -= easyEdges.size();
 
-                Set<Integer> removableIntegers = new MinFillEasySolver().findRemovableVertices(gPrime);
+                Set<Integer> removableIntegers = new MinFillPolynomialReducer().findRemovableVertices(gPrime);
                 gPrime = gPrime.inducedBy(gPrime.getVertices().minus(removableIntegers));
 
                 IO.printf("%d easy-edges added. %d getVertices removed \n", easyEdges.size(), removableIntegers.size());
