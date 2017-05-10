@@ -29,16 +29,16 @@ public class MinFillFominAlgorithmTest {
 
         badGraphs.add("1.graph"); // kernel takes long time
         badGraphs.add("2.graph"); // k = 12
-        badGraphs.add("3.graph"); // k=8 40 getVertices 252 edges should be doable
+        badGraphs.add("3.graph"); // k=11 40 getVertices 252 edges should be doable
         badGraphs.add("7.graph"); // k=265 simple solver takes long.
         badGraphs.add("8.graph"); // k=40
         badGraphs.add("10.graph"); // k=19 takes time to find non-reducible graph
         badGraphs.add("11.graph"); // k=11, 92 getVertices - takes long tim to find none reducible
         badGraphs.add("13.graph"); // k=21 lot of easy edges - still k too high
         badGraphs.add("15.graph"); // component too big - takes long time even to load
-        badGraphs.add("16.graph"); // k=31
+        badGraphs.add("16.graph"); // k=27
         badGraphs.add("17.graph"); // k=266 hmmm kernel now takes too long
-        badGraphs.add("18.graph"); // k=17 non reducible creates a lot of edges
+        badGraphs.add("18.graph"); // k=13 non reducible creates a lot of edges
         badGraphs.add("19.graph"); // k=37 lot of easy edges - still k too high
         badGraphs.add("21.graph"); // one component too big - kernel takes long time
         badGraphs.add("22.graph"); // k=38

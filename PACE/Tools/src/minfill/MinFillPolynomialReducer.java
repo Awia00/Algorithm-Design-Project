@@ -1,5 +1,6 @@
 package minfill;
 
+import minfill.graphs.ChordalGraph;
 import minfill.graphs.Edge;
 import minfill.graphs.Graph;
 import minfill.sets.Set;
@@ -12,30 +13,53 @@ import java.util.List;
 /**
  * Created by aws on 25-04-2017.
  */
-public class MinFillEasySolver {
+public class MinFillPolynomialReducer {
 
     public Set<Integer> findRemovableVertices(Graph g){
         java.util.Set<Integer> result = new HashSet<>();
-        // Simplicial getVertices
+
         for (Integer integer : g.getVertices()) {
-            if(g.neighborhood(integer).toSet().size()==g.getVertices().size()-1) // check if universal
+            Set<Integer> neighborhood = g.neighborhood(integer).toSet();
+            if (g.neighborhood(integer).toSet().size() == g.getVertices().size() - 1) { // check if universal
                 result.add(integer);
-            else if(g.isClique(g.neighborhood(integer).toSet())) // check is simplicial
+            } else if (g.isClique(neighborhood)) // check is simplicial
             {
+                // Simplicial getVertices
                 result.add(integer);
+
+                // Cliques
+                for (Set<Integer> component : g.inducedBy(g.getVertices().minus(neighborhood)).components()) {
+                    Set<Integer> fringe = g.neighborhood(component);
+                    neighborhood = neighborhood.minus(fringe).minus(component);
+                }
+                for (Integer vertex : neighborhood) {
+                    result.add(vertex);
+                }
             }
         }
+        //for (Set<Integer> subset : new SubsetOfAtMostSizeIterable<>(g.getVertices(), 4)) {
+        //    if(g.isClique(subset)){
+        //        for (Set<Integer> component : g.inducedBy(g.getVertices().minus(subset)).components()) {
+        //            Set<Integer> fringe = g.neighborhood(component);
+        //            subset = subset.minus(fringe).minus(component);
+        //        }
+        //        for (Integer vertex : subset) {
+        //            result.add(vertex);
+        //        }
+        //    }
+        //}
         return Set.of(result);
     }
 
-    public Set<Edge> findEasyEdges(Graph g){
-        Set<Edge> step1 = findEasyEdgesStep1(g);
-        Set<Edge> step2 = findEasyEdgesStep2(g.addEdges(step1));
-        return step1.union(step2);
+    public Set<Edge> findSafeEdges(Graph g){
+        Set<Edge> step1 = independentSimpleCycleReduction(g);
+        Set<Edge> step2 = nonIndependentSimpleCycleReducer(g.addEdges(step1));
+        Set<Edge> step3 = minimalSeparatorsAlmostCliquesReducer(g.addEdges(step2));
+        return step1.union(step2).union(step3);
     }
 
     @Contract(pure=true)
-    private Set<Edge> findEasyEdgesStep1(Graph g){
+    private Set<Edge> independentSimpleCycleReduction(Graph g){
         boolean hasChanged = true;
         Set<Edge> result = Set.empty();
         // step 1
@@ -67,7 +91,7 @@ public class MinFillEasySolver {
         return result;
     }
 
-    private Set<Edge> findEasyEdgesStep2(Graph g) {
+    private Set<Edge> nonIndependentSimpleCycleReducer(Graph g) {
         // step 1
         boolean hasChanged = true;
         Set<Edge> result = Set.empty();
@@ -95,16 +119,26 @@ public class MinFillEasySolver {
         return result;
     }
 
-    private Set<Edge> findEasyEdgesStep3(Graph g) {
+    // Does not work ATM
+    private Set<Edge> minimalSeparatorsAlmostCliquesReducer(Graph g) {
         // step 1
         boolean hasChanged = true;
         Set<Edge> result = Set.empty();
 
-        outer:
         while(hasChanged)
         {
             hasChanged = false;
+            ChordalGraph h = g.minimalTriangulation(); // this cannot be done to get the minimalSeparators
+            for (Set<Integer> separator : h.minimalSeparators()) {
+                Set<Edge> nonEdges = g.inducedBy(separator).getNonEdges();
+                if(nonEdges.size() == 1){
+                    result = result.union(nonEdges);
+                    g = g.addEdges(nonEdges);
+                    hasChanged = true;
+                    break;
+                }
+            }
         }
-        return result;
+        return Set.empty();
     }
 }
