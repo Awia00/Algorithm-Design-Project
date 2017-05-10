@@ -106,7 +106,7 @@ public class MinFillFomin {
         IO.printf("Step B2: Non-reducible instance found. k=%d\n", k);
         int maxSubsetSize = (int)(5*Math.sqrt(k)+5); // 5 is magic value, theoretically should be 2 or 3
 
-        Set<Integer> removableIntegers = Set.empty();//new MinFillEasySolver().findRemovableVertices(g);
+        Set<Integer> removableIntegers = Set.empty();//new MinFillPolynomialReducer().findRemovableVertices(g);
         Graph gPrime = g.inducedBy(g.getVertices().minus(removableIntegers));
         IO.printf("Removed %d getVertices\n", removableIntegers.size());
 
@@ -115,7 +115,7 @@ public class MinFillFomin {
             IO.println("Shortcut for vital potential maximum clique taken");
             piI = exhaustiveVitalPotentialMaximalCliqueSearch(gPrime, k);
         }
-        else if(k < 6) {
+        else if(k < 25) {
             IO.println("Shortcut Non-Edges taken");
             return MinFillSearchTree.minFillSearchTree(gPrime, k);
         }
