@@ -73,7 +73,7 @@ public class MinFillFomin {
             // If u and v are in same component in G[W \\union {u,v}] rule 1 holds.
             if (gw.hasPath(u, v)) {
                 Set<Edge> c = Set.empty();
-
+                assert !gw.isAdjacent(u,v);
                 // case 0: add edge between u and v.
                 changes.add(c.add(nonEdge));
 
