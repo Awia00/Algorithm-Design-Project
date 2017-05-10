@@ -1,8 +1,8 @@
 package utils;
 
 import minfill.IO;
-import minfill.MinFillKernel;
-import minfill.MinimumFillKernel;
+import minfill.kernel.MinFillKernel;
+import minfill.kernel.MinimumFillKernel;
 import minfill.graphs.Edge;
 import minfill.graphs.Graph;
 import minfill.sets.Set;

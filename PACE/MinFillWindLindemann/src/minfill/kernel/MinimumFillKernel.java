@@ -1,4 +1,4 @@
-package minfill;
+package minfill.kernel;
 
 import minfill.graphs.Graph;
 import minfill.sets.Set;

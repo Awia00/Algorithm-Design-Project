@@ -1,4 +1,4 @@
-package kernel;
+package minfill.kernel;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -465,8 +465,8 @@ class Kernel<T> {
             System.out.println(holder.essentialEdges);
 
 
-          //  Kernel kernel = new Kernel(graph);
-          //  kernel.runStuff();
+          //  Kernel minfill.kernel = new Kernel(graph);
+          //  minfill.kernel.runStuff();
           //  System.out.println(holder.graph);
             //System.out.println(holder.A.size());
 

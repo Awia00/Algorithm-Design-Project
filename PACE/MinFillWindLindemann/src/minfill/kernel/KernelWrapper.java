@@ -1,6 +1,5 @@
-package kernel;
+package minfill.kernel;
 
-import minfill.MinimumFillKernel;
 import minfill.graphs.Edge;
 import minfill.graphs.Graph;
 import minfill.graphs.adjacencyset.AdjacencySetGraph;

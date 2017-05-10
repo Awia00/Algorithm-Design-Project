@@ -2,7 +2,7 @@ package utils;
 
 
 import minfill.IO;
-import minfill.MinFillKernel;
+import minfill.kernel.MinFillKernel;
 import minfill.graphs.Graph;
 import minfill.tuples.Pair;
 import minfill.sets.Set;

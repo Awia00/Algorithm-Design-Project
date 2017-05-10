@@ -2,6 +2,7 @@ package minfill;
 
 import minfill.graphs.Edge;
 import minfill.graphs.Graph;
+import minfill.kernel.MinFillKernel;
 import minfill.sets.Set;
 import minfill.tuples.Pair;
 import minfill.tuples.Triple;

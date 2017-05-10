@@ -27,7 +27,7 @@ public class MinFillFominAlgorithmTest {
         graphs = new ArrayList<>();
         badGraphs = new ArrayList<>();
 
-        badGraphs.add("1.graph"); // kernel takes long time
+        badGraphs.add("1.graph"); // minfill.kernel takes long time
         badGraphs.add("2.graph"); // k = 12
         badGraphs.add("3.graph"); // k=11 40 getVertices 252 edges should be doable
         badGraphs.add("7.graph"); // k=265 simple solver takes long.
@@ -37,23 +37,23 @@ public class MinFillFominAlgorithmTest {
         badGraphs.add("13.graph"); // k=21 lot of easy edges - still k too high
         badGraphs.add("15.graph"); // component too big - takes long time even to load
         badGraphs.add("16.graph"); // k=27
-        badGraphs.add("17.graph"); // k=266 hmmm kernel now takes too long
+        badGraphs.add("17.graph"); // k=266 hmmm minfill.kernel now takes too long
         badGraphs.add("18.graph"); // k=13 non reducible creates a lot of edges
         badGraphs.add("19.graph"); // k=37 lot of easy edges - still k too high
-        badGraphs.add("21.graph"); // one component too big - kernel takes long time
+        badGraphs.add("21.graph"); // one component too big - minfill.kernel takes long time
         badGraphs.add("22.graph"); // k=38
         badGraphs.add("23.graph"); // k=40
         badGraphs.add("24.graph"); // k=10 should be doable
-        badGraphs.add("25.graph"); // kernel takes long time
+        badGraphs.add("25.graph"); // minfill.kernel takes long time
         badGraphs.add("26.graph"); // k=26
         badGraphs.add("28.graph"); // k=53
         badGraphs.add("29.graph"); // k=45
         badGraphs.add("30.graph"); // k=47
         badGraphs.add("31.graph"); // k=27
         badGraphs.add("32.graph"); // easy solver takes long time - lot of easy edges, k=173 - branching takes long time
-        badGraphs.add("33.graph"); // kernel takes too long
-        badGraphs.add("34.graph"); // kernel takes too long one component too big.
-        badGraphs.add("35.graph"); // kernel takes too long
+        badGraphs.add("33.graph"); // minfill.kernel takes too long
+        badGraphs.add("34.graph"); // minfill.kernel takes too long one component too big.
+        badGraphs.add("35.graph"); // minfill.kernel takes too long
         badGraphs.add("37.graph"); // k=47
         badGraphs.add("38.graph"); // k=47
         badGraphs.add("40.graph"); // k=51
@@ -64,13 +64,13 @@ public class MinFillFominAlgorithmTest {
         badGraphs.add("47.graph"); // K=58
         badGraphs.add("52.graph"); // K=59
         badGraphs.add("56.graph"); // K=48
-        badGraphs.add("57.graph"); // kernel takes too long
+        badGraphs.add("57.graph"); // minfill.kernel takes too long
         badGraphs.add("59.graph"); // k=36
         badGraphs.add("62.graph"); // k=30
         badGraphs.add("63.graph"); // k=0 can be done, but takes a bit to kernelize
         badGraphs.add("65.graph"); // k=78
         badGraphs.add("67.graph"); // k=40
-        badGraphs.add("68.graph"); // kernel takes too long
+        badGraphs.add("68.graph"); // minfill.kernel takes too long
         badGraphs.add("69.graph"); // k=67
         badGraphs.add("70.graph"); // k=42 for a component
         badGraphs.add("71.graph"); // k=81
@@ -79,17 +79,17 @@ public class MinFillFominAlgorithmTest {
         badGraphs.add("77.graph"); // k=49
         badGraphs.add("78.graph"); // k=60
         badGraphs.add("79.graph"); // k=44
-        badGraphs.add("80.graph"); // kernel takes too long.
+        badGraphs.add("80.graph"); // minfill.kernel takes too long.
         badGraphs.add("81.graph"); // k=79
-        badGraphs.add("82.graph"); // kernel takes too long
+        badGraphs.add("82.graph"); // minfill.kernel takes too long
         badGraphs.add("83.graph"); // k=70
         badGraphs.add("86.graph"); // k=22
         badGraphs.add("88.graph"); // component too big
         badGraphs.add("89.graph"); // k=39
-        badGraphs.add("90.graph"); // lot of components starting with k=450, kernel and simplesolver takes looong time - not too many getVertices.
+        badGraphs.add("90.graph"); // lot of components starting with k=450, minfill.kernel and simplesolver takes looong time - not too many getVertices.
         badGraphs.add("91.graph"); // k=65
         badGraphs.add("92.graph"); // k=50
-        badGraphs.add("93.graph"); // k=240 but good teamwork between kernel and simpleSolver
+        badGraphs.add("93.graph"); // k=240 but good teamwork between minfill.kernel and simpleSolver
         badGraphs.add("94.graph"); // k=104
         badGraphs.add("95.graph"); // k=137
         badGraphs.add("96.graph"); // k=73
