@@ -30,7 +30,8 @@ public class ImmutableSet<T> implements Set<T> {
 
     @Override
     public boolean isEmpty() {
-        return inner.isEmpty();
+        assert !inner.isEmpty();
+        return false;
     }
 
     @Override
@@ -76,9 +77,15 @@ public class ImmutableSet<T> implements Set<T> {
 
         java.util.Set<T> copy = new HashSet<>(inner);
 
-        for (T element : other) {
-            copy.add(element);
+        if (other instanceof ImmutableSet<?>) {
+            ImmutableSet<T> that = (ImmutableSet<T>) other;
+            copy.addAll(that.inner);
+        } else {
+            for (T element : other) {
+                copy.add(element);
+            }
         }
+
         return newSet(copy);
     }
 
@@ -86,11 +93,18 @@ public class ImmutableSet<T> implements Set<T> {
     public Set<T> intersect(Set<T> other) {
         if (other.isEmpty()) return other;
 
-        java.util.Set<T> intersection = new HashSet<>();
+        java.util.Set<T> intersection;
 
-        for (T element : other) {
-            if (inner.contains(element)) {
-                intersection.add(element);
+        if (other instanceof ImmutableSet<?>) {
+            ImmutableSet<T> that = (ImmutableSet<T>) other;
+            intersection = new HashSet<>(inner);
+            intersection.retainAll(that.inner);
+        } else {
+            intersection = new HashSet<>();
+            for (T element : other) {
+                if (inner.contains(element)) {
+                    intersection.add(element);
+                }
             }
         }
         return newSet(intersection);
@@ -102,8 +116,14 @@ public class ImmutableSet<T> implements Set<T> {
 
         java.util.Set<T> copy = new HashSet<>(inner);
 
-        for (T element : other) {
-            copy.remove(element);
+        if (other instanceof ImmutableSet<?>) {
+            ImmutableSet<T> that = (ImmutableSet<T>) other;
+
+            copy.removeAll(that.inner);
+        } else {
+            for (T element : other) {
+                copy.remove(element);
+            }
         }
 
         return newSet(copy);
