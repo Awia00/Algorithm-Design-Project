@@ -17,23 +17,36 @@ public class MinFillPolynomialReducer {
 
     public Set<Integer> findRemovableVertices(Graph g){
         java.util.Set<Integer> result = new HashSet<>();
+        Graph gPrime = g;
 
-        for (Integer integer : g.getVertices()) {
-            Set<Integer> neighborhood = g.neighborhood(integer).toSet();
-            if (g.neighborhood(integer).toSet().size() == g.getVertices().size() - 1) { // check if universal
-                result.add(integer);
-            } else if (g.isClique(neighborhood)) // check is simplicial
-            {
-                // Simplicial getVertices
-                result.add(integer);
+        boolean hasChanged = true;
+        while(hasChanged){
+            hasChanged = false;
+            for (Integer integer : gPrime.getVertices()) {
+                Set<Integer> neighborhood = gPrime.neighborhood(integer).toSet();
+                if (gPrime.neighborhood(integer).toSet().size() == gPrime.getVertices().size() - 1) { // check if universal
+                    result.add(integer);
+                    gPrime = gPrime.inducedBy(gPrime.getVertices().remove(integer));
 
-                // Cliques
-                for (Set<Integer> component : g.inducedBy(g.getVertices().minus(neighborhood)).components()) {
-                    Set<Integer> fringe = g.neighborhood(component);
-                    neighborhood = neighborhood.minus(fringe).minus(component);
-                }
-                for (Integer vertex : neighborhood) {
-                    result.add(vertex);
+                    hasChanged = true;
+                    break;
+                } else if (gPrime.isClique(neighborhood)) // check is simplicial
+                {
+                    // Simplicial getVertices
+                    result.add(integer);
+                    gPrime = gPrime.inducedBy(gPrime.getVertices().remove(integer));
+
+                    // Cliques
+                    for (Set<Integer> component : gPrime.inducedBy(gPrime.getVertices().minus(neighborhood)).components()) {
+                        Set<Integer> fringe = gPrime.neighborhood(component);
+                        neighborhood = neighborhood.minus(fringe).minus(component);
+                    }
+                    for (Integer vertex : neighborhood) {
+                        result.add(vertex);
+                        gPrime = gPrime.inducedBy(gPrime.getVertices().remove(integer));
+                    }
+                    hasChanged = true;
+                    break;
                 }
             }
         }

@@ -60,7 +60,7 @@ public class MinFill {
 
                 Set<Edge> kernelAddedEdges = gPrime.getEdges().minus(g.getEdges());
                 int amtOfRemovedVertices = g.getVertices().size()-gPrime.getVertices().size();
-                IO.printf("Kernel procedure 3 for k=%d, edges added= %d getVertices pruned=%d \n", kPrime, kernelAddedEdges.size(), amtOfRemovedVertices);
+                IO.printf("Kernel procedure 3 for k=%d, edges added= %d vertices pruned=%d \n", kPrime, kernelAddedEdges.size(), amtOfRemovedVertices);
 
                 Set<Set<Integer>> components = gPrime.components();
 
@@ -80,7 +80,7 @@ public class MinFill {
                 Set<Integer> removableIntegers = new MinFillPolynomialReducer().findRemovableVertices(gPrime);
                 gPrime = gPrime.inducedBy(gPrime.getVertices().minus(removableIntegers));
 
-                IO.printf("%d easy-edges added. %d getVertices removed \n", easyEdges.size(), removableIntegers.size());
+                IO.printf("%d easy-edges added. %d vertices removed \n", easyEdges.size(), removableIntegers.size());
                 if(!easyEdges.isEmpty() || !removableIntegers.isEmpty())
                     return perComponent(gPrime).union(kernelAddedEdges).union(easyEdges);
 
