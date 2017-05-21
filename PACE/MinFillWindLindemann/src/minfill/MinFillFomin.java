@@ -19,8 +19,10 @@ public class MinFillFomin {
 
     @Contract(pure = true)
     public Optional<Graph> stepB1(Graph g, int k) {
-        if (g.isChordal()) return Optional.of(g);
-        if (k <= 0) return Optional.empty();
+        if (k <= 0 && g.isChordal())
+            return Optional.of(g);
+        if (k <= 0)
+            return Optional.empty();
 
         Set<Set<Edge>> branches = branch(g, k);
 
