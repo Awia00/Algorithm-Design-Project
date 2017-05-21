@@ -1,6 +1,9 @@
 package minfill.graphs;
 
 import minfill.iterators.PairIterable;
+import minfill.iterators.PairIterator;
+import minfill.sets.*;
+import minfill.sets.Set;
 import minfill.tuples.Pair;
 import minfill.tuples.Tuple;
 import org.jetbrains.annotations.Contract;
@@ -419,6 +422,89 @@ public interface Graph {
             }
         }
         return cycles;
+    }
+
+    default minfill.sets.Set<Integer> isolatedSet(minfill.sets.Set<Integer> X){
+        Graph g = inducedBy(getVertices().minus(X));
+        for (minfill.sets.Set<Integer> component : g.components()) {
+            X = X.minus(neighborhood(component));
+        }
+        return X;
+    }
+
+    // todo dont know if is correct
+    // N_(x) = {x’ | x’ < x},
+    // N+(x) = N(x) - N_(x).
+    default minfill.sets.Set<Integer> nPlus(Integer x, Set<Set<Integer>> sMinus) {
+        Set<Integer> nPlus = neighborhood(x).toSet();
+        for (Set<Integer> minus : sMinus) {
+            nPlus = nPlus.minus(minus);
+        }
+        return nPlus;
+    }
+
+    default  Optional<minfill.sets.Set<Integer>> componentWithB(int b){
+        for (minfill.sets.Set<Integer> component : components()) {
+            if(component.contains(b))
+            {
+                return Optional.of(component);
+            }
+        }
+        return Optional.empty();
+    }
+
+    default minfill.sets.Set<minfill.sets.Set<Integer>> minimalSeparators(int a, int b){
+        minfill.sets.Set<Integer> Cb = minfill.sets.Set.empty();
+        Map<Integer, minfill.sets.Set<minfill.sets.Set<Integer>>> lk = new HashMap<>();
+            minfill.sets.Set<Integer> Na = neighborhood(a).toSet();
+            lk.put(0, minfill.sets.Set.of(Na.minus(isolatedSet(Na))));
+
+        int k = 0;
+        Cb = inducedBy(getVertices().minus(Na)).componentWithB(b).get();
+        while(k<getVertices().size()-3 && !Cb.isEmpty()){
+            for (minfill.sets.Set<Integer> s : lk.get(k)) {
+                for (Integer x : s) {
+                    if(!isAdjacent(b, x)){
+                        minfill.sets.Set<Integer> nPlus = nPlus(x, lk.get(k)); // todo correctly calculate n+
+                        minfill.sets.Set<Integer> s_nPlus = s.union(nPlus);
+                        Cb =  inducedBy(getVertices().minus(s_nPlus)).componentWithB(b).get();
+                        // Compute the connected component Cb of graph G[V - (SUN+(x))]
+                        if(!Cb.isEmpty()){
+                            minfill.sets.Set<Integer> sPrime = s_nPlus.minus(isolatedSet(s_nPlus));
+                            if(lk.containsValue(sPrime)){
+                                if(lk.containsKey(k+1))
+                                    lk.put(k+1, lk.get(k+3).add(sPrime));
+                                else
+                                    lk.put(k+1, minfill.sets.Set.of(sPrime));
+                            }
+                        }
+                    }
+                }
+            }
+            k++;
+        }
+        minfill.sets.Set<minfill.sets.Set<Integer>> separators = minfill.sets.Set.empty();
+        for (minfill.sets.Set<minfill.sets.Set<Integer>> sets : lk.values()) {
+            separators = separators.union(sets);
+        }
+        return separators;
+    }
+    default minfill.sets.Set<minfill.sets.Set<Integer>> minimalSeparators() {
+        Map<Integer, minfill.sets.Set<minfill.sets.Set<Integer>>> Tk = new HashMap<>();
+        minfill.sets.Set<minfill.sets.Set<Integer>> T = minfill.sets.Set.empty();
+        int c = 0;
+        for (Pair<Integer, Integer> vertexPair : new PairIterable<>(getVertices())) {
+            Tk.put(c, minimalSeparators(vertexPair.a, vertexPair.b));
+            c++;
+        }
+        for (int i = 0; i < Math.log(c)-1; i++) {
+            int prime = (int)(c/(Math.pow(2,i)+1));
+            for (int j = 0; j < prime-1; j++) {
+                Tk.put(j, Tk.get(j).union(Tk.get(j+prime)));
+            }
+            T = Tk.get(0); // makes very little sense to me.
+        }
+        return T;
     }
 
     @Override
