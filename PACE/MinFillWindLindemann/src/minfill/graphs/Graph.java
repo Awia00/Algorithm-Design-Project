@@ -454,7 +454,7 @@ public interface Graph {
     }
 
     default minfill.sets.Set<minfill.sets.Set<Integer>> minimalSeparators(int a, int b){
-        minfill.sets.Set<Integer> Cb = minfill.sets.Set.empty();
+        minfill.sets.Set<Integer> Cb;
         Map<Integer, minfill.sets.Set<minfill.sets.Set<Integer>>> lk = new HashMap<>();
             minfill.sets.Set<Integer> Na = neighborhood(a).toSet();
             lk.put(0, minfill.sets.Set.of(Na.minus(isolatedSet(Na))));
@@ -494,8 +494,11 @@ public interface Graph {
         minfill.sets.Set<minfill.sets.Set<Integer>> T = minfill.sets.Set.empty();
         int c = 0;
         for (Pair<Integer, Integer> vertexPair : new PairIterable<>(getVertices())) {
-            Tk.put(c, minimalSeparators(vertexPair.a, vertexPair.b));
-            c++;
+            if(!isAdjacent(vertexPair.a, vertexPair.b))
+            {
+                Tk.put(c, minimalSeparators(vertexPair.a, vertexPair.b));
+                c++;
+            }
         }
         for (int i = 0; i < Math.log(c)-1; i++) {
             int prime = (int)(c/(Math.pow(2,i)+1));
