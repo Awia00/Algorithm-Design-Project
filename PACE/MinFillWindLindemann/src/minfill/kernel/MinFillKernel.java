@@ -49,7 +49,7 @@ public class MinFillKernel implements MinimumFillKernel {
                         if (gV.hasPath(u, v)) {
                             List<Integer> path = gV.shortestPath(u, v);
                             path.add(x);
-                            assert (!g.inducedBy(Set.of(path)).isChordal());
+                            assert  (!g.inducedBy(Set.of(path)).isChordal());
 
                             cycleFound = true;
 
@@ -114,7 +114,7 @@ public class MinFillKernel implements MinimumFillKernel {
             java.util.Set<Integer> Axy = new HashSet<>();
 
             for (Integer b : bNeighbors) {
-                Graph gPrime = g.inducedBy(g.getVertices().remove(b));
+                Graph gPrime = g.inducedBy(g.getVertices().remove(b).minus(g.neighborhood(b).toSet()).add(x).add(y));
 
                 if (gPrime.hasPath(x, y)) {
                     Axy.add(b);
