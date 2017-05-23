@@ -450,13 +450,13 @@ public interface Graph {
     }
 
     default Set<Set<Integer>> minimalSeparators(int a, int b){
-        Set<Integer> Cb;
+        Set<Integer> Na = neighborhood(a).toSet();
+        Set<Integer> Cb = inducedBy(getVertices().minus(Na)).componentWithB(b).get();
+
         Map<Integer, Set<Set<Integer>>> lk = new HashMap<>();
-            Set<Integer> Na = neighborhood(a).toSet();
-            lk.put(0, Set.of(Na.minus(isolatedSet(Na, b))));
+        lk.put(0, Set.of(Na.minus(isolatedSet(Na, b))));
 
         int k = 0;
-        Cb = inducedBy(getVertices().minus(Na)).componentWithB(b).get();
         while(k<getVertices().size()-3 && !Cb.isEmpty()){
             for (Set<Integer> s : lk.get(k)) {
                 for (Integer x : s) {
