@@ -24,7 +24,7 @@ public interface Graph {
         Set<Integer> neighborhood = Set.empty();
 
         for (Integer vertex : vertices) {
-            neighborhood = neighborhood.union(neighborhood(vertex).toSet());
+            neighborhood = neighborhood.union(neighborhood(vertex).toSet().minus(vertices));
         }
 
         return neighborhood.minus(vertices);
