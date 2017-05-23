@@ -74,17 +74,14 @@ public class MinFillFomin {
             Graph gw = g.inducedBy(w.union(Set.of(u, v))); // G[W \\union {u,v}]
             // If u and v are in same component in G[W \\union {u,v}] rule 1 holds.
             if (gw.hasPath(u, v)) {
-                Set<Edge> c = Set.empty();
                 assert !gw.isAdjacent(u,v);
-                // case 0: add edge between u and v.
-                changes.add(c.add(nonEdge));
 
                 // Find a shortest u,v-path in gw.
                 Set<Integer> path = Set.of(gw.shortestPath(u, v)).minus(nonEdge.vertices());
 
                 // case i: add edge between w_i in path and all getVertices in x.
                 for (int wi : path) {
-                    c = Set.empty();
+                    Set<Edge> c = Set.empty();
                     for (Integer vertex : x) {
                         // If x and vertex are distinct non-adjacent getVertices, add edges to change set.
                         if (vertex != wi && !g.isAdjacent(wi, vertex)) {
@@ -98,6 +95,9 @@ public class MinFillFomin {
                         changes.add(c);
                     }
                 }
+
+                // case 0: add edge between u and v.
+                changes.add(Set.of(nonEdge));
                 break;
             }
         }
