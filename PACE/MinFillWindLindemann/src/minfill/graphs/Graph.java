@@ -453,7 +453,7 @@ public interface Graph {
         Set<Integer> Cb = inducedBy(getVertices().minus(Na)).componentWithB(b).get();
 
         Map<Integer, Set<Set<Integer>>> lk = new HashMap<>();
-        lk.put(0, Set.of(Na.minus(isolatedSet(Na, b))));
+        lk.put(0, Set.of(Na.minus(isolatedSet(Cb, Na))));
 
         int k = 0;
         while(k<getVertices().size()-3 && !Cb.isEmpty()){
@@ -465,7 +465,7 @@ public interface Graph {
                         Cb =  inducedBy(getVertices().minus(s_nPlus)).componentWithB(b).get();
                         // Compute the connected component Cb of graph G[V - (SUN+(x))]
                         if(!Cb.isEmpty()){
-                            Set<Integer> sPrime = s_nPlus.minus(isolatedSet(s_nPlus, b));
+                            Set<Integer> sPrime = s_nPlus.minus(isolatedSet(Cb, s_nPlus));
                             for (Set<Set<Integer>> sets : lk.values()) {
                                 if(sets.contains(sPrime)){
                                     if(lk.containsKey(k+1))
