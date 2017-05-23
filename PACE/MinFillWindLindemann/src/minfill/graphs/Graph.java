@@ -505,13 +505,14 @@ public interface Graph {
             for (int j = 0; j < prime-1; j++) {
                 Tk.put(j, Tk.get(j).union(Tk.get(j+prime)));
             }
-            //T = Tk.get(0); // makes very little sense to me.
+            T = Tk.get(0); // makes very little sense to me.
         }
         Set<Set<Integer>> separators = Set.empty();
         for (Set<Set<Integer>> sets : Tk.values()) {
             separators = separators.union(sets);
         }
-        return separators;
+        //return separators;
+        return T;
     }
 
     @Override

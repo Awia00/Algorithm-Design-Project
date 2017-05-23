@@ -67,9 +67,10 @@ public class MinFillPolynomialReducer {
         Set<Edge> step1 = independentSimpleCycleReduction(g);
         Set<Edge> step2 = nonIndependentSimpleCycleReducer(g.addEdges(step1));
         Set<Edge> step3 = firstLevelMinimalSeparatorsAlmostCliquesReducer(g.addEdges(step2.union(step1)));
+        Set<Edge> step4 = higherLevelMinimalSeparatorsAlmostCliquesReducer(g.addEdges(step3.union(step2).union(step1)));
 
-        IO.println("MinSep: " + step3.size());
-        return step1.union(step2).union(step3);
+        //IO.println("MinSep: " + step3.size());
+        return step1.union(step2).union(step3).union(step4);
     }
 
     @Contract(pure=true)
@@ -154,8 +155,29 @@ public class MinFillPolynomialReducer {
         return result;
     }
 
+    private Set<Edge> higherLevelMinimalSeparatorsAlmostCliquesReducer(Graph g) {
+        Set<Edge> result = Set.empty();
+
+        boolean hasChanged;
+        outer:
+        do {
+            hasChanged = false;
+            for (Set<Integer> separator : g.minimalSeparators()) {
+                Set<Edge> nonEdges = g.inducedBy(separator).getNonEdges();
+                if (nonEdges.size() == 1) {
+                    g = g.addEdges(nonEdges);
+                    result = result.union(nonEdges);
+                    hasChanged = true;
+                    continue outer; // To start from the new graph.
+                }
+            }
+        } while (hasChanged);
+
+        return result;
+    }
+
     public Optional<Set<Integer>> separatorsThatAreClique(Graph g) {
-        for (Set<Integer> separator : new SomeMinimalSeparatorIterable(g)) {
+        for (Set<Integer> separator : g.minimalSeparators()) {
             if (g.isClique(separator)) {
                 return Optional.of(separator);
             }
