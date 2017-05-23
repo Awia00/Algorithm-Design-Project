@@ -456,24 +456,22 @@ public interface Graph {
         lk.put(0, Set.of(Na.minus(isolatedSet(Cb, Na))));
 
         int k = 0;
-        while(k<getVertices().size()-3 && !Cb.isEmpty()){
+        while(k < getVertices().size()-3 && !Cb.isEmpty()){
             for (Set<Integer> s : lk.get(k)) {
-                for (Integer x : s) {
-                    if(!isAdjacent(b, x)){
-                        Set<Integer> nPlus = nPlus(x, lk.get(k)); // todo correctly calculate n+
-                        Set<Integer> s_nPlus = s.union(nPlus);
-                        Cb =  inducedBy(getVertices().minus(s_nPlus)).componentWithB(b).get();
-                        // Compute the connected component Cb of graph G[V - (SUN+(x))]
-                        if(!Cb.isEmpty()){
-                            Set<Integer> sPrime = s_nPlus.minus(isolatedSet(Cb, s_nPlus));
-                            for (Set<Set<Integer>> sets : lk.values()) {
-                                if(sets.contains(sPrime)){
-                                    if(lk.containsKey(k+1))
-                                        lk.put(k+1, lk.get(k+3).add(sPrime));
-                                    else
-                                        lk.put(k+1, Set.of(sPrime));
-                                    break;
-                                }
+                for (Integer x : s.minus(neighborhood(b).toSet())) {
+                    Set<Integer> nPlus = nPlus(x, lk.get(k));
+                    Set<Integer> s_nPlus = s.union(nPlus);
+                    Cb =  inducedBy(getVertices().minus(s_nPlus)).componentWithB(b).get();
+                    // Compute the connected component Cb of graph G[V - (SUN+(x))]
+                    if(!Cb.isEmpty()){
+                        Set<Integer> sPrime = s_nPlus.minus(isolatedSet(Cb, s_nPlus));
+                        for (Set<Set<Integer>> sets : lk.values()) {
+                            if(sets.contains(sPrime)){
+                                if(lk.containsKey(k+1))
+                                    lk.put(k+1, lk.get(k+3).add(sPrime));
+                                else
+                                    lk.put(k+1, Set.of(sPrime));
+                                break;
                             }
                         }
                     }

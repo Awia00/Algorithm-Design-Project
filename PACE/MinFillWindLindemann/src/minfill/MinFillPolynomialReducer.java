@@ -3,7 +3,9 @@ package minfill;
 import minfill.graphs.ChordalGraph;
 import minfill.graphs.Edge;
 import minfill.graphs.Graph;
+import minfill.iterators.PairIterable;
 import minfill.sets.Set;
+import minfill.tuples.Pair;
 import org.jetbrains.annotations.Contract;
 
 import java.util.ArrayList;
@@ -67,7 +69,7 @@ public class MinFillPolynomialReducer {
     public Set<Edge> findSafeEdges(Graph g){
         Set<Edge> step1 = independentSimpleCycleReduction(g);
         Set<Edge> step2 = nonIndependentSimpleCycleReducer(g.addEdges(step1));
-        Set<Edge> step3 = minimalSeparatorsAlmostCliquesReducer(g.addEdges(step2));
+        Set<Edge> step3 = firstLevelMinimalSeparatorsAlmostCliquesReducer(g.addEdges(step2.union(step1)));
         return step1.union(step2).union(step3);
     }
 
@@ -133,22 +135,29 @@ public class MinFillPolynomialReducer {
     }
 
     // Does not work ATM
-    private Set<Edge> minimalSeparatorsAlmostCliquesReducer(Graph g) {
+    private Set<Edge> firstLevelMinimalSeparatorsAlmostCliquesReducer(Graph g) {
         // step 1
         boolean hasChanged = true;
         Set<Edge> result = Set.empty();
 
+        outer:
         while(hasChanged)
         {
             hasChanged = false;
-            ChordalGraph h = g.minimalTriangulation(); // this cannot be done to get the minimalSeparators
-            for (Set<Integer> separator : h.minimalSeparators()) {
-                Set<Edge> nonEdges = g.inducedBy(separator).getNonEdges();
-                if(nonEdges.size() == 1){
-                    result = result.union(nonEdges);
-                    g = g.addEdges(nonEdges);
-                    hasChanged = true;
-                    break;
+            for (Integer a : g.getVertices()) {
+                for (Integer b : g.getVertices().remove(a)) {
+                    if(!g.isAdjacent(a,b)){
+                        Set<Integer> nA = g.neighborhood(a).toSet();
+                        Set<Integer> cB = g.inducedBy(g.getVertices().minus(nA)).componentWithB(b).get();
+                        Set<Integer> s = nA.minus(g.isolatedSet(cB, nA));
+                        Set<Edge> nonEdges = g.inducedBy(s).getNonEdges();
+                        if(nonEdges.size() == 1){
+                            g = g.addEdges(nonEdges);
+                            result = result.union(nonEdges);
+                            hasChanged = true;
+                            continue outer;
+                        }
+                    }
                 }
             }
         }
