@@ -46,9 +46,11 @@ public class MinFillKernel implements MinimumFillKernel {
 
                     for (Integer v : R) {
                         if (gPrime.hasPath(u, v)) {
-                            cycleFound = true;
                             List<Integer> path = gPrime.shortestPath(u, v);
                             path.add(x);
+                            if(!g.inducedBy(Set.of(path)).isChordal()) continue;
+
+                            cycleFound = true;
 
                             List<Set<Integer>> subPaths = new ArrayList<>();
 
