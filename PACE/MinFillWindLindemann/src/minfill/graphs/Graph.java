@@ -423,12 +423,9 @@ public interface Graph {
         return cycles;
     }
 
-    default Set<Integer> isolatedSet(Set<Integer> X){
+    default Set<Integer> isolatedSet(Set<Integer> X, int b){
         Graph g = inducedBy(getVertices().minus(X));
-        for (Set<Integer> component : g.components()) {
-            X = X.minus(neighborhood(component));
-        }
-        return X;
+        return X.minus(neighborhood(g.componentWithB(b).get()));
     }
 
     // todo dont know if is correct
@@ -456,7 +453,7 @@ public interface Graph {
         Set<Integer> Cb;
         Map<Integer, Set<Set<Integer>>> lk = new HashMap<>();
             Set<Integer> Na = neighborhood(a).toSet();
-            lk.put(0, Set.of(Na.minus(isolatedSet(Na))));
+            lk.put(0, Set.of(Na.minus(isolatedSet(Na, b))));
 
         int k = 0;
         Cb = inducedBy(getVertices().minus(Na)).componentWithB(b).get();
@@ -469,7 +466,7 @@ public interface Graph {
                         Cb =  inducedBy(getVertices().minus(s_nPlus)).componentWithB(b).get();
                         // Compute the connected component Cb of graph G[V - (SUN+(x))]
                         if(!Cb.isEmpty()){
-                            Set<Integer> sPrime = s_nPlus.minus(isolatedSet(s_nPlus));
+                            Set<Integer> sPrime = s_nPlus.minus(isolatedSet(s_nPlus, b));
                             for (Set<Set<Integer>> sets : lk.values()) {
                                 if(sets.contains(sPrime)){
                                     if(lk.containsKey(k+1))
@@ -507,9 +504,13 @@ public interface Graph {
             for (int j = 0; j < prime-1; j++) {
                 Tk.put(j, Tk.get(j).union(Tk.get(j+prime)));
             }
-            T = Tk.get(0); // makes very little sense to me.
+            //T = Tk.get(0); // makes very little sense to me.
         }
-        return T;
+        Set<Set<Integer>> separators = Set.empty();
+        for (Set<Set<Integer>> sets : Tk.values()) {
+            separators = separators.union(sets);
+        }
+        return separators;
     }
 
     @Override
