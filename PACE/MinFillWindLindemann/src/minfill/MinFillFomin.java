@@ -56,7 +56,7 @@ public class MinFillFomin {
 
             // See the proof of Lemma 3.2.
 
-            // X = N(u) \\union N(v)
+            // X = N(u) union N(v)
             Set<Integer> x = g.neighborhood(u).toSet().intersect(g.neighborhood(v).toSet());
 
             // W = V(G)\{u,v} such that every vertex is nonadjacent to at least h getVertices of x.
@@ -98,6 +98,7 @@ public class MinFillFomin {
                         changes.add(c);
                     }
                 }
+                break;
             }
         }
         return Set.of(changes);
