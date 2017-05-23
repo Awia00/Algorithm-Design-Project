@@ -84,6 +84,20 @@ public class MinFill {
                 if(!easyEdges.isEmpty() || !removableIntegers.isEmpty())
                     return perComponent(gPrime).union(kernelAddedEdges).union(easyEdges);
 
+                Optional<Set<Integer>> separator = easySolver.separatorsThatAreClique(g);
+
+                if (separator.isPresent()) {
+                    IO.println("Separator found");
+                    Set<Edge> fill = Set.empty();
+                    Set<Integer> s = separator.get();
+                    for (Set<Integer> component : g.inducedBy(g.getVertices().minus(s)).components()) {
+                        fill = fill.union(perComponent(g.inducedBy(component.union(s))));
+                    }
+
+                    return fill.union(kernelAddedEdges).union(easyEdges);
+                }
+                IO.println("Separator NOT found");
+
                 Optional<Graph> result = mfi.stepB1(gPrime, kPrime);
 
                 if (result.isPresent()) {

@@ -1,16 +1,13 @@
 package minfill;
 
-import minfill.graphs.ChordalGraph;
 import minfill.graphs.Edge;
 import minfill.graphs.Graph;
-import minfill.iterators.PairIterable;
+import minfill.iterators.FilterIterable;
+import minfill.iterators.SomeMinimalSeparatorIterable;
 import minfill.sets.Set;
-import minfill.tuples.Pair;
 import org.jetbrains.annotations.Contract;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by aws on 25-04-2017.
@@ -70,6 +67,8 @@ public class MinFillPolynomialReducer {
         Set<Edge> step1 = independentSimpleCycleReduction(g);
         Set<Edge> step2 = nonIndependentSimpleCycleReducer(g.addEdges(step1));
         Set<Edge> step3 = firstLevelMinimalSeparatorsAlmostCliquesReducer(g.addEdges(step2.union(step1)));
+
+        IO.println("MinSep: " + step3.size());
         return step1.union(step2).union(step3);
     }
 
@@ -134,33 +133,35 @@ public class MinFillPolynomialReducer {
         return result;
     }
 
-    // Does not work ATM
     private Set<Edge> firstLevelMinimalSeparatorsAlmostCliquesReducer(Graph g) {
-        // step 1
-        boolean hasChanged = true;
         Set<Edge> result = Set.empty();
 
+        boolean hasChanged;
         outer:
-        while(hasChanged)
-        {
+        do {
             hasChanged = false;
-            for (Integer a : g.getVertices()) {
-                for (Integer b : g.getVertices().remove(a)) {
-                    if(!g.isAdjacent(a,b)){
-                        Set<Integer> nA = g.neighborhood(a).toSet();
-                        Set<Integer> cB = g.inducedBy(g.getVertices().minus(nA)).componentWithB(b).get();
-                        Set<Integer> s = nA.minus(g.isolatedSet(cB, nA));
-                        Set<Edge> nonEdges = g.inducedBy(s).getNonEdges();
-                        if(nonEdges.size() == 1){
-                            g = g.addEdges(nonEdges);
-                            result = result.union(nonEdges);
-                            hasChanged = true;
-                            continue outer;
-                        }
-                    }
+            for (Set<Integer> separator : new SomeMinimalSeparatorIterable(g)) {
+                Set<Edge> nonEdges = g.inducedBy(separator).getNonEdges();
+                if (nonEdges.size() == 1) {
+                    g = g.addEdges(nonEdges);
+                    result = result.union(nonEdges);
+                    hasChanged = true;
+                    continue outer; // To start from the new graph.
                 }
             }
+        } while (hasChanged);
+
+        return result;
+    }
+
+    public Optional<Set<Integer>> separatorsThatAreClique(Graph g) {
+        for (Set<Integer> separator : new SomeMinimalSeparatorIterable(g)) {
+            if (g.isClique(separator)) {
+                return Optional.of(separator);
+            }
         }
-        return Set.empty();
+
+        return Optional.empty();
     }
 }
+
