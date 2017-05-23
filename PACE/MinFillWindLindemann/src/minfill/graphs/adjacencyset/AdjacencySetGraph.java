@@ -10,53 +10,53 @@ import org.jetbrains.annotations.Contract;
 import java.util.HashMap;
 import java.util.Map;
 
-public class AdjacencySetGraph implements Graph {
-    private final Set<Integer> vertices;
-    private final Map<Integer, Set<Integer>> neighborhoods;
+public class AdjacencySetGraph<T extends Comparable<T>> implements Graph<T> {
+    private final Set<T> vertices;
+    private final Map<T, Set<T>> neighborhoods;
 
-    public AdjacencySetGraph(Set<Integer> vertices) {
+    public AdjacencySetGraph(Set<T> vertices) {
         this.vertices = vertices;
         neighborhoods = new HashMap<>();
 
-        for (Integer vertex : vertices) {
+        for (T vertex : vertices) {
             neighborhoods.put(vertex, Set.empty());
         }
     }
 
-    public AdjacencySetGraph(Set<Integer> vertices, Set<Edge> edges) {
+    public AdjacencySetGraph(Set<T> vertices, Set<Edge<T>> edges) {
         this(vertices);
 
-        for (Edge edge : edges) {
+        for (Edge<T> edge : edges) {
             neighborhoods.put(edge.from, neighborhoods.get(edge.from).add(edge.to));
             neighborhoods.put(edge.to, neighborhoods.get(edge.to).add(edge.from));
         }
     }
 
-    protected AdjacencySetGraph(Set<Integer> vertices, Map<Integer, Set<Integer>> neighborhoods) {
+    protected AdjacencySetGraph(Set<T> vertices, Map<T, Set<T>> neighborhoods) {
         this.vertices = vertices;
         this.neighborhoods = neighborhoods;
     }
 
     @Override
     @Contract(pure = true)
-    public Set<Integer> getVertices() {
+    public Set<T> getVertices() {
         return vertices;
     }
 
     @Override
     @Contract(pure = true)
-    public Neighborhood neighborhood(Integer n) {
+    public Neighborhood<T> neighborhood(T n) {
         assert vertices.contains(n);
-        return new AdjacencySetNeighborhood(neighborhoods.get(n));
+        return new AdjacencySetNeighborhood<>(neighborhoods.get(n));
     }
 
     @Override
-    public Graph removeEdges(Set<Edge> edges) {
+    public Graph<T> removeEdges(Set<Edge<T>> edges) {
         boolean change = false;
 
-        Map<Integer, Set<Integer>> copy = new HashMap<>(neighborhoods);
+        Map<T, Set<T>> copy = new HashMap<>(neighborhoods);
 
-        for (Edge e : edges) {
+        for (Edge<T> e : edges) {
             assert vertices.contains(e.from);
             assert vertices.contains(e.to);
 
@@ -67,34 +67,34 @@ public class AdjacencySetGraph implements Graph {
             }
         }
 
-        return change ? new AdjacencySetGraph(vertices, copy) : this;
+        return change ? new AdjacencySetGraph<>(vertices, copy) : this;
     }
 
     @Override
     @Contract(pure = true)
-    public Graph addEdge(Edge e) {
+    public Graph<T> addEdge(Edge<T> e) {
         assert vertices.contains(e.from);
         assert vertices.contains(e.to);
 
         if (isAdjacent(e.from, e.to)) return this;
 
-        Map<Integer, Set<Integer>> copy = new HashMap<>(neighborhoods);
+        Map<T, Set<T>> copy = new HashMap<>(neighborhoods);
 
         copy.put(e.from, copy.get(e.from).add(e.to));
         copy.put(e.to, copy.get(e.to).add(e.from));
 
-        return new AdjacencySetGraph(vertices, copy);
+        return new AdjacencySetGraph<>(vertices, copy);
     }
 
 
     @Override
     @Contract(pure = true)
-    public Graph addEdges(Set<Edge> edges) {
+    public Graph<T> addEdges(Set<Edge<T>> edges) {
         boolean change = false;
 
-        Map<Integer, Set<Integer>> copy = new HashMap<>(neighborhoods);
+        Map<T, Set<T>> copy = new HashMap<>(neighborhoods);
 
-        for (Edge e : edges) {
+        for (Edge<T> e : edges) {
             assert vertices.contains(e.from);
             assert vertices.contains(e.to);
 
@@ -105,22 +105,22 @@ public class AdjacencySetGraph implements Graph {
             }
         }
 
-        return change ? new AdjacencySetGraph(vertices, copy) : this;
+        return change ? new AdjacencySetGraph<>(vertices, copy) : this;
     }
 
     @Override
     @Contract(pure = true)
-    public Graph inducedBy(Set<Integer> vertices) {
+    public Graph<T> inducedBy(Set<T> vertices) {
         assert vertices.isSubsetOf(getVertices());
 
         if (vertices.isProperSubsetOf(getVertices())) {
-            Map<Integer, Set<Integer>> copy = new HashMap<>();
+            Map<T, Set<T>> copy = new HashMap<>();
 
-            for (Integer vertex : vertices) {
+            for (T vertex : vertices) {
                 copy.put(vertex, neighborhood(vertex).toSet().intersect(vertices));
             }
 
-            return new AdjacencySetGraph(vertices, copy);
+            return new AdjacencySetGraph<>(vertices, copy);
         }
         // If getVertices is a subset of V(this), but not a proper subset, then it must be the entire graph.
         return this;
@@ -128,16 +128,16 @@ public class AdjacencySetGraph implements Graph {
 
     @Override
     @Contract(pure = true)
-    public ChordalGraph minimalTriangulation() {
-        if (isChordal()) return new AdjacencySetChordalGraph(vertices, neighborhoods);
-        Map<Integer, Set<Integer>> copy = new HashMap<>(neighborhoods);
+    public ChordalGraph<T> minimalTriangulation() {
+        if (isChordal()) return new AdjacencySetChordalGraph<>(vertices, neighborhoods);
+        Map<T, Set<T>> copy = new HashMap<>(neighborhoods);
 
-        for (Edge edge : maximumCardinalitySearchM().b) {
+        for (Edge<T> edge : maximumCardinalitySearchM().b) {
             copy.put(edge.from, copy.get(edge.from).add(edge.to));
             copy.put(edge.to, copy.get(edge.to).add(edge.from));
         }
 
-        return new AdjacencySetChordalGraph(vertices, copy);
+        return new AdjacencySetChordalGraph<>(vertices, copy);
     }
 
     @Override
@@ -145,7 +145,7 @@ public class AdjacencySetGraph implements Graph {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        AdjacencySetGraph that = (AdjacencySetGraph) o;
+        AdjacencySetGraph<?> that = (AdjacencySetGraph<?>) o;
 
         return neighborhoods.equals(that.neighborhoods);
     }

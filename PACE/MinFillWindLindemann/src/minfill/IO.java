@@ -11,7 +11,6 @@ import java.util.*;
 
 public class IO implements AutoCloseable {
     static final boolean printDebug = false;
-    private String[] nodeNames;
     private final InputStream input;
 
     public IO() {
@@ -22,46 +21,39 @@ public class IO implements AutoCloseable {
         this.input = input;
     }
 
-    public void print(Set<Edge> minFill) {
+    public void print(Set<Edge<String>> minFill) {
         for (Edge edge : minFill) {
-            System.out.printf("%s %s\n", nodeNames[edge.from], nodeNames[edge.to]);
+            System.out.printf("%s %s\n", edge.from, edge.to);
         }
         System.out.flush();
     }
 
-    public Graph parse() {
-        Map<String, Integer> nodeIndexer = new HashMap<>();
-        int nextNodeId = 0;
-        java.util.Set<Edge> edges = new HashSet<>();
+    public Graph<String> parse() {
+        Map<String, String> intern = new HashMap<>();
+        java.util.Set<Edge<String>> edges = new HashSet<>();
         try (Scanner scanner = new Scanner(input)) {
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine();
 
                 String[] tokens = line.split(" ");
 
-                if (!nodeIndexer.containsKey(tokens[0])) {
-                    nodeIndexer.put(tokens[0], nextNodeId++);
+
+                if (!intern.containsKey(tokens[0])) {
+                    intern.put(tokens[0], tokens[0]);
                 }
-                if (!nodeIndexer.containsKey(tokens[1])) {
-                    nodeIndexer.put(tokens[1], nextNodeId++);
+                if (!intern.containsKey(tokens[1])) {
+                    intern.put(tokens[1], tokens[1]);
                 }
 
-                edges.add(new Edge(nodeIndexer.get(tokens[0]), nodeIndexer.get(tokens[1])));
+                edges.add(new Edge<>(intern.get(tokens[0]), intern.get(tokens[1])));
             }
         }
 
-        nodeNames = new String[nodeIndexer.size()];
-
-        for (Map.Entry<String, Integer> entry : nodeIndexer.entrySet()) {
-            nodeNames[entry.getValue()] = entry.getKey();
-        }
-
-        return new AdjacencySetGraph(Set.of(nodeIndexer.values()), Set.of(edges));
+        return new AdjacencySetGraph<>(Set.of(intern.values()), Set.of(edges));
     }
 
     @Override
     public void close() throws IOException {
-        nodeNames = null;
         input.close();
     }
 

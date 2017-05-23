@@ -11,24 +11,24 @@ import minfill.tuples.Triple;
 import java.io.IOException;
 import java.util.Optional;
 
-public class Kernelizer {
-    private static MinFillKernel kernel = new MinFillKernel();
+public class Kernelizer<T extends Comparable<T>> {
+    private MinFillKernel<T> kernel = new MinFillKernel<>();
 
     public static void main(String[] args) throws IOException {
         try (IO io = new IO(Util.getInput(args))) {
-            io.print(kernelize(io.parse()).getEdges());
+            io.print(new Kernelizer<String>().kernelize(io.parse()).getEdges());
         }
     }
 
-    public static Graph kernelize(Graph g) {
+    public Graph<T> kernelize(Graph<T> g) {
         return kernelizeWithK(g).a;
     }
 
-    public static Pair<Graph, Integer> kernelizeWithK(Graph g) {
-        Triple<Set<Integer>, Set<Integer>, Integer> abk = kernel.kernelProcedure1And2(g);
+    public Pair<Graph<T>, Integer> kernelizeWithK(Graph<T> g) {
+        Triple<Set<T>, Set<T>, Integer> abk = kernel.kernelProcedure1And2(g);
 
         int k = abk.c - 1;
-        Optional<Pair<Graph, Integer>> gk;
+        Optional<Pair<Graph<T>, Integer>> gk;
         do {
             gk = kernel.kernelProcedure3(g, abk.a, abk.b, ++k);
         } while(!gk.isPresent());

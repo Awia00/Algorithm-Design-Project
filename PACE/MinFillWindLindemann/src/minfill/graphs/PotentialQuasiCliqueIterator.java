@@ -8,17 +8,17 @@ import java.util.*;
 /**
  * Created by aws on 19-04-2017.
  */
-public class PotentialQuasiCliqueIterator implements Iterator<Set<Integer>> {
-    private final Graph g;
-    private final Iterator<Set<Integer>> vertexSubsets;
-    private Set<Integer> z;
-    private FilterIterator<Set<Integer>> minimalSeparators;
-    private Iterator<Set<Integer>> maximalCliques;
-    private Iterator<Integer> zIterator;
-    private Graph gMinusKUnionZ;
+public class PotentialQuasiCliqueIterator<T extends Comparable<T>> implements Iterator<Set<T>> {
+    private final Graph<T> g;
+    private final Iterator<Set<T>> vertexSubsets;
+    private Set<T> z;
+    private FilterIterator<Set<T>> minimalSeparators;
+    private Iterator<Set<T>> maximalCliques;
+    private Iterator<T> zIterator;
+    private Graph<T> gMinusKUnionZ;
     private int stage;
 
-    public PotentialQuasiCliqueIterator(Graph g, int k) {
+    public PotentialQuasiCliqueIterator(Graph<T> g, int k) {
         this.g = g;
         vertexSubsets = Set.subsetsOfSizeAtMost(g.getVertices(), (int)(5*Math.sqrt(k))).iterator();
     }
@@ -56,11 +56,11 @@ public class PotentialQuasiCliqueIterator implements Iterator<Set<Integer>> {
     }
 
     @Override
-    public Set<Integer> next() {
+    public Set<T> next() {
         if(stage == 0){
             z = vertexSubsets.next();
-            Set<Integer> gMinusZ = g.getVertices().minus(z);
-            ChordalGraph h = g.inducedBy(gMinusZ).minimalTriangulation();
+            Set<T> gMinusZ = g.getVertices().minus(z);
+            ChordalGraph<T> h = g.inducedBy(gMinusZ).minimalTriangulation();
             minimalSeparators = new FilterIterator<>(h.minimalSeparators(), g::isClique);
             maximalCliques = h.maximalCliques().iterator();
 
@@ -70,11 +70,11 @@ public class PotentialQuasiCliqueIterator implements Iterator<Set<Integer>> {
                 stage = 2;
         }
         if(stage == 1){
-            Set<Integer> s = minimalSeparators.next();
+            Set<T> s = minimalSeparators.next();
             return s.union(z);
         }
         if(stage == 2){
-            Set<Integer> maximalClique = maximalCliques.next();
+            Set<T> maximalClique = maximalCliques.next();
             gMinusKUnionZ = g.inducedBy(g.getVertices().minus(maximalClique.union(z)));
             zIterator = z.iterator();
             stage = 3;
@@ -83,9 +83,9 @@ public class PotentialQuasiCliqueIterator implements Iterator<Set<Integer>> {
             }
         }
         if(stage == 3){
-            Integer y = zIterator.next();
-            Set<Integer> Y = Set.of(y);
-            for (Set<Integer> bi : gMinusKUnionZ.components()) {
+            T y = zIterator.next();
+            Set<T> Y = Set.of(y);
+            for (Set<T> bi : gMinusKUnionZ.components()) {
                 if (g.neighborhood(bi).contains(y)) {
                     Y = Y.union(bi);
                 }

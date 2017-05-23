@@ -16,55 +16,57 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.PriorityQueue;
 
-public class WindLindemannAlgorithm {
-    private static MinimumFillKernel kernel = new MinFillKernel();
+public class WindLindemannAlgorithm<T extends Comparable<T>> {
+    private MinimumFillKernel<T> kernel = new MinFillKernel<>();
+    private Kernelizer<T> kernelizer = new Kernelizer<>();
 
     public static void main(String[] args) throws FileNotFoundException {
         IO io = new IO(Util.getInput(args));
+        WindLindemannAlgorithm<String> algorithm = new WindLindemannAlgorithm<>();
 
-        Graph g = io.parse();
+        Graph<String> g = io.parse();
 
-        java.util.Set<Edge> minFill = new HashSet<>();
-        for (Set<Integer> component : g.components()) {
-            for (Edge edge : perComponent(g.inducedBy(component))) {
+        java.util.Set<Edge<String>> minFill = new HashSet<>();
+        for (Set<String> component : g.components()) {
+            for (Edge<String> edge : algorithm.perComponent(g.inducedBy(component))) {
                 minFill.add(edge);
             }
         }
 
-        Graph filled = g.addEdges(Set.of(minFill));
+        Graph<String> filled = g.addEdges(Set.of(minFill));
         assert filled.isChordal();
 
-        Set<Edge> F = filled.getEdges().minus(g.getEdges());
+        Set<Edge<String>> F = filled.getEdges().minus(g.getEdges());
 
         IO.println("|F| = " + F.size());
         io.print(F);
     }
 
-    public static Set<Edge> perComponent(Graph g) {
+    public Set<Edge<T>> perComponent(Graph<T> g) {
         if (g.isChordal()) return Set.empty();
 
-        Triple<Set<Integer>, Set<Integer>, Integer> abk = kernel.kernelProcedure1And2(g);
+        Triple<Set<T>, Set<T>, Integer> abk = kernel.kernelProcedure1And2(g);
 
         int k = abk.c;
         while (true) {
             IO.printf("k=%d\n", k);
-            Optional<Pair<Graph, Integer>> option = kernel.kernelProcedure3(g, abk.a, abk.b, k);
+            Optional<Pair<Graph<T>, Integer>> option = kernel.kernelProcedure3(g, abk.a, abk.b, k);
 
             if (option.isPresent()) {
-                Graph gPrime = option.get().a;
+                Graph<T> gPrime = option.get().a;
                 int kPrime = option.get().b;
 
-                Set<Edge> edgesAddedByKernel = gPrime.getEdges();
+                Set<Edge<T>> edgesAddedByKernel = gPrime.getEdges();
 
-                Set<Set<Integer>> components = gPrime.components();
+                Set<Set<T>> components = gPrime.components();
                 if (components.size() != 1) {
                     boolean hasResult = true;
-                    java.util.Set<Edge> minFill = new HashSet<>();
-                    for (Set<Integer> component : components) {
-                        Optional<Set<Edge>> maybeEdges = perComponent(gPrime.inducedBy(component), kPrime);
+                    java.util.Set<Edge<T>> minFill = new HashSet<>();
+                    for (Set<T> component : components) {
+                        Optional<Set<Edge<T>>> maybeEdges = perComponent(gPrime.inducedBy(component), kPrime);
 
                         if (maybeEdges.isPresent()) {
-                            for (Edge edge : maybeEdges.get()) {
+                            for (Edge<T> edge : maybeEdges.get()) {
                                 minFill.add(edge);
                             }
                         } else {
@@ -78,15 +80,15 @@ public class WindLindemannAlgorithm {
                         return Set.of(minFill).union(edgesAddedByKernel);
                     }
                 } else {
-                    Graph best = null;
+                    Graph<T> best = null;
                     int bestK = kPrime;
-                    Set<Edge> bestNonEdgesAdded = Set.empty();
+                    Set<Edge<T>> bestNonEdgesAdded = Set.empty();
 
                     IO.println("Now trying all non-edges.");
-                    for (Edge nonEdge : gPrime.getNonEdges()) {
-                        Graph gNonEdge = gPrime.addEdge(nonEdge);
+                    for (Edge<T> nonEdge : gPrime.getNonEdges()) {
+                        Graph<T> gNonEdge = gPrime.addEdge(nonEdge);
 
-                        Pair<Graph, Integer> kernelized = Kernelizer.kernelizeWithK(gNonEdge);
+                        Pair<Graph<T>, Integer> kernelized = kernelizer.kernelizeWithK(gNonEdge);
 
                         if (kernelized.b < bestK) {
                             best = kernelized.a;
@@ -103,7 +105,7 @@ public class WindLindemannAlgorithm {
                             return best.getEdges().union(bestNonEdgesAdded).union(edgesAddedByKernel);
                         }
                         IO.println("Search deeper!");
-                        Optional<Set<Edge>> maybeEdges = perComponent(best, kPrime - bestNonEdgesAdded.size());
+                        Optional<Set<Edge<T>>> maybeEdges = perComponent(best, kPrime - bestNonEdgesAdded.size());
 
                         if (maybeEdges.isPresent()) {
                             return maybeEdges.get().union(bestNonEdgesAdded).union(edgesAddedByKernel);
@@ -115,19 +117,19 @@ public class WindLindemannAlgorithm {
         }
     }
 
-    public static Optional<Set<Edge>> perComponent(Graph gPrime, int kPrime) {
+    public Optional<Set<Edge<T>>> perComponent(Graph<T> gPrime, int kPrime) {
         if (gPrime.isChordal()) return Optional.of(Set.empty());
         if (kPrime == 0) return Optional.empty();
 
-        Set<Set<Integer>> components = gPrime.components();
+        Set<Set<T>> components = gPrime.components();
         if (components.size() != 1) {
             boolean hasResult = true;
-            java.util.Set<Edge> minFill = new HashSet<>();
-            for (Set<Integer> component : components) {
-                Optional<Set<Edge>> maybeEdges = perComponent(gPrime.inducedBy(component), kPrime);
+            java.util.Set<Edge<T>> minFill = new HashSet<>();
+            for (Set<T> component : components) {
+                Optional<Set<Edge<T>>> maybeEdges = perComponent(gPrime.inducedBy(component), kPrime);
 
                 if (maybeEdges.isPresent()) {
-                    for (Edge edge : maybeEdges.get()) {
+                    for (Edge<T> edge : maybeEdges.get()) {
                         minFill.add(edge);
                     }
                 } else {
@@ -142,12 +144,12 @@ public class WindLindemannAlgorithm {
             }
         } else {
             IO.println("Now trying all non-edges.");
-            PriorityQueue<Triple<Graph, Integer, Set<Edge>>> pq = new PriorityQueue<>(Comparator.comparing(a -> a.b));
+            PriorityQueue<Triple<Graph<T>, Integer, Set<Edge<T>>>> pq = new PriorityQueue<>(Comparator.comparing(a -> a.b));
 
-            for (Edge nonEdge : gPrime.getNonEdges()) {
-                Graph gNonEdge = gPrime.addEdge(nonEdge);
+            for (Edge<T> nonEdge : gPrime.getNonEdges()) {
+                Graph<T> gNonEdge = gPrime.addEdge(nonEdge);
 
-                Pair<Graph, Integer> kernelized = Kernelizer.kernelizeWithK(gNonEdge);
+                Pair<Graph<T>, Integer> kernelized = kernelizer.kernelizeWithK(gNonEdge);
 
                 if (kernelized.b < kPrime) {
                     pq.add(Tuple.of(kernelized.a, kernelized.b, gNonEdge.getEdges().union(kernelized.a.getEdges()).minus(gPrime.getEdges())));
@@ -155,17 +157,17 @@ public class WindLindemannAlgorithm {
             }
 
             while (!pq.isEmpty()) {
-                Triple<Graph, Integer, Set<Edge>> good = pq.poll();
+                Triple<Graph<T>, Integer, Set<Edge<T>>> good = pq.poll();
 
                 if (good.a.isChordal()) {
                     IO.println("Found result!");
                     return Optional.of(good.a.getEdges().union(good.c));
                 }
                 IO.println("Search deeper!");
-                Optional<Set<Edge>> maybeEdges = perComponent(good.a, kPrime - good.c.size());
+                Optional<Set<Edge<T>>> maybeEdges = perComponent(good.a, kPrime - good.c.size());
 
                 if (maybeEdges.isPresent()) {
-                    Set<Edge> fill = maybeEdges.get().union(good.c);
+                    Set<Edge<T>> fill = maybeEdges.get().union(good.c);
 
                     if (fill.size() < kPrime) {
                         return Optional.of(maybeEdges.get().union(good.c));

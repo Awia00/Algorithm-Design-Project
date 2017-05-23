@@ -27,10 +27,10 @@ public class PaceToDot {
         return result + "}";
     }
 
-    public static String generateFromGraph(Graph g){
-        String result = "Graph g {\n";
-        for (Edge edge : g.getEdges()) {
-            result += String.format("\t%s--%s\n", edge.from, edge.to);
+    public static <T extends Comparable<T>> String generateFromGraph(Graph<T> g){
+        StringBuilder result = new StringBuilder("Graph g {\n");
+        for (Edge<T> edge : g.getEdges()) {
+            result.append(String.format("\t%s--%s\n", edge.from, edge.to));
         }
         return result + "}";
     }

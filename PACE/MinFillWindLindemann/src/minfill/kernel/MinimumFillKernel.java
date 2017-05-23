@@ -8,10 +8,10 @@ import org.jetbrains.annotations.Contract;
 
 import java.util.Optional;
 
-public interface MinimumFillKernel {
+public interface MinimumFillKernel<T extends Comparable<T>> {
     @Contract(pure = true)
-    Triple<Set<Integer>, Set<Integer>, Integer> kernelProcedure1And2(Graph g);
+    Triple<Set<T>, Set<T>, Integer> kernelProcedure1And2(Graph<T> g);
 
     @Contract(pure = true)
-    Optional<Pair<Graph, Integer>> kernelProcedure3(Graph g, Set<Integer> A, Set<Integer> B, int k);
+    Optional<Pair<Graph<T>, Integer>> kernelProcedure3(Graph<T> g, Set<T> A, Set<T> B, int k);
 }

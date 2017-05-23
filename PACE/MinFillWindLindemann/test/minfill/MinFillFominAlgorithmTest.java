@@ -114,13 +114,13 @@ public class MinFillFominAlgorithmTest {
     private void testMinFillGraph(String graph) throws FileNotFoundException{
         IO io = new IO(new FileInputStream(new File(graph)));
 
-        Graph entireGraph = io.parse();
+        Graph<String> entireGraph = io.parse();
 
-        Set<Edge> edges = MinFill.minFill(entireGraph);
+        Set<Edge<String>> edges = MinFill.minFill(entireGraph);
         // check correct
         assert entireGraph.addEdges(edges).isChordal();
         // check minimality
-        for (Edge edge : edges) {
+        for (Edge<String> edge : edges) {
             assert !entireGraph.addEdges(edges.remove(edge)).isChordal();
         }
         System.out.print("Minfill size: " + edges.size());
