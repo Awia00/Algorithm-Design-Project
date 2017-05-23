@@ -423,9 +423,8 @@ public interface Graph {
         return cycles;
     }
 
-    default Set<Integer> isolatedSet(Set<Integer> X, int b){
-        Graph g = inducedBy(getVertices().minus(X));
-        return X.minus(neighborhood(g.componentWithB(b).get()));
+    default Set<Integer> isolatedSet(Set<Integer> cb, Set<Integer> X){
+        return X.minus(neighborhood(cb));
     }
 
     // todo dont know if is correct
