@@ -45,10 +45,11 @@ public class MinFillKernel implements MinimumFillKernel {
                     Set<Integer> R = (g.neighborhood(x).toSet().minus(g.neighborhood(u).toSet())).intersect(B);
 
                     for (Integer v : R) {
-                        if (gPrime.hasPath(u, v)) {
-                            List<Integer> path = gPrime.shortestPath(u, v);
+                        Graph gV = gPrime.inducedBy(gPrime.getVertices().minus(g.neighborhood(x).toSet()).add(u).add(v));
+                        if (gV.hasPath(u, v)) {
+                            List<Integer> path = gV.shortestPath(u, v);
                             path.add(x);
-                            if(!g.inducedBy(Set.of(path)).isChordal()) continue;
+                            assert (!g.inducedBy(Set.of(path)).isChordal());
 
                             cycleFound = true;
 
