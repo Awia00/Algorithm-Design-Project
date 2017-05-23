@@ -45,10 +45,14 @@ public class MinFillKernel<T extends Comparable<T>> implements MinimumFillKernel
                     Set<T> R = (g.neighborhood(x).toSet().minus(g.neighborhood(u).toSet())).intersect(B);
 
                     for (T v : R) {
-                        if (gPrime.hasPath(u, v)) {
-                            cycleFound = true;
-                            List<T> path = gPrime.shortestPath(u, v);
+                        Graph<T> gV = gPrime.inducedBy(gPrime.getVertices().minus(g.neighborhood(x).toSet()).add(u).add(v));
+                        if (gV.hasPath(u, v)) {
+                            List<T> path = gV.shortestPath(u, v);
+
                             path.add(x);
+                            assert  (!g.inducedBy(Set.of(path)).isChordal());
+
+                            cycleFound = true;
 
                             List<Set<T>> subPaths = new ArrayList<>();
 
@@ -111,7 +115,7 @@ public class MinFillKernel<T extends Comparable<T>> implements MinimumFillKernel
             java.util.Set<T> Axy = new HashSet<>();
 
             for (T b : bNeighbors) {
-                Graph<T> gPrime = g.inducedBy(g.getVertices().remove(b));
+                Graph<T> gPrime = g.inducedBy(g.getVertices().remove(b).minus(g.neighborhood(b).toSet()).add(x).add(y));
 
                 if (gPrime.hasPath(x, y)) {
                     Axy.add(b);

@@ -454,7 +454,8 @@ public interface Graph<T extends Comparable<T>> {
         lk.put(0, Set.of(Na.minus(isolatedSet(Cb, Na))));
 
         int k = 0;
-        while(k < getVertices().size()-3 && !Cb.isEmpty()){
+
+        while(k <= getVertices().size()-3 && !Cb.isEmpty() && lk.containsKey(k)){
             for (Set<T> s : lk.get(k)) {
                 for (T x : s.minus(neighborhood(b).toSet())) {
                     Set<T> nPlus = nPlus(x, lk.get(k));
@@ -463,14 +464,18 @@ public interface Graph<T extends Comparable<T>> {
                     // Compute the connected component Cb of graph G[V - (SUN+(x))]
                     if(!Cb.isEmpty()){
                         Set<T> sPrime = s_nPlus.minus(isolatedSet(Cb, s_nPlus));
+                        boolean alreadyAdded = false;
                         for (Set<Set<T>> sets : lk.values()) {
                             if(sets.contains(sPrime)){
-                                if(lk.containsKey(k+1))
-                                    lk.put(k+1, lk.get(k+3).add(sPrime));
-                                else
-                                    lk.put(k+1, Set.of(sPrime));
-                                break;
+                                alreadyAdded = true;
                             }
+                        }
+                        if(!alreadyAdded){
+                            if(lk.containsKey(k+1))
+                                lk.put(k+1, lk.get(k+1).add(sPrime));
+                            else
+                                lk.put(k+1, Set.of(sPrime));
+                            break;
                         }
                     }
                 }
