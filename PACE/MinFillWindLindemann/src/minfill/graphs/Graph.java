@@ -193,7 +193,7 @@ public interface Graph {
 
 
                 while (!queue.isEmpty() && marked.size() != getVertices().size()) {
-                    int vertex = queue.poll();
+                    Integer vertex = queue.poll();
 
                     for (Integer neighbor : neighborhood(vertex)) {
                         if (!marked.contains(neighbor)) {
