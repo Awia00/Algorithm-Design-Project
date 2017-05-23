@@ -84,7 +84,7 @@ public class MinFill {
                 if(!easyEdges.isEmpty() || !removableIntegers.isEmpty())
                     return perComponent(gPrime).union(kernelAddedEdges).union(easyEdges);
 
-                Optional<Set<Integer>> separator = easySolver.separatorsThatAreClique(g);
+                Optional<Set<Integer>> separator = easySolver.separatorsThatAreClique(gPrime);
 
                 if (separator.isPresent()) {
                     IO.println("Separator found");
