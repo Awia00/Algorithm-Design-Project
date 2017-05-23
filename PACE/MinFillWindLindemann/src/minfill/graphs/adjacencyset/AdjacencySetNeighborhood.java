@@ -6,26 +6,26 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Iterator;
 
-public class AdjacencySetNeighborhood implements Neighborhood {
-    private final Set<Integer> neighborhood;
+public class AdjacencySetNeighborhood<T extends Comparable<T>> implements Neighborhood<T> {
+    private final Set<T> neighborhood;
 
-    public AdjacencySetNeighborhood(Set<Integer> neighborhood) {
+    public AdjacencySetNeighborhood(Set<T> neighborhood) {
         this.neighborhood = neighborhood;
     }
 
     @Override
-    public boolean contains(Integer vertex) {
+    public boolean contains(T vertex) {
         return neighborhood.contains(vertex);
     }
 
     @Override
-    public Set<Integer> toSet() {
+    public Set<T> toSet() {
         return neighborhood;
     }
 
     @NotNull
     @Override
-    public Iterator<Integer> iterator() {
+    public Iterator<T> iterator() {
         return neighborhood.iterator();
     }
 }

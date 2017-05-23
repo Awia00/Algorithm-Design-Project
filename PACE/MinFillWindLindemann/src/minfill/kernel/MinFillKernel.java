@@ -10,21 +10,21 @@ import org.jetbrains.annotations.Contract;
 
 import java.util.*;
 
-public class MinFillKernel implements MinimumFillKernel {
+public class MinFillKernel<T extends Comparable<T>> implements MinimumFillKernel<T> {
     @Override
     @Contract(pure = true)
-    public Triple<Set<Integer>, Set<Integer>, Integer> kernelProcedure1And2(Graph g) {
-        Set<Integer> A = Set.empty(), B = g.getVertices();
+    public Triple<Set<T>, Set<T>, Integer> kernelProcedure1And2(Graph<T> g) {
+        Set<T> A = Set.empty(), B = g.getVertices();
         int kMin = 0;
 
         // P1
         boolean cycleFound;
         do {
             cycleFound = false;
-            Optional<List<Integer>> cycle = g.inducedBy(B).findChordlessCycle();
+            Optional<List<T>> cycle = g.inducedBy(B).findChordlessCycle();
             if (cycle.isPresent()) {
                 cycleFound = true;
-                Set<Integer> cycleSet = Set.of(cycle.get());
+                Set<T> cycleSet = Set.of(cycle.get());
                 assert cycleSet.size() >= 4;
 
                 kMin += cycleSet.size() - 3;
@@ -39,22 +39,22 @@ public class MinFillKernel implements MinimumFillKernel {
         do {
             cycleFound = false;
 
-            for (Integer u : A) {
-                for (Integer x : g.neighborhood(u).toSet().intersect(B)) {
-                    Graph gPrime = g.inducedBy(g.getVertices().remove(x));
-                    Set<Integer> R = (g.neighborhood(x).toSet().minus(g.neighborhood(u).toSet())).intersect(B);
+            for (T u : A) {
+                for (T x : g.neighborhood(u).toSet().intersect(B)) {
+                    Graph<T> gPrime = g.inducedBy(g.getVertices().remove(x));
+                    Set<T> R = (g.neighborhood(x).toSet().minus(g.neighborhood(u).toSet())).intersect(B);
 
-                    for (Integer v : R) {
+                    for (T v : R) {
                         if (gPrime.hasPath(u, v)) {
                             cycleFound = true;
-                            List<Integer> path = gPrime.shortestPath(u, v);
+                            List<T> path = gPrime.shortestPath(u, v);
                             path.add(x);
 
-                            List<Set<Integer>> subPaths = new ArrayList<>();
+                            List<Set<T>> subPaths = new ArrayList<>();
 
                             boolean prevInB = false;
-                            java.util.Set<Integer> subPath = new HashSet<>();
-                            for (Integer vertex : path) {
+                            java.util.Set<T> subPath = new HashSet<>();
+                            for (T vertex : path) {
                                 if (prevInB) {
                                     if (B.contains(vertex)) {
                                         subPath.add(vertex);
@@ -72,7 +72,7 @@ public class MinFillKernel implements MinimumFillKernel {
                             }
                             if(!subPath.isEmpty()) subPaths.add(Set.of(subPath));
 
-                            Set<Integer> vertices = Set.of(path);
+                            Set<T> vertices = Set.of(path);
                             A = A.union(vertices);
                             B = B.minus(vertices);
 
@@ -100,18 +100,18 @@ public class MinFillKernel implements MinimumFillKernel {
 
     @Override
     @Contract(pure = true)
-    public Optional<Pair<Graph, Integer>> kernelProcedure3(Graph g, Set<Integer> A, Set<Integer> B, int k) {
+    public Optional<Pair<Graph<T>, Integer>> kernelProcedure3(Graph<T> g, Set<T> A, Set<T> B, int k) {
         int kPrime = k;
 
         // P3
-        for (Edge nonEdge : g.inducedBy(A).getNonEdges()) {
-            int x = nonEdge.from, y = nonEdge.to;
+        for (Edge<T> nonEdge : g.inducedBy(A).getNonEdges()) {
+            T x = nonEdge.from, y = nonEdge.to;
 
-            Set<Integer> bNeighbors = g.neighborhood(x).toSet().intersect(g.neighborhood(y).toSet()).intersect(B);
-            java.util.Set<Integer> Axy = new HashSet<>();
+            Set<T> bNeighbors = g.neighborhood(x).toSet().intersect(g.neighborhood(y).toSet()).intersect(B);
+            java.util.Set<T> Axy = new HashSet<>();
 
-            for (Integer b : bNeighbors) {
-                Graph gPrime = g.inducedBy(g.getVertices().remove(b));
+            for (T b : bNeighbors) {
+                Graph<T> gPrime = g.inducedBy(g.getVertices().remove(b));
 
                 if (gPrime.hasPath(x, y)) {
                     Axy.add(b);
@@ -124,7 +124,7 @@ public class MinFillKernel implements MinimumFillKernel {
 
                 if (kPrime < 0) return Optional.empty();
             } else {
-                Set<Integer> set = Set.of(Axy);
+                Set<T> set = Set.of(Axy);
                 A = A.union(set);
                 B = B.minus(set);
             }

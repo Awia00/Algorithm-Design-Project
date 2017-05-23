@@ -1,7 +1,6 @@
 package minfill.graphs;
 
 import minfill.iterators.PairIterable;
-import minfill.iterators.PairIterator;
 import minfill.sets.Set;
 import minfill.tuples.Pair;
 import minfill.tuples.Tuple;
@@ -9,21 +8,21 @@ import org.jetbrains.annotations.Contract;
 
 import java.util.*;
 
-public interface Graph {
+public interface Graph<T extends Comparable<T>> {
     @Contract(pure = true)
-    Set<Integer> getVertices();
+    Set<T> getVertices();
 
     @Contract(pure = true)
-    Neighborhood neighborhood(Integer n);
+    Neighborhood<T> neighborhood(T n);
 
     @Contract(pure = true)
-    Graph removeEdges(Set<Edge> edges);
+    Graph<T> removeEdges(Set<Edge<T>> edges);
 
     @Contract(pure = true)
-    default Set<Integer> neighborhood(Set<Integer> vertices) {
-        Set<Integer> neighborhood = Set.empty();
+    default Set<T> neighborhood(Set<T> vertices) {
+        Set<T> neighborhood = Set.empty();
 
-        for (Integer vertex : vertices) {
+        for (T vertex : vertices) {
             neighborhood = neighborhood.union(neighborhood(vertex).toSet().minus(vertices));
         }
 
@@ -31,7 +30,7 @@ public interface Graph {
     }
 
     @Contract(pure = true)
-    default boolean isAdjacent(Integer a, Integer b) {
+    default boolean isAdjacent(T a, T b) {
         assert getVertices().contains(a);
         assert getVertices().contains(b);
 
@@ -39,20 +38,20 @@ public interface Graph {
     }
 
     @Contract(pure = true)
-    default boolean hasPath(Integer a, Integer b) {
+    default boolean hasPath(T a, T b) {
         assert getVertices().contains(a);
         assert getVertices().contains(b);
 
-        Queue<Integer> queue = new ArrayDeque<>();
-        java.util.Set<Integer> marked = new HashSet<>();
+        Queue<T> queue = new ArrayDeque<>();
+        java.util.Set<T> marked = new HashSet<>();
         queue.add(a);
 
         while (!queue.isEmpty()) {
-            Integer vertex = queue.poll();
+            T vertex = queue.poll();
             if (Objects.equals(vertex, b)) return true;
             if (!marked.contains(vertex)) {
                 marked.add(vertex);
-                for (Integer neighbor : neighborhood(vertex)) {
+                for (T neighbor : neighborhood(vertex)) {
                     queue.add(neighbor);
                 }
             }
@@ -62,19 +61,19 @@ public interface Graph {
     }
 
     @Contract(pure = true)
-    default List<Integer> maximumCardinalitySearch() {
-        List<Integer> order = new ArrayList<>(getVertices().size());
-        java.util.Set<Integer> numbered = new HashSet<>(getVertices().size());
-        Map<Integer, Integer> weightMap = new HashMap<>();
-        for (Integer vertex : getVertices()) {
+    default List<T> maximumCardinalitySearch() {
+        List<T> order = new ArrayList<>(getVertices().size());
+        java.util.Set<T> numbered = new HashSet<>(getVertices().size());
+        Map<T, Integer> weightMap = new HashMap<>();
+        for (T vertex : getVertices()) {
             weightMap.put(vertex, 0);
             order.add(vertex);
         }
         for (int i = getVertices().size()-1; i >= 0 ; i--) {
-            Integer z = unNumberedMaximumWeightVertex(weightMap, numbered);
+            T z = unNumberedMaximumWeightVertex(weightMap, numbered);
             order.set(i, z);
             numbered.add(z);
-            for (Integer neighbour : neighborhood(z)) {
+            for (T neighbour : neighborhood(z)) {
                 if (!numbered.contains(neighbour)) {
                     weightMap.put(neighbour, weightMap.get(neighbour) + 1);
                 }
@@ -84,10 +83,11 @@ public interface Graph {
     }
 
     @Contract(pure = true)
-    default Integer unNumberedMaximumWeightVertex(Map<Integer, Integer> weightMap, java.util.Set<Integer> numbered) {
-        Integer key = -1, value = Integer.MIN_VALUE;
+    default T unNumberedMaximumWeightVertex(Map<T, Integer> weightMap, java.util.Set<T> numbered) {
+        T key = null;
+        Integer value = Integer.MIN_VALUE;
 
-        for (Map.Entry<Integer, Integer> entry : weightMap.entrySet()) {
+        for (Map.Entry<T, Integer> entry : weightMap.entrySet()) {
             if (!numbered.contains(entry.getKey()) && entry.getValue().compareTo(value) > 0) {
                 key = entry.getKey();
                 value = entry.getValue();
@@ -98,27 +98,27 @@ public interface Graph {
     }
 
     @Contract(pure = true) // berry page 5
-    default Pair<List<Integer>, Set<Edge>> maximumCardinalitySearchM() {
-        List<Integer> order = new ArrayList<>(getVertices().size());
-        java.util.Set<Integer> numbered = new HashSet<>(getVertices().size());
-        Map<Integer, Integer> weightMap = new HashMap<>();
-        Set<Edge> F = Set.empty();
-        for (Integer vertex : getVertices()) {
+    default Pair<List<T>, Set<Edge<T>>> maximumCardinalitySearchM() {
+        List<T> order = new ArrayList<>(getVertices().size());
+        java.util.Set<T> numbered = new HashSet<>(getVertices().size());
+        Map<T, Integer> weightMap = new HashMap<>();
+        Set<Edge<T>> F = Set.empty();
+        for (T vertex : getVertices()) {
             weightMap.put(vertex,0);
             order.add(vertex);
         }
         for (int i = getVertices().size()-1; i >= 0 ; i--) {
-            Map<Integer, Integer> weightCopy = new HashMap<>(weightMap);
+            Map<T, Integer> weightCopy = new HashMap<>(weightMap);
 
-            Integer z = unNumberedMaximumWeightVertex(weightMap, numbered);
+            T z = unNumberedMaximumWeightVertex(weightMap, numbered);
             order.set(i, z);
             numbered.add(z);
-            for (Integer y : getVertices()) {
+            for (T y : getVertices()) {
                 if(!numbered.contains(y)){
                     Integer yWeight = weightCopy.get(y);
-                    Set<Integer> possibleGraph = Set.of(z,y);
+                    Set<T> possibleGraph = Set.of(z,y);
 
-                    for (Integer Xi : getVertices()) {
+                    for (T Xi : getVertices()) {
                         if(!numbered.contains(Xi) && weightCopy.get(Xi) < yWeight){ // w{z-}(xi) < w_{z-}(y) so maybe wrong maybe we need a path of increasing weight or something
                             possibleGraph = possibleGraph.add(Xi);
                         }
@@ -126,7 +126,7 @@ public interface Graph {
 
                     if(inducedBy(possibleGraph).hasPath(y,z)){
                         weightMap.put(y, weightMap.get(y)+1);
-                        F = F.add(new Edge(z,y));
+                        F = F.add(new Edge<>(z,y));
                     }
                 }
             }
@@ -136,10 +136,10 @@ public interface Graph {
 
     @Contract(pure = true)
     default boolean isChordal() {
-        List<Integer> order = maximumCardinalitySearch();
+        List<T> order = maximumCardinalitySearch();
 
         for (int i = 0; i < order.size(); i++) {
-            Set<Integer> mAdj = mAdj(order, i);
+            Set<T> mAdj = mAdj(order, i);
             if (!isClique(mAdj))
                 return false;
         }
@@ -152,26 +152,26 @@ public interface Graph {
     }
 
     @Contract(pure = true)
-    default boolean isPotentialMaximalClique(Set<Integer> k){
-        Graph gk = inducedBy(getVertices().minus(k));
-        java.util.Set<Set<Integer>> s = new HashSet<>();
-        for (Set<Integer> component : gk.components()) {
-            Set<Integer> sI = neighborhood(component).intersect(k);
+    default boolean isPotentialMaximalClique(Set<T> k){
+        Graph<T> gk = inducedBy(getVertices().minus(k));
+        java.util.Set<Set<T>> s = new HashSet<>();
+        for (Set<T> component : gk.components()) {
+            Set<T> sI = neighborhood(component).intersect(k);
             if(!sI.isProperSubsetOf(k)){
                 return false;
             }
             s.add(sI);
         }
-        Graph cliqueChecker = this;
-        for (Set<Integer> sI : s) {
-            Set<Edge> fillEdges = cliqueChecker.cliqueify(sI);
+        Graph<T> cliqueChecker = this;
+        for (Set<T> sI : s) {
+            Set<Edge<T>> fillEdges = cliqueChecker.cliqueify(sI);
             cliqueChecker = cliqueChecker.addEdges(fillEdges);
         }
         return cliqueChecker.inducedBy(k).isClique();
     }
 
     @Contract(pure = true)
-    default boolean isVitalPotentialMaximalClique(Set<Integer> vertices, int k) {
+    default boolean isVitalPotentialMaximalClique(Set<T> vertices, int k) {
         if (!vertices.isSubsetOf(getVertices())) throw new IllegalArgumentException("Unknown vertex");
         return k >= 0 &&
                 inducedBy(vertices).getNumberOfNonEdges() <= k &&
@@ -179,23 +179,22 @@ public interface Graph {
     }
 
     @Contract(pure = true)
-    default Set<Set<Integer>> components() {
-        java.util.Set<Integer> marked = new HashSet<>();
-        java.util.Set<Set<Integer>> components = new HashSet<>();
+    default Set<Set<T>> components() {
+        java.util.Set<T> marked = new HashSet<>();
+        java.util.Set<Set<T>> components = new HashSet<>();
 
-        for (Integer i : getVertices()) {
+        for (T i : getVertices()) {
             if (!marked.contains(i)) {
-                java.util.Set<Integer> component = new HashSet<>();
-                Queue<Integer> queue = new ArrayDeque<>();
+                java.util.Set<T> component = new HashSet<>();
+                Queue<T> queue = new ArrayDeque<>();
                 queue.add(i);
                 component.add(i);
                 marked.add(i);
 
-
                 while (!queue.isEmpty() && marked.size() != getVertices().size()) {
-                    Integer vertex = queue.poll();
+                    T vertex = queue.poll();
 
-                    for (Integer neighbor : neighborhood(vertex)) {
+                    for (T neighbor : neighborhood(vertex)) {
                         if (!marked.contains(neighbor)) {
                             marked.add(neighbor);
                             component.add(neighbor);
@@ -211,10 +210,10 @@ public interface Graph {
     }
 
     @Contract(pure = true)
-    default Set<Set<Integer>> fullComponents(Set<Integer> separator) {
-        java.util.Set<Set<Integer>> fullComponents = new HashSet<>();
-        Graph gMinusS = this.inducedBy(this.getVertices().minus(separator));
-        for (Set<Integer> component : gMinusS.components()) {
+    default Set<Set<T>> fullComponents(Set<T> separator) {
+        java.util.Set<Set<T>> fullComponents = new HashSet<>();
+        Graph<T> gMinusS = this.inducedBy(this.getVertices().minus(separator));
+        for (Set<T> component : gMinusS.components()) {
             if (neighborhood(component).equals(separator)) {
                 fullComponents.add(component);
             }
@@ -223,19 +222,19 @@ public interface Graph {
     }
 
     @Contract(pure = true)
-    default List<Integer> shortestPath(Integer from, Integer to) {
+    default List<T> shortestPath(T from, T to) {
         assert getVertices().contains(from);
         assert getVertices().contains(to);
 
-        java.util.Set<Integer> marked = new HashSet<>();
-        Map<Integer, Integer> edgeFrom = new HashMap<>();
-        Queue<Integer> queue = new ArrayDeque<>();
+        java.util.Set<T> marked = new HashSet<>();
+        Map<T, T> edgeFrom = new HashMap<>();
+        Queue<T> queue = new ArrayDeque<>();
         queue.add(from);
         marked.add(from);
 
         while (!queue.isEmpty()) {
-            int vertex = queue.poll();
-            for (Integer neighbor : neighborhood(vertex)) {
+            T vertex = queue.poll();
+            for (T neighbor : neighborhood(vertex)) {
                 if (!marked.contains(neighbor)) {
                     marked.add(neighbor);
                     edgeFrom.put(neighbor, vertex);
@@ -245,8 +244,8 @@ public interface Graph {
             }
         }
 
-        List<Integer> path = new ArrayList<>();
-        Integer pathVertex = to;
+        List<T> path = new ArrayList<>();
+        T pathVertex = to;
 
         while (pathVertex != null) {
             path.add(pathVertex);
@@ -259,32 +258,32 @@ public interface Graph {
     }
 
     @Contract(pure = true)
-    Graph addEdge(Edge e);
+    Graph<T> addEdge(Edge<T> e);
 
     @Contract(pure = true)
-    Graph addEdges(Set<Edge> edges);
+    Graph<T> addEdges(Set<Edge<T>> edges);
 
     @Contract(pure = true)
-    default Set<Edge> getNonEdges() {
-        java.util.Set<Edge> nonEdges = new HashSet<>();
+    default Set<Edge<T>> getNonEdges() {
+        java.util.Set<Edge<T>> nonEdges = new HashSet<>();
 
-        PairIterable<Integer> vertexPairs = new PairIterable<>(getVertices());
-        for(Pair<Integer, Integer> pair : vertexPairs){
+        PairIterable<T> vertexPairs = new PairIterable<>(getVertices());
+        for(Pair<T, T> pair : vertexPairs){
             if (!isAdjacent(pair.a, pair.b)) {
-                nonEdges.add(new Edge(pair.a, pair.b));
+                nonEdges.add(new Edge<>(pair.a, pair.b));
             }
         }
         return Set.of(nonEdges);
     }
 
     @Contract(pure = true)
-    default Set<Edge> getEdges() {
-        java.util.Set<Edge> edges = new HashSet<>();
+    default Set<Edge<T>> getEdges() {
+        java.util.Set<Edge<T>> edges = new HashSet<>();
 
-        for (Integer v1 : getVertices()) {
-            for (Integer v2 : getVertices()) {
-                if (v1 < v2 && isAdjacent(v1, v2)) {
-                    edges.add(new Edge(v1, v2));
+        for (T v1 : getVertices()) {
+            for (T v2 : getVertices()) {
+                if (v1.compareTo(v2) < 0 && isAdjacent(v1, v2)) {
+                    edges.add(new Edge<>(v1, v2));
                 }
             }
         }
@@ -294,8 +293,8 @@ public interface Graph {
 
     default int getNumberOfNonEdges() {
         int number = 0;
-        PairIterable<Integer> vertexPairs = new PairIterable<>(getVertices());
-        for(Pair<Integer, Integer> pair : vertexPairs){
+        PairIterable<T> vertexPairs = new PairIterable<>(getVertices());
+        for(Pair<T, T> pair : vertexPairs){
             if (!isAdjacent(pair.a, pair.b)) {
                 number++;
             }
@@ -304,14 +303,14 @@ public interface Graph {
     }
 
     @Contract(pure = true)
-    Graph inducedBy(Set<Integer> vertices);
+    Graph<T> inducedBy(Set<T> vertices);
 
     @Contract(pure = true)
-    ChordalGraph minimalTriangulation();
+    ChordalGraph<T> minimalTriangulation();
 
     @Contract(pure = true)
-    default Set<Integer> mAdj(List<Integer> peo, int index) {
-        Set<Integer> neighborhood = neighborhood(peo.get(index)).toSet();
+    default Set<T> mAdj(List<T> peo, int index) {
+        Set<T> neighborhood = neighborhood(peo.get(index)).toSet();
         return neighborhood.intersect(
                 Set.of(
                         peo.subList(index + 1, peo.size())
@@ -319,15 +318,15 @@ public interface Graph {
     }
 
     @Contract(pure = true)
-    default Set<Edge> cliqueify(Set<Integer> vertices) {
+    default Set<Edge<T>> cliqueify(Set<T> vertices) {
         assert vertices.isSubsetOf(getVertices());
 
-        java.util.Set<Edge> fill = new HashSet<>();
+        java.util.Set<Edge<T>> fill = new HashSet<>();
 
-        PairIterable<Integer> vertexPairs = new PairIterable<>(vertices);
-        for(Pair<Integer, Integer> pair : vertexPairs){
+        PairIterable<T> vertexPairs = new PairIterable<>(vertices);
+        for(Pair<T, T> pair : vertexPairs){
             if (!isAdjacent(pair.a, pair.b)) {
-                fill.add(new Edge(pair.a, pair.b));
+                fill.add(new Edge<>(pair.a, pair.b));
             }
         }
 
@@ -335,11 +334,10 @@ public interface Graph {
     }
 
     @Contract(pure = true)
-    default boolean isClique(Set<Integer> vertices) {
+    default boolean isClique(Set<T> vertices) {
         assert vertices.isSubsetOf(getVertices());
 
-        PairIterable<Integer> vertexPairs = new PairIterable<>(vertices);
-        for(Pair<Integer, Integer> pair : vertexPairs){
+        for(Pair<T, T> pair : new PairIterable<>(vertices)){
             if (!isAdjacent(pair.a, pair.b)) {
                 return false;
             }
@@ -347,29 +345,29 @@ public interface Graph {
         return true;
     }
 
-    default Optional<List<Integer>> findChordlessCycle() {
-        for (Set<Integer> component : components()) {
-            List<Integer> order = inducedBy(component).maximumCardinalitySearch();
+    default Optional<List<T>> findChordlessCycle() {
+        for (Set<T> component : components()) {
+            List<T> order = inducedBy(component).maximumCardinalitySearch();
 
             for (int i = 0; i < order.size(); i++) {
-                Set<Integer> madj = mAdj(order, i);
-                List<Integer> madjList = new ArrayList<>();
-                for (Integer vertex : madj) {
+                Set<T> madj = mAdj(order, i);
+                List<T> madjList = new ArrayList<>();
+                for (T vertex : madj) {
                     madjList.add(vertex);
                 }
                 if (!isClique(madj)) {
                     // Cycle identified
                     for (int j = 0; j < madjList.size()-1; j++) {
-                        Integer v = madjList.get(j);
+                        T v = madjList.get(j);
                         for (int k = j+1; k < madjList.size(); k++) {
-                            Integer w = madjList.get(k);
+                            T w = madjList.get(k);
 
-                            Set<Integer> toRemove = madj.minus(Set.of(v, w)).add(order.get(i));
+                            Set<T> toRemove = madj.minus(Set.of(v, w)).add(order.get(i));
 
-                            Graph gPrime = inducedBy(getVertices().minus(toRemove));
+                            Graph<T> gPrime = inducedBy(getVertices().minus(toRemove));
 
                             if (!gPrime.isAdjacent(v, w) && gPrime.hasPath(v, w)) {
-                                List<Integer> path = gPrime.shortestPath(v, w);
+                                List<T> path = gPrime.shortestPath(v, w);
                                 path.add(order.get(i));
 
                                 assert path.size() >= 4;
@@ -385,27 +383,27 @@ public interface Graph {
         return Optional.empty();
     }
 
-    default Set<List<Integer>> findChordlessCycles() {
-        Set<List<Integer>> cycles = Set.empty();
-        for (Set<Integer> component : components()) {
-            List<Integer> order = inducedBy(component).maximumCardinalitySearch();
+    default Set<List<T>> findChordlessCycles() {
+        Set<List<T>> cycles = Set.empty();
+        for (Set<T> component : components()) {
+            List<T> order = inducedBy(component).maximumCardinalitySearch();
 
             for (int i = 0; i < order.size(); i++) {
-                Set<Integer> madj = mAdj(order, i);
-                List<Integer> madjList = new ArrayList<>();
-                for (Integer vertex : madj) {
+                Set<T> madj = mAdj(order, i);
+                List<T> madjList = new ArrayList<>();
+                for (T vertex : madj) {
                     madjList.add(vertex);
                 }
                 if (!isClique(madj)) {
                     // Cycle identified
-                    Graph gPrime = inducedBy(getVertices().remove(order.get(i)));
+                    Graph<T> gPrime = inducedBy(getVertices().remove(order.get(i)));
 
                     for (int j = 0; j < madjList.size()-1; j++) {
-                        Integer v = madjList.get(j);
+                        T v = madjList.get(j);
                         for (int k = j+1; k < madjList.size(); k++) {
-                            Integer w = madjList.get(k);
+                            T w = madjList.get(k);
                             if (!gPrime.isAdjacent(v, w) && gPrime.hasPath(v, w)) {
-                                List<Integer> path = gPrime.shortestPath(v, w);
+                                List<T> path = gPrime.shortestPath(v, w);
                                 path.add(order.get(i));
 
                                 assert path.size() >= 4;
@@ -423,23 +421,23 @@ public interface Graph {
         return cycles;
     }
 
-    default Set<Integer> isolatedSet(Set<Integer> cb, Set<Integer> X){
+    default Set<T> isolatedSet(Set<T> cb, Set<T> X){
         return X.minus(neighborhood(cb));
     }
 
     // todo dont know if is correct
     // N_(x) = {x’ | x’ < x},
     // N+(x) = N(x) - N_(x).
-    default Set<Integer> nPlus(Integer x, Set<Set<Integer>> sMinus) {
-        Set<Integer> nPlus = neighborhood(x).toSet();
-        for (Set<Integer> minus : sMinus) {
+    default Set<T> nPlus(T x, Set<Set<T>> sMinus) {
+        Set<T> nPlus = neighborhood(x).toSet();
+        for (Set<T> minus : sMinus) {
             nPlus = nPlus.minus(minus);
         }
         return nPlus;
     }
 
-    default  Optional<Set<Integer>> componentWithB(int b){
-        for (Set<Integer> component : components()) {
+    default Optional<Set<T>> componentWithB(T b){
+        for (Set<T> component : components()) {
             if(component.contains(b))
             {
                 return Optional.of(component);
@@ -448,24 +446,24 @@ public interface Graph {
         return Optional.empty();
     }
 
-    default Set<Set<Integer>> minimalSeparators(int a, int b){
-        Set<Integer> Na = neighborhood(a).toSet();
-        Set<Integer> Cb = inducedBy(getVertices().minus(Na)).componentWithB(b).get();
+    default Set<Set<T>> minimalSeparators(T a, T b){
+        Set<T> Na = neighborhood(a).toSet();
+        Set<T> Cb = inducedBy(getVertices().minus(Na)).componentWithB(b).get();
 
-        Map<Integer, Set<Set<Integer>>> lk = new HashMap<>();
+        Map<Integer, Set<Set<T>>> lk = new HashMap<>();
         lk.put(0, Set.of(Na.minus(isolatedSet(Cb, Na))));
 
         int k = 0;
         while(k < getVertices().size()-3 && !Cb.isEmpty()){
-            for (Set<Integer> s : lk.get(k)) {
-                for (Integer x : s.minus(neighborhood(b).toSet())) {
-                    Set<Integer> nPlus = nPlus(x, lk.get(k));
-                    Set<Integer> s_nPlus = s.union(nPlus);
+            for (Set<T> s : lk.get(k)) {
+                for (T x : s.minus(neighborhood(b).toSet())) {
+                    Set<T> nPlus = nPlus(x, lk.get(k));
+                    Set<T> s_nPlus = s.union(nPlus);
                     Cb =  inducedBy(getVertices().minus(s_nPlus)).componentWithB(b).get();
                     // Compute the connected component Cb of graph G[V - (SUN+(x))]
                     if(!Cb.isEmpty()){
-                        Set<Integer> sPrime = s_nPlus.minus(isolatedSet(Cb, s_nPlus));
-                        for (Set<Set<Integer>> sets : lk.values()) {
+                        Set<T> sPrime = s_nPlus.minus(isolatedSet(Cb, s_nPlus));
+                        for (Set<Set<T>> sets : lk.values()) {
                             if(sets.contains(sPrime)){
                                 if(lk.containsKey(k+1))
                                     lk.put(k+1, lk.get(k+3).add(sPrime));
@@ -479,17 +477,17 @@ public interface Graph {
             }
             k++;
         }
-        Set<Set<Integer>> separators = Set.empty();
-        for (Set<Set<Integer>> sets : lk.values()) {
+        Set<Set<T>> separators = Set.empty();
+        for (Set<Set<T>> sets : lk.values()) {
             separators = separators.union(sets);
         }
         return separators;
     }
-    default Set<Set<Integer>> minimalSeparators() {
-        Map<Integer, Set<Set<Integer>>> Tk = new HashMap<>();
+    default Set<Set<T>> minimalSeparators() {
+        Map<Integer, Set<Set<T>>> Tk = new HashMap<>();
         Set<Set<Integer>> T = Set.empty();
         int c = 0;
-        for (Pair<Integer, Integer> vertexPair : new PairIterable<>(getVertices())) {
+        for (Pair<T, T> vertexPair : new PairIterable<>(getVertices())) {
             if(!isAdjacent(vertexPair.a, vertexPair.b))
             {
                 Tk.put(c, minimalSeparators(vertexPair.a, vertexPair.b));
@@ -503,8 +501,8 @@ public interface Graph {
             }
             //T = Tk.get(0); // makes very little sense to me.
         }
-        Set<Set<Integer>> separators = Set.empty();
-        for (Set<Set<Integer>> sets : Tk.values()) {
+        Set<Set<T>> separators = Set.empty();
+        for (Set<Set<T>> sets : Tk.values()) {
             separators = separators.union(sets);
         }
         return separators;

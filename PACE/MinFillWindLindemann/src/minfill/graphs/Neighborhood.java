@@ -4,12 +4,12 @@ import minfill.sets.Set;
 
 import java.util.HashSet;
 
-public interface Neighborhood extends Iterable<Integer> {
-    boolean contains(Integer vertex);
+public interface Neighborhood<T> extends Iterable<T> {
+    boolean contains(T vertex);
 
-    default Set<Integer> toSet() {
-        java.util.Set<Integer> neighbors = new HashSet<>();
-        for (Integer vertex : this) {
+    default Set<T> toSet() {
+        java.util.Set<T> neighbors = new HashSet<>();
+        for (T vertex : this) {
             neighbors.add(vertex);
         }
         return Set.of(neighbors);
