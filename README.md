@@ -1,5 +1,5 @@
 # Algorithm Design Project
-This is the repository of Anders Wind Steffensen and Mikael Lindemann Jepsen for shared information and code for the course Algorithm Design Project.
+This is the repository of Anders Wind Steffensen and Mikael Lindemann for shared information and code for the course Algorithm Design Project.
 
 We will try to implement an algorithm for the <a href="https://pacechallenge.wordpress.com/pace-2017/track-b-minimum-fill-in/">PACE Challenge 2017 Track B - Minimum Fill-In</a>.
 
