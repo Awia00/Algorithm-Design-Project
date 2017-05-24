@@ -51,17 +51,6 @@ public class MinFillPolynomialReducer<T extends Comparable<T>> {
                 }
             }
         }
-        //for (Set<Integer> subset : new SubsetOfAtMostSizeIterable<>(g.getVertices(), 4)) {
-        //    if(g.isClique(subset)){
-        //        for (Set<Integer> component : g.inducedBy(g.getVertices().minus(subset)).components()) {
-        //            Set<Integer> fringe = g.neighborhood(component);
-        //            subset = subset.minus(fringe).minus(component);
-        //        }
-        //        for (Integer vertex : subset) {
-        //            result.add(vertex);
-        //        }
-        //    }
-        //}
         return Set.of(result);
     }
 

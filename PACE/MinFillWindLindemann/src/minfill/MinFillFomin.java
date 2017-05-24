@@ -107,22 +107,28 @@ public class MinFillFomin<T extends Comparable<T>> {
     @Contract(pure = true)
     public Optional<Graph<T>> stepB2(Graph<T> g, int k) {
         IO.printf("Step B2: Non-reducible instance found. k=%d\n", k);
-        int maxSubsetSize = (int)(5*Math.sqrt(k)+5); // 5 is magic value, theoretically should be 2 or 3
+        Graph<T> gPrime = g;
 
-        Set<T> removableIntegers = Set.empty();//new MinFillPolynomialReducer().findRemovableVertices(g);
-        Graph<T> gPrime = g.inducedBy(g.getVertices().minus(removableIntegers));
-        IO.printf("Removed %d getVertices\n", removableIntegers.size());
+        // reduction
+        MinFillPolynomialReducer<T> minFillPolynomialReducer = new MinFillPolynomialReducer<>();
+        Set<T> removableIntegers = minFillPolynomialReducer.findRemovableVertices(gPrime);
+        if(removableIntegers.size()!=0){
+            gPrime = gPrime.inducedBy(gPrime.getVertices().minus(removableIntegers));
+            IO.printf("Removed %d getVertices\n", removableIntegers.size());
+        }
 
+        // shortcuts
         Set<Set<T>> piI;
+        int maxSubsetSize = (int)(5*Math.sqrt(k)+5); // 5 is magic value, theoretically should be 2 or 3
         if(maxSubsetSize > gPrime.getVertices().size()) {
             IO.println("Shortcut for vital potential maximum clique taken");
             piI = exhaustiveVitalPotentialMaximalCliqueSearch(gPrime, k);
         }
         else if(k < 25) {
-            IO.println("Shortcut Non-Edges taken");
-            return MinFillSearchTree.minFillSearchTree(gPrime, k);
+            IO.println("Shortcut 'search tree' taken");
+            return MinFillSearchTree.minFillSearchTree(g, k);
         }
-        else
+        else // Straight up Fomin
             piI = generateVitalPotentialMaximalCliques(gPrime, k);
 
         return stepC(g, k, piI);
