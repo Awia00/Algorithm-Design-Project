@@ -16,7 +16,7 @@ import java.util.Optional;
  */
 public class MinFillPolynomialReducer<T extends Comparable<T>> {
 
-    public Set<T> findRemovableVertices(Graph<T> g){
+    public Set<T> findRemovableVertices(Graph<T> g) {
         java.util.Set<T> result = new HashSet<>();
         Graph<T> gPrime = g;
 
@@ -57,7 +57,7 @@ public class MinFillPolynomialReducer<T extends Comparable<T>> {
     public Set<Edge<T>> findSafeEdges(Graph<T> g){
         Set<Edge<T>> step1 = independentSimpleCycleReduction(g);
         Set<Edge<T>> step2 = nonIndependentSimpleCycleReducer(g.addEdges(step1));
-        Set<Edge<T>> step3 = firstLevelMinimalSeparatorsAlmostCliquesReducer(g.addEdges(step2.union(step1)));
+        Set<Edge<T>> step3 = Set.empty();//firstLevelMinimalSeparatorsAlmostCliquesReducer(g.addEdges(step2.union(step1)));
         Set<Edge<T>> step4 = higherLevelMinimalSeparatorsAlmostCliquesReducer(g.addEdges(step3.union(step2).union(step1)));
 
         //IO.println("MinSep: " + step3.size());

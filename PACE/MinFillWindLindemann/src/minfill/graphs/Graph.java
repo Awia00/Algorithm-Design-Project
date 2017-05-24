@@ -497,6 +497,8 @@ public interface Graph<T extends Comparable<T>> {
             {
                 Tk.put(c, minimalSeparators(vertexPair.a, vertexPair.b));
                 c++;
+                Tk.put(c, minimalSeparators(vertexPair.b, vertexPair.a));
+                c++;
             }
         }
         for (int i = 0; i < Math.log(c)-1; i++) {

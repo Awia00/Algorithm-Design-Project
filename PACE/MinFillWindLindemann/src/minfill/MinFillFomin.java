@@ -8,10 +8,7 @@ import minfill.sets.Set;
 import minfill.tuples.Pair;
 import org.jetbrains.annotations.Contract;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.atomic.LongAdder;
 
 public class MinFillFomin<T extends Comparable<T>> {
@@ -110,12 +107,7 @@ public class MinFillFomin<T extends Comparable<T>> {
         Graph<T> gPrime = g;
 
         // reduction
-        MinFillPolynomialReducer<T> minFillPolynomialReducer = new MinFillPolynomialReducer<>();
-        Set<T> removableIntegers = minFillPolynomialReducer.findRemovableVertices(gPrime);
-        if(removableIntegers.size()!=0){
-            gPrime = gPrime.inducedBy(gPrime.getVertices().minus(removableIntegers));
-            IO.printf("Removed %d getVertices\n", removableIntegers.size());
-        }
+
 
         // shortcuts
         Set<Set<T>> piI;
@@ -124,9 +116,12 @@ public class MinFillFomin<T extends Comparable<T>> {
             IO.println("Shortcut for vital potential maximum clique taken");
             piI = exhaustiveVitalPotentialMaximalCliqueSearch(gPrime, k);
         }
-        else if(k < 25) {
+        else if(k<15) {
             IO.println("Shortcut 'search tree' taken");
             return MinFillSearchTree.minFillSearchTree(g, k);
+        }
+        else if(true){
+            piI = FrenchVitalPotentialMaximalCliqueSearch(gPrime, k);
         }
         else // Straight up Fomin
             piI = generateVitalPotentialMaximalCliques(gPrime, k);
@@ -144,6 +139,67 @@ public class MinFillFomin<T extends Comparable<T>> {
             }
         }
         return Set.of(potentialMaximalCliques);
+    }
+
+    @Contract(pure = true)
+    private Set<Set<T>> oneMoreVertex(Graph<T> g, Graph<T> gPrime, T a, Set<Set<T>> piGPrime, Set<Set<T>> deltaG, Set<Set<T>> deltaGPrime) {
+        java.util.Set<Set<T>> potentialMaximalCliques = new HashSet<>();
+        for (Set<T> omegaPrime : piGPrime) {
+            if(g.isPotentialMaximalClique(omegaPrime)){
+                potentialMaximalCliques.add(omegaPrime);
+            }
+            else if(g.isPotentialMaximalClique(omegaPrime.add(a))){
+                potentialMaximalCliques.add(omegaPrime.add(a));
+            }
+        }
+        for (Set<T> S : deltaG) {
+            if(g.isPotentialMaximalClique(S.add(a))){
+                potentialMaximalCliques.add(S.add(a));
+            }
+            else if(!S.contains(a) && !deltaGPrime.contains(S)){
+                for (Set<T> T : deltaG) {
+                    for (Set<T> C : g.fullComponents(S)) {
+                        Set<T> set = S.union(T.intersect(C));
+                        if(g.isPotentialMaximalClique(set)){
+                            potentialMaximalCliques.add(set);
+                        }
+                    }
+                }
+            }
+        }
+        return Set.of(potentialMaximalCliques);
+    }
+    @Contract(pure = true)
+    private Set<Set<T>> FrenchVitalPotentialMaximalCliqueSearch(Graph<T> graph, int k) {
+        List<T> vertices = new ArrayList<T>();
+        Set<Set<T>> deltaG, deltaGPrime, piG, piGPrime = Set.empty();
+
+        for (T i : graph.getVertices()) {
+            vertices.add(i);
+        }
+
+        piG = Set.of(Set.of(vertices.get(0)));
+        deltaG = Set.empty();
+        Graph<T> gI = graph;
+        for (int i = 0; i < vertices.size()-1; i++) {
+            T a = vertices.get(i+1);
+            Graph<T> gJ = gI.inducedBy(gI.getVertices().remove(a));
+            deltaGPrime = gJ.minimalSeparators();
+
+            piGPrime = piG.union(oneMoreVertex(gI, gJ, a, piG, deltaG, deltaGPrime));
+
+            deltaG = deltaGPrime;
+            piG = piGPrime;
+        }
+
+        // check vitality
+        java.util.Set<Set<T>> vitalPotentialMaximalCliques = new HashSet<>();
+        for (Set<T> potentialMaximalClique : piGPrime) {
+            if(graph.isVitalPotentialMaximalClique(potentialMaximalClique, k)){
+                vitalPotentialMaximalCliques.add(potentialMaximalClique);
+            }
+        }
+        return Set.of(vitalPotentialMaximalCliques);
     }
 
     @Contract(pure = true)
