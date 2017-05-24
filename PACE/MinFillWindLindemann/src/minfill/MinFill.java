@@ -51,7 +51,6 @@ public class MinFill {
         IO.printf("Kernel procedure 1 and 2 done. k=%d\n", abk.c);
 
         int k = abk.c;
-
         while (true) {
             Optional<Pair<Graph<String>, Integer>> tmp = kernel.kernelProcedure3(g, abk.a, abk.b, k);
             if (tmp.isPresent()) {

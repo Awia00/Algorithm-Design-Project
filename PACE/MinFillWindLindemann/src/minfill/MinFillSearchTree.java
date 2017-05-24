@@ -16,11 +16,12 @@ import java.util.Optional;
 public class MinFillSearchTree {
     private static int
             memoizerCounter,
-            minDepth = 5;
-    private static HashMap<Integer, java.util.Set<Graph>> nonSolvableGraphs = new HashMap<>();
+            minDepth = 7;
+    private static HashMap<Integer, java.util.Set<Graph>> nonSolvableGraphs;
 
     public static <T extends Comparable<T>> Optional<Graph<T>> minFillSearchTree(Graph<T> g, int k){
         memoizerCounter = 0;
+        nonSolvableGraphs = new HashMap<>();
         for (int i = minDepth; i <= k; i++) {
             if(!nonSolvableGraphs.containsKey(i)){
                 nonSolvableGraphs.put(i, new HashSet<>());
@@ -53,8 +54,9 @@ public class MinFillSearchTree {
             }
         }
 
-        if(k >= minDepth) // store in memoizer
+        if(k >= minDepth) {// store in memoizer
             nonSolvableGraphs.get(k).add(g);
+        }
 
         return Optional.empty();
     }
