@@ -13,12 +13,9 @@ import java.util.Optional;
  */
 public class MinFillSearchTree {
     public static <T extends Comparable<T>> Optional<Graph<T>> minFillSearchTree(Graph<T> g, int k){
-        if(k==0 && g.isChordal()){
-            IO.println("button reached:");
-            return Optional.of(g);
-        }
-        if(k==0){
-            return Optional.empty();
+        if(k==0 ){
+            if(g.isChordal()) return Optional.of(g);
+            else return Optional.empty();
         }
 
         for (Pair<T, T> pair : new PairIterable<>(Set.of(g.findChordlessCycle().get()))) {

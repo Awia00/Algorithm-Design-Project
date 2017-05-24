@@ -19,10 +19,10 @@ public class MinFillFomin<T extends Comparable<T>> {
 
     @Contract(pure = true)
     public Optional<Graph<T>> stepB1(Graph<T> g, int k) {
-        if (k <= 0 && g.isChordal())
-            return Optional.of(g);
-        if (k <= 0)
-            return Optional.empty();
+        if (k <= 0 ) {
+            if(g.isChordal()) return Optional.of(g);
+            else return Optional.empty();
+        }
 
         Set<Set<Edge<T>>> branches = branch(g, k);
 
@@ -183,9 +183,8 @@ public class MinFillFomin<T extends Comparable<T>> {
     }
 
     // Implementation of Lemma 4.1
-    // TODO: Check that we branch correctly on component size.
     @Contract(pure = true)
-    private java.util.Set<Set<T>> enumerateVitalQuasiCliques(Graph<T> g, int k) {
+    private java.util.Set<Set<T>> enumerateQuasiCliques(Graph<T> g, int k) {
         java.util.Set<Set<T>> potentialMaximalCliques = new HashSet<>();
         Iterable<Set<T>> vertexSubsets = Set.subsetsOfSizeAtMost(g.getVertices(), (int)(5*Math.sqrt(k)));
 
@@ -197,7 +196,7 @@ public class MinFillFomin<T extends Comparable<T>> {
             for (Set<T> s : h.minimalSeparators()) {
                 if(g.isClique(s)){
                     Set<T> c = s.union(z);
-                    if (!potentialMaximalCliques.contains(c) && g.isVitalPotentialMaximalClique(c, k)) {
+                    if (!potentialMaximalCliques.contains(c) && g.isPotentialMaximalClique(c)) {
                         potentialMaximalCliques.add(c);
                     }
                 }
@@ -207,7 +206,7 @@ public class MinFillFomin<T extends Comparable<T>> {
                 // Case 2
                 if (g.isClique(maximalClique)) {
                     Set<T> c = maximalClique.union(z);
-                    if (!potentialMaximalCliques.contains(c) && g.isVitalPotentialMaximalClique(c, k)) {
+                    if (!potentialMaximalCliques.contains(c) && g.isPotentialMaximalClique(c)) {
                         potentialMaximalCliques.add(c);
                     }
                 }
@@ -222,7 +221,7 @@ public class MinFillFomin<T extends Comparable<T>> {
                         }
                     }
                     Set<T> c = g.neighborhood(Y).add(y);
-                    if (!potentialMaximalCliques.contains(c) && g.isVitalPotentialMaximalClique(c, k)) {
+                    if (!potentialMaximalCliques.contains(c) && g.isPotentialMaximalClique(c)) {
                         potentialMaximalCliques.add(c);
                     }
                 }
