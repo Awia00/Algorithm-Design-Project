@@ -112,16 +112,17 @@ public class MinFillFomin<T extends Comparable<T>> {
         // shortcuts
         Set<Set<T>> piI;
         int maxSubsetSize = (int)(5*Math.sqrt(k)+5); // 5 is magic value, theoretically should be 2 or 3
-        if(maxSubsetSize > gPrime.getVertices().size()) {
+        if(maxSubsetSize > gPrime.getVertices().size() && gPrime.getVertices().size() < 16) {
             IO.println("Shortcut for vital potential maximum clique taken");
             piI = exhaustiveVitalPotentialMaximalCliqueSearch(gPrime, k);
         }
-        else if(k<15) {
+        else if(k<12) {
             IO.println("Shortcut 'search tree' taken");
             return MinFillSearchTree.minFillSearchTree(g, k);
         }
-        else if(true){
-            piI = FrenchVitalPotentialMaximalCliqueSearch(gPrime, k);
+        else if(true) {
+            IO.println("Shortcut 'minimal separator for cliques' taken");
+            piI = todincaVitalPotentialMaximalCliqueSearch(gPrime, k);
         }
         else // Straight up Fomin
             piI = generateVitalPotentialMaximalCliques(gPrime, k);
@@ -170,7 +171,7 @@ public class MinFillFomin<T extends Comparable<T>> {
         return Set.of(potentialMaximalCliques);
     }
     @Contract(pure = true)
-    private Set<Set<T>> FrenchVitalPotentialMaximalCliqueSearch(Graph<T> graph, int k) {
+    private Set<Set<T>> todincaVitalPotentialMaximalCliqueSearch(Graph<T> graph, int k) {
         List<T> vertices = new ArrayList<T>();
         Set<Set<T>> deltaG, deltaGPrime, piG, piGPrime = Set.empty();
 
@@ -195,7 +196,7 @@ public class MinFillFomin<T extends Comparable<T>> {
         // check vitality
         java.util.Set<Set<T>> vitalPotentialMaximalCliques = new HashSet<>();
         for (Set<T> potentialMaximalClique : piGPrime) {
-            if(graph.isVitalPotentialMaximalClique(potentialMaximalClique, k)){
+            if(graph.inducedBy(potentialMaximalClique).getNumberOfNonEdges()<=k){
                 vitalPotentialMaximalCliques.add(potentialMaximalClique);
             }
         }
