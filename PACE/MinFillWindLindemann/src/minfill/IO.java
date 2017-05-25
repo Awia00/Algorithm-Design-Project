@@ -34,16 +34,12 @@ public class IO implements AutoCloseable {
         try (Scanner scanner = new Scanner(input)) {
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine();
+                if (line.startsWith("#")) continue;
 
                 String[] tokens = line.split(" ");
 
-
-                if (!intern.containsKey(tokens[0])) {
-                    intern.put(tokens[0], tokens[0]);
-                }
-                if (!intern.containsKey(tokens[1])) {
-                    intern.put(tokens[1], tokens[1]);
-                }
+                intern.putIfAbsent(tokens[0], tokens[0]);
+                intern.putIfAbsent(tokens[1], tokens[1]);
 
                 edges.add(new Edge<>(intern.get(tokens[0]), intern.get(tokens[1])));
             }
